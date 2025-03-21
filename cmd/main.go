@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/Michaelpalacce/go-btva/internal/args"
+)
 
 func main() {
-	fmt.Println("Hello World")
+	cliOptions := args.ParseArguments()
+
+	fmt.Println(cliOptions)
 }
