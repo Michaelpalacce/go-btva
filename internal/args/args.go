@@ -2,10 +2,10 @@ package args
 
 import "flag"
 
-func ParseArguments() Options {
-	options := Options{
-		Software: Software{},
-		Mvn:      Mvn{},
+// Args will parse the CLI arguments once and return the parsed options from then on
+func Args() *Options {
+	if options.parsed {
+		return options
 	}
 
 	// Software
@@ -20,6 +20,8 @@ func ParseArguments() Options {
 	flag.BoolVar(&options.Infra.MinimalInfrastructure, "minimalInfrastructure", true, "Do you want to spin up a mininmal infrastructure example?")
 
 	flag.Parse()
+
+	options.parsed = true
 
 	return options
 }

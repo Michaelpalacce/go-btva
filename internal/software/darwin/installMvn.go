@@ -1,4 +1,5 @@
 package darwin
 
-func (i *DarwinInstaller) InstallMvn() {
+func (i *DarwinInstaller) InstallMvn() error {
+	return nil
 }
