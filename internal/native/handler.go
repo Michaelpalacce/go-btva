@@ -12,8 +12,9 @@ import (
 
 // Handler is a struct that can
 type Handler struct {
-	os    *os.OS
-	state *state.State
+	os      *os.OS
+	state   *state.State
+	options *args.Options
 
 	// installer is a pointer
 	installer software.Installer
@@ -21,7 +22,7 @@ type Handler struct {
 
 // NewHandler will return a new native Handler that will be used to manage and execute os operations
 func NewHandler(os *os.OS, options *args.Options) (*Handler, error) {
-	handler := &Handler{os: os, state: state.NewState()}
+	handler := &Handler{os: os, state: state.NewState(), options: options}
 
 	switch os.Distro {
 	case "linux":
@@ -36,7 +37,7 @@ func NewHandler(os *os.OS, options *args.Options) (*Handler, error) {
 }
 
 func (h *Handler) SetupSoftware(c chan error) {
-	if h.state.GetDone(software.IsJavaInstalled(false)) {
+	if h.state.GetDone(software.IsJavaInstalled(false)) && h.options.Software.InstallJava {
 		err := h.installer.InstallJava()
 		if err != nil {
 			h.state.Set(software.JavaInstalled(err))
