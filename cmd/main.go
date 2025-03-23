@@ -5,10 +5,16 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/native"
+	"github.com/Michaelpalacce/go-btva/pkg/logger"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
 func main() {
+	// Logger Block. Will configure the `slog` logger
+	logger.ConfigureLogging()
+
+	// Variables block. Init vars
+
 	var (
 		handler *native.Handler
 		err     error
