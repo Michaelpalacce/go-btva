@@ -5,6 +5,8 @@ else
 GOBIN=$(shell go env GOBIN)
 endif
 
+GOEXEC=$(shell which go)
+
 # Setting SHELL to bash allows bash commands to be executed by recipes.
 # Options are set to exit when a recipe line exits non-zero or a piped command fails.
 SHELL = /usr/bin/env bash -o pipefail
@@ -35,7 +37,7 @@ build: ## Build the project
 
 .PHONY: run 
 run: ## Go run the project
-	go run cmd/main.go
+	sudo $(GOEXEC) run cmd/main.go
 
 # go-install-tool will 'go install' any package with custom target and name of binary, if it doesn't exist
 # $1 - target path with name of binary
