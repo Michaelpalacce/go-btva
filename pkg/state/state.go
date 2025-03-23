@@ -14,7 +14,10 @@ type internalState struct {
 
 // State contains the current state of the application
 type State struct {
-	_state map[string]internalState
+	State map[string]internalState `json:"state"`
+
+	// storage is an array, as you may want to store the state in multiple places
+	storage []Storage
 }
 
 // NewState will return a new state object, ready to be used
@@ -36,14 +39,26 @@ type (
 	GetErrStateOption     func(*State) error
 )
 
-func (s *State) Set(option SetStateOption) error           { return option(s) }
+func (s *State) Set(options ...SetStateOption) error {
+	for _, option := range options {
+		if err := option(s); err != nil {
+			return err
+		}
+	}
+
+	for _, storage := range s.storage {
+		storage.Commit(s)
+	}
+
+	return nil
+}
 func (s *State) Get(option GetStateOption) *internalState  { return option(s) }
 func (s *State) GetDone(option GetSuccessStateOption) bool { return option(s) }
 func (s *State) GetMsg(option GetMsgStateOption) string    { return option(s) }
 func (s *State) GetErr(option GetErrStateOption) error     { return option(s) }
 
 func (s *State) GetValue(key string) *internalState {
-	if value, ok := s._state[key]; !ok {
+	if value, ok := s.State[key]; !ok {
 		return nil
 	} else {
 		return &value
@@ -51,12 +66,12 @@ func (s *State) GetValue(key string) *internalState {
 }
 
 func (s *State) SetValue(key string, done bool, msg string, step int, err error) {
-	s._state[key] = internalState{Done: done, Msg: msg, Step: step, Err: err}
+	s.State[key] = internalState{Done: done, Msg: msg, Step: step, Err: err}
 }
 
 // Init can be used to initialize the internals of the State object
 func (s *State) Init() {
-	if s._state == nil {
-		s._state = make(map[string]internalState)
+	if s.State == nil {
+		s.State = make(map[string]internalState)
 	}
 }

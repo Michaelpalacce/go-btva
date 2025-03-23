@@ -33,7 +33,7 @@ func IsJavaInstalled(isTrue bool) state.GetSuccessStateOption {
 	return func(s *state.State) bool {
 		value := s.GetValue(javaInstallationState)
 		if value == nil {
-			return isTrue && false
+			return !isTrue
 		}
 
 		return value.Done && isTrue
