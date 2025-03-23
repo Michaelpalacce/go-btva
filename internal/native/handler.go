@@ -70,6 +70,28 @@ func (h *Handler) SetupSoftware(c chan error) {
 		slog.Info("Java is already installed, skipping...")
 	}
 
+	//                  in state                           is wanted in arguments            already installed
+	if h.state.GetDone(software.IsMvnInstalled(false)) && h.options.Software.InstallMvn && !h.installer.Mvn().Exists() {
+		slog.Info("Mvn is not installed, installing")
+		err := h.installer.Mvn().Install()
+		if err != nil {
+			if err := h.state.Set(software.MvnInstalled(err)); err != nil {
+				slog.Error("Error setting state", err)
+			}
+			c <- err
+
+			return
+		}
+
+		if err := h.state.Set(software.MvnInstalled(nil)); err != nil {
+			slog.Error("Error setting state", err)
+		}
+
+		slog.Info("Successfully installed Mvn")
+	} else {
+		slog.Info("Mvn is already installed, skipping...")
+	}
+
 	c <- nil
 }
 

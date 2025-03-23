@@ -9,6 +9,9 @@ import (
 const (
 	javaStateKey         = "java"
 	JAVA_STATE_INSTALLED = "Installed"
+
+	mvnStateKey         = "mvn"
+	MVN_STATE_INSTALLED = "Installed"
 )
 
 // JAVA
@@ -36,6 +39,39 @@ func JavaInstalled(err error) state.SetStateOption {
 func IsJavaInstalled(isTrue bool) state.GetSuccessStateOption {
 	return func(s *state.State) bool {
 		value := s.GetValue(javaStateKey)
+		if value == nil {
+			return !isTrue
+		}
+
+		return value.Done == isTrue
+	}
+}
+
+// Mvn
+func MvnInstalled(err error) state.SetStateOption {
+	return func(s *state.State) error {
+		var (
+			msg  string
+			step int
+		)
+		if err != nil {
+			msg = fmt.Sprintf("Error installing Mvn: %v", err)
+			step = 0
+		} else {
+			msg = fmt.Sprintf(MVN_STATE_INSTALLED)
+			step = 1
+		}
+
+		s.SetValue(mvnStateKey, err == nil, msg, step, err)
+
+		return nil
+	}
+}
+
+// IsMvnInstalled allows you to ask if it isTrue or not
+func IsMvnInstalled(isTrue bool) state.GetSuccessStateOption {
+	return func(s *state.State) bool {
+		value := s.GetValue(mvnStateKey)
 		if value == nil {
 			return !isTrue
 		}

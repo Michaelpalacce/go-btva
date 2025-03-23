@@ -1,6 +1,7 @@
 package linux
 
 import (
+	"fmt"
 	"log/slog"
 	"os/exec"
 
@@ -22,7 +23,7 @@ var javaSoftware *JavaSoftware = &JavaSoftware{}
 // Install will install java with apt
 // @NOTE: Make sure you run the go process as sudo
 func (s *JavaSoftware) Install() error {
-	cmd := exec.Command("apt", "install", "-y", s.Options.Software.JavaLinuxPackage)
+	cmd := exec.Command("apt", "install", "-y", fmt.Sprintf("openjdk-%s-jdk", s.Options.Software.LinuxJavaVersion))
 
 	output, err := cmd.CombinedOutput()
 	slog.Debug(string(output))
@@ -32,7 +33,7 @@ func (s *JavaSoftware) Install() error {
 
 // Remove will remove java
 func (s *JavaSoftware) Remove() error {
-	cmd := exec.Command("apt", "remove", "-y", s.Options.Software.JavaLinuxPackage)
+	cmd := exec.Command("apt", "remove", "-y", fmt.Sprintf("openjdk-%s-jdk", s.Options.Software.LinuxJavaVersion))
 
 	output, err := cmd.CombinedOutput()
 	slog.Debug(string(output))

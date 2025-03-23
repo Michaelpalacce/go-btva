@@ -41,6 +41,11 @@ run: ## Go run the project
 
 ##@ Cleanup. Linux only
 
+.PHONY: cleanup-mvn
+cleanup-mvn: ## Removes mvn
+	sudo rm -rf /usr/bin/mvn \
+	sudo rm -rf /opt/apache-maven*
+
 .PHONY: cleanup-java
 cleanup-java: ## Removes Java installation
 	sudo apt remove -y openjdk-17-jdk openjdk-17-jre openjdk-17-jdk-headless openjdk-17-jre-headless
@@ -50,7 +55,7 @@ cleanup-state: ## Removes the state file
 	rm -rf state.json5
 
 .PHONY: cleanup
-cleanup: cleanup-java cleanup-state ## Will cleanup the environment so we can rerun the tool
+cleanup: cleanup-java cleanup-state cleanup-mvn ## Will cleanup the environment so we can rerun the tool
 
 
 # go-install-tool will 'go install' any package with custom target and name of binary, if it doesn't exist

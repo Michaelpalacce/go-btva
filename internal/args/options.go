@@ -8,7 +8,8 @@ type Software struct {
 	InstallNode bool `json:"installNode"`
 
 	// Versions
-	JavaLinuxPackage string `json:"javaLinuxPackage"`
+	LinuxJavaVersion string `json:"linuxJavaVersion"`
+	LinuxMvnVersion  string `json:"linuxMvnVersion"`
 }
 
 // Local will hold different configurations for mvn that may be needed
