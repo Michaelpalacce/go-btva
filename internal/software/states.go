@@ -29,6 +29,7 @@ func JavaInstalled(err error) state.SetStateOption {
 	}
 }
 
+// IsJavaInstalled allows oyu to ask if it isTrue or not
 func IsJavaInstalled(isTrue bool) state.GetSuccessStateOption {
 	return func(s *state.State) bool {
 		value := s.GetValue(javaInstallationState)
@@ -36,6 +37,6 @@ func IsJavaInstalled(isTrue bool) state.GetSuccessStateOption {
 			return !isTrue
 		}
 
-		return value.Done && isTrue
+		return value.Done == isTrue
 	}
 }
