@@ -1,6 +1,16 @@
 /*
 The `state` package is used to contain the execution state of the program. It will save whatever is given to it and may or may not redirect it.
 
-@TODO: Finish documetnation
+# How to use?
+
+## Creating a new State object with JsonStorage
+
+```go
+
+	 state := state.NewState()
+
+	state.Modify(state.WithJsonStorage("file.json", true))
+
+```
 */
 package state

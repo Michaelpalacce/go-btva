@@ -1,6 +1,10 @@
 package state
 
-import "fmt"
+import (
+	"encoding/json"
+	"log/slog"
+	"os"
+)
 
 // Storage is an interface that defines how to store and load the state
 type Storage interface {
@@ -16,14 +20,29 @@ type JsonStorage struct {
 }
 
 func (s *JsonStorage) Commit(state *State) error {
-	fmt.Println("@TODO: Commit state to ", s.Filepath)
-	return nil
+	bytes, err := json.MarshalIndent(state, "", "\t")
+	if err != nil {
+		return err
+	}
+	slog.Debug("Committing", "state", string(bytes))
+
+	return os.WriteFile(s.Filepath, bytes, 0o644)
 }
 
-// @TODO: FINISH
+// Load will load the state from a file if it exists.
 func (s *JsonStorage) Load(state *State) error {
-	fmt.Println("@TODO: Load state from ", s.Filepath)
-	return nil
+	bytes, err := os.ReadFile(s.Filepath)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return err
+		}
+
+		bytes = []byte("{}")
+	}
+
+	slog.Info("Loading previous state", "state", string(bytes))
+
+	return json.Unmarshal(bytes, state)
 }
 
 // WithJsonStorage will make the State store data in JSON

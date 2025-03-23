@@ -26,7 +26,9 @@ func NewHandler(os *os.OS, options *args.Options) (*Handler, error) {
 	handler := &Handler{os: os, state: state.NewState(), options: options}
 
 	if options.Local.SaveState {
-		handler.state.Set(state.WithJsonStorage(options.Local.StateJson, true))
+		if err := handler.state.Modify(state.WithJsonStorage(options.Local.StateJson, true)); err != nil {
+			return nil, err
+		}
 	}
 
 	switch os.Distro {

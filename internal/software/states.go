@@ -6,7 +6,10 @@ import (
 	"github.com/Michaelpalacce/go-btva/pkg/state"
 )
 
-const javaInstallationState = "javaSoftware"
+const (
+	javaStateKey         = "java"
+	JAVA_STATE_INSTALLED = "Installed"
+)
 
 // JAVA
 func JavaInstalled(err error) state.SetStateOption {
@@ -19,11 +22,11 @@ func JavaInstalled(err error) state.SetStateOption {
 			msg = fmt.Sprintf("Error installing Java: %v", err)
 			step = 0
 		} else {
-			msg = fmt.Sprintf("Java installed")
+			msg = fmt.Sprintf(JAVA_STATE_INSTALLED)
 			step = 1
 		}
 
-		s.SetValue(javaInstallationState, err != nil, msg, step, err)
+		s.SetValue(javaStateKey, err == nil, msg, step, err)
 
 		return nil
 	}
@@ -32,7 +35,7 @@ func JavaInstalled(err error) state.SetStateOption {
 // IsJavaInstalled allows oyu to ask if it isTrue or not
 func IsJavaInstalled(isTrue bool) state.GetSuccessStateOption {
 	return func(s *state.State) bool {
-		value := s.GetValue(javaInstallationState)
+		value := s.GetValue(javaStateKey)
 		if value == nil {
 			return !isTrue
 		}
