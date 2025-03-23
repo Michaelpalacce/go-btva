@@ -46,9 +46,10 @@ func NewHandler(os *os.OS, options *args.Options) (*Handler, error) {
 // SetupSoftware will install all the needed software based on the os and options
 // @NOTE: This is meant to be ran async
 func (h *Handler) SetupSoftware(c chan error) {
-	if h.state.GetDone(software.IsJavaInstalled(false)) && h.options.Software.InstallJava {
+	//                  in state                           is wanted in arguments            already installed
+	if h.state.GetDone(software.IsJavaInstalled(false)) && h.options.Software.InstallJava && !h.installer.Java().Exists() {
 		slog.Info("Java is not installed, installing")
-		err := h.installer.InstallJava()
+		err := h.installer.Java().Install()
 		if err != nil {
 			if err := h.state.Set(software.JavaInstalled(err)); err != nil {
 				slog.Error("Error setting state", err)
