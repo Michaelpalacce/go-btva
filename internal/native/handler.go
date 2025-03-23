@@ -18,7 +18,7 @@ type Handler struct {
 	options *args.Options
 
 	// installer is a pointer
-	installer software.Installer
+	installer Installer
 }
 
 // NewHandler will return a new native Handler that will be used to manage and execute os operations
@@ -33,7 +33,9 @@ func NewHandler(os *os.OS, options *args.Options) (*Handler, error) {
 	case "linux":
 		handler.installer = &linux.LinuxInstaller{OS: os, Options: options}
 	case "windows":
+		fallthrough
 	case "darwin":
+		fallthrough
 	default:
 		return nil, fmt.Errorf("OS %s is not supported", os.Distro)
 	}
