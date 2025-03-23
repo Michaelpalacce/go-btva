@@ -2,7 +2,6 @@ package linux
 
 import (
 	"fmt"
-	"log/slog"
 	"os/exec"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
@@ -25,20 +24,22 @@ var javaSoftware *JavaSoftware = &JavaSoftware{}
 func (s *JavaSoftware) Install() error {
 	cmd := exec.Command("apt", "install", "-y", fmt.Sprintf("openjdk-%s-jdk", s.Options.Software.LinuxJavaVersion))
 
-	output, err := cmd.CombinedOutput()
-	slog.Debug(string(output))
+	if output, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("Error while running command. Error was %w, output was %s", err, output)
+	}
 
-	return err
+	return nil
 }
 
 // Remove will remove java
 func (s *JavaSoftware) Remove() error {
 	cmd := exec.Command("apt", "remove", "-y", fmt.Sprintf("openjdk-%s-jdk", s.Options.Software.LinuxJavaVersion))
 
-	output, err := cmd.CombinedOutput()
-	slog.Debug(string(output))
+	if output, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("Error while running command. Error was %w, output was %s", err, output)
+	}
 
-	return err
+	return nil
 }
 
 // Exists verifies if java is already installed.
