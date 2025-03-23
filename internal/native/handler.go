@@ -47,7 +47,7 @@ func NewHandler(os *os.OS, options *args.Options) (*Handler, error) {
 // @NOTE: This is meant to be ran async
 func (h *Handler) SetupSoftware(c chan error) {
 	if h.state.GetDone(software.IsJavaInstalled(false)) && h.options.Software.InstallJava {
-		slog.Info("Installing JAVA")
+		slog.Info("Java is not installed, installing")
 		err := h.installer.InstallJava()
 		if err != nil {
 			if err := h.state.Set(software.JavaInstalled(err)); err != nil {
@@ -63,6 +63,8 @@ func (h *Handler) SetupSoftware(c chan error) {
 		}
 
 		slog.Info("Successfully installed Java")
+	} else {
+		slog.Info("Java is already installed, skipping...")
 	}
 
 	c <- nil
