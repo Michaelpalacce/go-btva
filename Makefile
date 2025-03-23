@@ -39,6 +39,14 @@ build: ## Build the project
 run: ## Go run the project
 	sudo $(GOEXEC) run cmd/main.go
 
+.PHONY: cleanup-java
+cleanup-java: ## Removes Java installation. Linux only
+	sudo apt remove -y openjdk-17-jdk openjdk-17-jre openjdk-17-jdk-headless openjdk-17-jre-headless
+
+.PHONY: cleanup
+cleanup: cleanup-java ## Will cleanup the environment so we can rerun the tool. Linux Onl
+
+
 # go-install-tool will 'go install' any package with custom target and name of binary, if it doesn't exist
 # $1 - target path with name of binary
 # $2 - package url which can be installed
