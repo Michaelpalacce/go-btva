@@ -51,9 +51,11 @@ func (h *Handler) SetupSoftware(c chan error) {
 	//                  in state                           is wanted in arguments            already installed
 	if h.state.GetDone(software.IsJavaInstalled(false)) && h.options.Software.InstallJava && !h.installer.Java().Exists() {
 		slog.Info("Java is not installed, installing")
-		err := h.installer.Java().Install()
+
+		javaSoftware := h.installer.Java()
+		err := javaSoftware.Install()
 		if err != nil {
-			if err := h.state.Set(software.JavaInstalled(err)); err != nil {
+			if err := h.state.Set(software.SoftwareInstalled(javaSoftware, err)); err != nil {
 				slog.Error("Error setting state", err)
 			}
 			c <- err
@@ -61,7 +63,7 @@ func (h *Handler) SetupSoftware(c chan error) {
 			return
 		}
 
-		if err := h.state.Set(software.JavaInstalled(nil)); err != nil {
+		if err := h.state.Set(software.SoftwareInstalled(javaSoftware, nil)); err != nil {
 			slog.Error("Error setting state", err)
 		}
 
@@ -72,10 +74,12 @@ func (h *Handler) SetupSoftware(c chan error) {
 
 	//                  in state                           is wanted in arguments            already installed
 	if h.state.GetDone(software.IsMvnInstalled(false)) && h.options.Software.InstallMvn && !h.installer.Mvn().Exists() {
-		slog.Info("Mvn is not installed, installing")
-		err := h.installer.Mvn().Install()
+		slog.Info("Maven is not installed, installing")
+
+		mvnSoftware := h.installer.Mvn()
+		err := mvnSoftware.Install()
 		if err != nil {
-			if err := h.state.Set(software.MvnInstalled(err)); err != nil {
+			if err := h.state.Set(software.SoftwareInstalled(mvnSoftware, err)); err != nil {
 				slog.Error("Error setting state", err)
 			}
 			c <- err
@@ -83,13 +87,13 @@ func (h *Handler) SetupSoftware(c chan error) {
 			return
 		}
 
-		if err := h.state.Set(software.MvnInstalled(nil)); err != nil {
+		if err := h.state.Set(software.SoftwareInstalled(mvnSoftware, nil)); err != nil {
 			slog.Error("Error setting state", err)
 		}
 
-		slog.Info("Successfully installed Mvn")
+		slog.Info("Successfully installed Maven1")
 	} else {
-		slog.Info("Mvn is already installed, skipping...")
+		slog.Info("Maven is already installed, skipping...")
 	}
 
 	c <- nil

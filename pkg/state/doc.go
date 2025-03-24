@@ -9,6 +9,7 @@ The `state` package is used to contain the execution state of the program. It wi
 
 	 state := state.NewState()
 
+	// This will also load the state file
 	state.Modify(state.WithJsonStorage("file.json", true))
 
 ```

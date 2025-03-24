@@ -51,6 +51,9 @@ func (s *JavaSoftware) Exists() bool {
 	return err == nil
 }
 
+func (s *JavaSoftware) GetName() string    { return software.JavaSoftwareKey }
+func (s *JavaSoftware) GetVersion() string { return s.Options.Software.LinuxJavaVersion }
+
 // Java will return the JavaSoftware object that can be used to install, remove or check if java exists
 // Only a single instance of the JavaSoftware will be returned
 func (i *LinuxInstaller) Java() software.Software {

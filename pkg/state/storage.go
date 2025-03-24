@@ -19,6 +19,7 @@ type JsonStorage struct {
 	Filepath string
 }
 
+// Commit will save the current State object to file
 func (s *JsonStorage) Commit(state *State) error {
 	bytes, err := json.MarshalIndent(state, "", "\t")
 	if err != nil {

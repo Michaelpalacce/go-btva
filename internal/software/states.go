@@ -7,29 +7,25 @@ import (
 )
 
 const (
-	javaStateKey         = "java"
-	JAVA_STATE_INSTALLED = "Installed"
-
-	mvnStateKey         = "mvn"
-	MVN_STATE_INSTALLED = "Installed"
+	SOFTWARE_STATE_INSTALLED = "Installed"
 )
 
-// JAVA
-func JavaInstalled(err error) state.SetStateOption {
+// SoftwareInstalled will set the state of the given software
+func SoftwareInstalled(software Software, err error) state.SetStateOption {
 	return func(s *state.State) error {
 		var (
 			msg  string
 			step int
 		)
 		if err != nil {
-			msg = fmt.Sprintf("Error installing Java: %v", err)
+			msg = fmt.Sprintf("Error installing %s:%s. Error was %v", software.GetName(), software.GetVersion(), err)
 			step = 0
 		} else {
-			msg = fmt.Sprintf(JAVA_STATE_INSTALLED)
+			msg = fmt.Sprintf(SOFTWARE_STATE_INSTALLED)
 			step = 1
 		}
 
-		s.SetValue(javaStateKey, err == nil, msg, step, err)
+		s.SetValue(software.GetName(), err == nil, msg, step, err)
 
 		return nil
 	}
@@ -38,7 +34,7 @@ func JavaInstalled(err error) state.SetStateOption {
 // IsJavaInstalled allows oyu to ask if it isTrue or not
 func IsJavaInstalled(isTrue bool) state.GetSuccessStateOption {
 	return func(s *state.State) bool {
-		value := s.GetValue(javaStateKey)
+		value := s.GetValue(JavaSoftwareKey)
 		if value == nil {
 			return !isTrue
 		}
@@ -47,31 +43,10 @@ func IsJavaInstalled(isTrue bool) state.GetSuccessStateOption {
 	}
 }
 
-// Mvn
-func MvnInstalled(err error) state.SetStateOption {
-	return func(s *state.State) error {
-		var (
-			msg  string
-			step int
-		)
-		if err != nil {
-			msg = fmt.Sprintf("Error installing Mvn: %v", err)
-			step = 0
-		} else {
-			msg = fmt.Sprintf(MVN_STATE_INSTALLED)
-			step = 1
-		}
-
-		s.SetValue(mvnStateKey, err == nil, msg, step, err)
-
-		return nil
-	}
-}
-
 // IsMvnInstalled allows you to ask if it isTrue or not
 func IsMvnInstalled(isTrue bool) state.GetSuccessStateOption {
 	return func(s *state.State) bool {
-		value := s.GetValue(mvnStateKey)
+		value := s.GetValue(MvnSoftwareKey)
 		if value == nil {
 			return !isTrue
 		}

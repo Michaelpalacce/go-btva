@@ -5,4 +5,12 @@ type Software interface {
 	Install() error
 	Remove() error
 	Exists() bool
+
+	GetName() string
+	GetVersion() string
 }
+
+const (
+	JavaSoftwareKey = "Java"
+	MvnSoftwareKey  = "Maven"
+)

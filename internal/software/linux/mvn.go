@@ -79,7 +79,11 @@ func (s *MvnSoftware) ensureInstallZipExists() error {
 
 	mvnWgetCmd := exec.Command(
 		"wget",
-		fmt.Sprintf("https://downloads.apache.org/maven/maven-3/%s/binaries/apache-maven-%s-bin.tar.gz", s.Options.Software.LinuxMvnVersion, s.Options.Software.LinuxMvnVersion),
+		fmt.Sprintf(
+			"https://downloads.apache.org/maven/maven-3/%s/binaries/apache-maven-%s-bin.tar.gz",
+			s.Options.Software.LinuxMvnVersion,
+			s.Options.Software.LinuxMvnVersion,
+		),
 		"-P",
 		"/tmp",
 	)
@@ -91,6 +95,7 @@ func (s *MvnSoftware) ensureInstallZipExists() error {
 	return nil
 }
 
+// getInstallZipPath is an internal function that will give us the download installer zip location
 func (s *MvnSoftware) getInstallZipPath() string {
 	return fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.Options.Software.LinuxMvnVersion)
 }
@@ -106,16 +111,8 @@ func (s *MvnSoftware) symlinkMvn() error {
 	return nil
 }
 
-// untar works on a tar.gz file and untars it
-func untar(filename string, destination string) error {
-	mvnExtractCmd := exec.Command("tar", "xf", filename, "-C", destination)
-
-	if output, err := mvnExtractCmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("Error untarring file. Error was %w, output was %s", err, output)
-	}
-
-	return nil
-}
+func (s *MvnSoftware) GetName() string    { return software.MvnSoftwareKey }
+func (s *MvnSoftware) GetVersion() string { return s.Options.Software.LinuxMvnVersion }
 
 // Java will return the MvnSoftware object that can be used to install, remove or check if mvn exists
 // Only a single instance of the MvnSoftware will be returned
@@ -127,4 +124,17 @@ func (i *LinuxInstaller) Mvn() software.Software {
 	}
 
 	return mvnSoftware
+}
+
+// Helper funcs
+
+// untar works on a tar.gz file and untars it
+func untar(filename string, destination string) error {
+	mvnExtractCmd := exec.Command("tar", "xf", filename, "-C", destination)
+
+	if output, err := mvnExtractCmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("Error untarring file. Error was %w, output was %s", err, output)
+	}
+
+	return nil
 }
