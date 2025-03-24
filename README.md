@@ -20,7 +20,11 @@ Sets UP BTVA for local development.
 
 - [x] Implement Software installation Linux
 - [ ] Implement Environment Setup Linux
-- [ ] Implement Infra Setup Linux
+
+- [ ] Implement Software installation Darwin
+- [ ] Implement Environment Setup Darwin
+
+- [ ] Implement Infra Setup
 
 # Development
 
