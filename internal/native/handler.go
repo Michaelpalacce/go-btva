@@ -50,14 +50,14 @@ func NewHandler(os *os.OS, options *args.Options) (*Handler, error) {
 // SetupSoftware will install all the needed software based on the os and options
 // @NOTE: This is meant to be ran async
 func (h *Handler) SetupSoftware(c chan error) {
-	if h.options.Software.InstallJava && h.state.GetDone(software.IsSoftwareNotInstalled(h.installer.Java())) {
+	if h.options.Software.InstallJava {
 		if err := h.installSoftware(h.installer.Java()); err != nil {
 			c <- err
 			return
 		}
 	}
 
-	if h.options.Software.InstallMvn && h.state.GetDone(software.IsSoftwareNotInstalled(h.installer.Mvn())) {
+	if h.options.Software.InstallMvn {
 		if err := h.installSoftware(h.installer.Mvn()); err != nil {
 			c <- err
 			return
@@ -69,7 +69,7 @@ func (h *Handler) SetupSoftware(c chan error) {
 
 // installSoftware is an internal function that can be used to install any software. It will run through a set of commands
 func (h *Handler) installSoftware(soft software.Software) error {
-	if !soft.Exists() {
+	if h.state.GetDone(software.IsSoftwareNotInstalled(soft)) && !soft.Exists() {
 		slog.Info("Software is not installed, installing", "name", soft.GetName(), "version", soft.GetVersion())
 
 		err := soft.Install()
