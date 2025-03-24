@@ -13,10 +13,17 @@ import (
 func ConfigureLogging() {
 	w := os.Stderr
 
+	var level slog.Level
+	if os.Getenv("ENV") == "prod" {
+		level = slog.LevelInfo
+	} else {
+		level = slog.LevelDebug
+	}
+
 	// set global logger with custom options
 	slog.SetDefault(slog.New(
 		tint.NewHandler(w, &tint.Options{
-			Level:      slog.LevelDebug,
+			Level:      level,
 			TimeFormat: time.Kitchen,
 		}),
 	))
