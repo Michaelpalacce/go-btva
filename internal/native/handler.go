@@ -7,9 +7,9 @@ import (
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/software"
 	"github.com/Michaelpalacce/go-btva/internal/software/linux"
+	"github.com/Michaelpalacce/go-btva/internal/ssh"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 	"github.com/Michaelpalacce/go-btva/pkg/state"
-	"github.com/melbahja/goph"
 )
 
 // Handler is a struct that orchestrates the setup process based on OS
@@ -45,6 +45,8 @@ func NewHandler(os *os.OS, options *args.Options) (*Handler, error) {
 
 	return handler, nil
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Setup Software Block
 
@@ -102,6 +104,8 @@ func (h *Handler) installSoftware(soft software.Software) error {
 
 // END Software Block
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // Setup Local Env Block
 
 // @TODO: Finish
@@ -111,35 +115,16 @@ func (h *Handler) SetupLocalEnv(c chan error) {
 
 // END Setup Local Env Block
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // Setup Infra Block
 
 // @TODO: Finish
 func (h *Handler) SetupInfra(c chan error) {
-	vmIP := h.options.Infra.SSHVMIP
-	username := h.options.Infra.SSHUsername
-	password := goph.Password(h.options.Infra.SSHPassword)
-	privateKey := h.options.Infra.SSHPrivateKey
-
-	var (
-		client *goph.Client
-		auth   goph.Auth
-		err    error
-	)
-
-	if privateKey != "" {
-		// Start new ssh connection with private key.
-		auth, err = goph.Key(privateKey, h.options.Infra.SSHPrivateKeyPassphrase)
-		if err != nil {
-			c <- fmt.Errorf("there was an error using the private key %s, err was: %w", privateKey, err)
-			return
-		}
-	} else {
-		fmt.Println(h.options.Infra.SSHPassword)
-		auth = password
-	}
-
-	if client, err = goph.New(username, vmIP, auth); err != nil {
-		c <- fmt.Errorf("there was an error while establishing connection to remote server for infra setup. Err was: %w", err)
+	infraOptions := h.options.Infra
+	client, err := ssh.GetClient(infraOptions.SSHVMIP, infraOptions.SSHUsername, infraOptions.SSHPassword, infraOptions.SSHPrivateKey, infraOptions.SSHPrivateKeyPassphrase)
+	if err != nil {
+		c <- fmt.Errorf("could not create client. err was %w", err)
 		return
 	}
 
@@ -147,9 +132,9 @@ func (h *Handler) SetupInfra(c chan error) {
 	defer client.Close()
 
 	// Execute your command.
-	out, err := client.Run("ls /tmp/")
+	out, err := client.Run("ls -lah /tmp")
 	if err != nil {
-		c <- err
+		c <- fmt.Errorf("process exited with error. err was %w, output was:\n%s", err, out)
 		return
 	}
 
