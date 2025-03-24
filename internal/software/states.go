@@ -31,26 +31,26 @@ func SoftwareInstalled(software Software, err error) state.SetStateOption {
 	}
 }
 
-// IsJavaInstalled allows oyu to ask if it isTrue or not
-func IsJavaInstalled(isTrue bool) state.GetSuccessStateOption {
+// IsSoftwareInstalled checks if the current software is installed
+func IsSoftwareInstalled(software Software) state.GetSuccessStateOption {
 	return func(s *state.State) bool {
-		value := s.GetValue(JavaSoftwareKey)
+		value := s.GetValue(software.GetName())
 		if value == nil {
-			return !isTrue
+			return false
 		}
 
-		return value.Done == isTrue
+		return value.Done
 	}
 }
 
-// IsMvnInstalled allows you to ask if it isTrue or not
-func IsMvnInstalled(isTrue bool) state.GetSuccessStateOption {
+// IsSoftwareNotInstalled checks if the current software is not installed
+func IsSoftwareNotInstalled(software Software) state.GetSuccessStateOption {
 	return func(s *state.State) bool {
-		value := s.GetValue(MvnSoftwareKey)
+		value := s.GetValue(software.GetName())
 		if value == nil {
-			return !isTrue
+			return true
 		}
 
-		return value.Done == isTrue
+		return !value.Done
 	}
 }

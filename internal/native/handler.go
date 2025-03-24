@@ -11,7 +11,7 @@ import (
 	"github.com/Michaelpalacce/go-btva/pkg/state"
 )
 
-// Handler is a struct that can
+// Handler is a struct that orchestrates the setup process based on OS
 type Handler struct {
 	os      *os.OS
 	state   *state.State
@@ -45,66 +45,69 @@ func NewHandler(os *os.OS, options *args.Options) (*Handler, error) {
 	return handler, nil
 }
 
+// Setup Software Block
+
 // SetupSoftware will install all the needed software based on the os and options
 // @NOTE: This is meant to be ran async
 func (h *Handler) SetupSoftware(c chan error) {
-	//                  in state                           is wanted in arguments            already installed
-	if h.state.GetDone(software.IsJavaInstalled(false)) && h.options.Software.InstallJava && !h.installer.Java().Exists() {
-		slog.Info("Java is not installed, installing")
-
-		javaSoftware := h.installer.Java()
-		err := javaSoftware.Install()
-		if err != nil {
-			if err := h.state.Set(software.SoftwareInstalled(javaSoftware, err)); err != nil {
-				slog.Error("Error setting state", err)
-			}
+	if h.options.Software.InstallJava && h.state.GetDone(software.IsSoftwareNotInstalled(h.installer.Java())) {
+		if err := h.installSoftware(h.installer.Java()); err != nil {
 			c <- err
-
 			return
 		}
-
-		if err := h.state.Set(software.SoftwareInstalled(javaSoftware, nil)); err != nil {
-			slog.Error("Error setting state", err)
-		}
-
-		slog.Info("Successfully installed Java")
-	} else {
-		slog.Info("Java is already installed, skipping...")
 	}
 
-	//                  in state                           is wanted in arguments            already installed
-	if h.state.GetDone(software.IsMvnInstalled(false)) && h.options.Software.InstallMvn && !h.installer.Mvn().Exists() {
-		slog.Info("Maven is not installed, installing")
-
-		mvnSoftware := h.installer.Mvn()
-		err := mvnSoftware.Install()
-		if err != nil {
-			if err := h.state.Set(software.SoftwareInstalled(mvnSoftware, err)); err != nil {
-				slog.Error("Error setting state", err)
-			}
+	if h.options.Software.InstallMvn && h.state.GetDone(software.IsSoftwareNotInstalled(h.installer.Mvn())) {
+		if err := h.installSoftware(h.installer.Mvn()); err != nil {
 			c <- err
-
 			return
 		}
-
-		if err := h.state.Set(software.SoftwareInstalled(mvnSoftware, nil)); err != nil {
-			slog.Error("Error setting state", err)
-		}
-
-		slog.Info("Successfully installed Maven1")
-	} else {
-		slog.Info("Maven is already installed, skipping...")
 	}
 
 	c <- nil
 }
+
+// installSoftware is an internal function that can be used to install any software. It will run through a set of commands
+func (h *Handler) installSoftware(soft software.Software) error {
+	if !soft.Exists() {
+		slog.Info("Software is not installed, installing", "name", soft.GetName(), "version", soft.GetVersion())
+
+		err := soft.Install()
+		if err != nil {
+			if err := h.state.Set(software.SoftwareInstalled(soft, err)); err != nil {
+				slog.Error("Error setting state", err)
+			}
+			return err
+		}
+
+		if err := h.state.Set(software.SoftwareInstalled(soft, nil)); err != nil {
+			slog.Error("Error setting state", err)
+		}
+
+		slog.Info("Software successfully installed", "name", soft.GetName(), "version", soft.GetVersion())
+	} else {
+		slog.Info("Software already installed, skipping...", "name", soft.GetName(), "version", soft.GetVersion())
+	}
+
+	return nil
+}
+
+// END Software Block
+
+// Setup Local Env Block
 
 // @TODO: Finish
 func (h *Handler) SetupLocalEnv(c chan error) {
 	c <- nil
 }
 
+// END Setup Local Env Block
+
+// Setup Infra Block
+
 // @TODO: Finish
 func (h *Handler) SetupInfra(c chan error) {
 	c <- nil
 }
+
+// END Setup Infra Block
