@@ -3,7 +3,7 @@ package os
 import "runtime"
 
 // OS contains what the current OS is as well as different configuration that may be usefull
-// WARN: You should not use this directly, but instead use `software.GetOS()`. This struct is provided for mocking or to be used as an
+// WARN: You should not use this directly, but instead use `os.GetOS()`. This struct is provided for mocking or to be used as an
 // argument
 type OS struct {
 	Distro      string
