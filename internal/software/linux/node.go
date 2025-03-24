@@ -27,18 +27,20 @@ func (s *NodeSoftware) Install() error {
 		shell = "/bin/bash"
 	}
 
-	if err := RunCommand(shell, "-c", fmt.Sprintf("curl -fsSL https://fnm.vercel.app/install | %s", shell)); err != nil {
-		return err
-	}
-
 	var profile string
 	switch shell {
 	case "/bin/zsh":
 		profile = "$HOME/.zshrc"
 	case "/bin/fish":
 		profile = "$HOME/.config/fish/config.fish"
-	default:
+	case "/bin/bash":
 		profile = "$HOME/.bashrc"
+	default:
+		return fmt.Errorf("Shell %s is not supported", shell)
+	}
+
+	if err := RunCommand(shell, "-c", fmt.Sprintf("curl -fsSL https://fnm.vercel.app/install | %s", shell)); err != nil {
+		return err
 	}
 
 	return RunCommand(shell, "-i", "-c", fmt.Sprintf("source %s && fnm install %s", profile, s.Options.Software.LinuxNodeVersion))
