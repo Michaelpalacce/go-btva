@@ -12,8 +12,8 @@ import (
 
 // MvnSoftware is responsible for installing, removing and checking if mvn is installed
 type MvnSoftware struct {
-	OS      *os.OS
-	Options *args.Options
+	os      *os.OS
+	options *args.Options
 
 	initialized bool
 }
@@ -30,7 +30,7 @@ func (s *MvnSoftware) Install() error {
 		return err
 	}
 
-	if err := untar(fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.Options.Software.LinuxMvnVersion), "/opt"); err != nil {
+	if err := untar(fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.options.Software.LinuxMvnVersion), "/opt"); err != nil {
 		return err
 	}
 
@@ -56,7 +56,7 @@ func (s *MvnSoftware) Exists() bool {
 
 // removeTempFiles is a helper that will remove the downloaded tar.gz files pre and post install
 func (s *MvnSoftware) removeTempFiles() error {
-	return RunCommand("rm", "-rf", fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.Options.Software.LinuxMvnVersion))
+	return RunCommand("rm", "-rf", fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.options.Software.LinuxMvnVersion))
 }
 
 // ensureInstallZipExists will download the mvn tar.gz file if it does not exist
@@ -69,8 +69,8 @@ func (s *MvnSoftware) ensureInstallZipExists() error {
 		"wget",
 		fmt.Sprintf(
 			"https://downloads.apache.org/maven/maven-3/%s/binaries/apache-maven-%s-bin.tar.gz",
-			s.Options.Software.LinuxMvnVersion,
-			s.Options.Software.LinuxMvnVersion,
+			s.options.Software.LinuxMvnVersion,
+			s.options.Software.LinuxMvnVersion,
 		),
 		"-P",
 		"/tmp",
@@ -79,23 +79,23 @@ func (s *MvnSoftware) ensureInstallZipExists() error {
 
 // getInstallZipPath is an internal function that will give us the download installer zip location
 func (s *MvnSoftware) getInstallZipPath() string {
-	return fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.Options.Software.LinuxMvnVersion)
+	return fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.options.Software.LinuxMvnVersion)
 }
 
 // symlinkMvn will symlink the mvn binary to /usr/bin/mvn
 func (s *MvnSoftware) symlinkMvn() error {
-	return RunSudoCommand("ln", "-sf", fmt.Sprintf("/opt/apache-maven-%s/bin/mvn", s.Options.Software.LinuxMvnVersion), "/usr/bin/mvn")
+	return RunSudoCommand("ln", "-sf", fmt.Sprintf("/opt/apache-maven-%s/bin/mvn", s.options.Software.LinuxMvnVersion), "/usr/bin/mvn")
 }
 
 func (s *MvnSoftware) GetName() string    { return software.MvnSoftwareKey }
-func (s *MvnSoftware) GetVersion() string { return s.Options.Software.LinuxMvnVersion }
+func (s *MvnSoftware) GetVersion() string { return s.options.Software.LinuxMvnVersion }
 
 // Java will return the MvnSoftware object that can be used to install, remove or check if mvn exists
 // Only a single instance of the MvnSoftware will be returned
 func (i *LinuxInstaller) Mvn() software.Software {
 	if !mvnSoftware.initialized {
-		mvnSoftware.OS = i.OS
-		mvnSoftware.Options = i.Options
+		mvnSoftware.os = i.OS
+		mvnSoftware.options = i.Options
 		mvnSoftware.initialized = true
 	}
 

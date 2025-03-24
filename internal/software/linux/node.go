@@ -12,8 +12,8 @@ import (
 
 // NodeSoftware is responsible for installing, removing and checking if node is installed
 type NodeSoftware struct {
-	OS      *os.OS
-	Options *args.Options
+	os      *os.OS
+	options *args.Options
 
 	initialized bool
 }
@@ -43,7 +43,7 @@ func (s *NodeSoftware) Install() error {
 		return err
 	}
 
-	return RunCommand(shell, "-i", "-c", fmt.Sprintf("source %s && fnm install %s", profile, s.Options.Software.LinuxNodeVersion))
+	return RunCommand(shell, "-i", "-c", fmt.Sprintf("source %s && fnm install %s", profile, s.options.Software.LinuxNodeVersion))
 }
 
 // Exists verifies if node is already installed.
@@ -55,14 +55,14 @@ func (s *NodeSoftware) Exists() bool {
 }
 
 func (s *NodeSoftware) GetName() string    { return software.NodeSoftwareKey }
-func (s *NodeSoftware) GetVersion() string { return s.Options.Software.LinuxNodeVersion }
+func (s *NodeSoftware) GetVersion() string { return s.options.Software.LinuxNodeVersion }
 
 // Node will return the NodeSoftware object that can be used to install, remove or check if node exists
 // Only a single instance of the NodeSoftware will be returned
 func (i *LinuxInstaller) Node() software.Software {
 	if !nodeSoftware.initialized {
-		nodeSoftware.OS = i.OS
-		nodeSoftware.Options = i.Options
+		nodeSoftware.os = i.OS
+		nodeSoftware.options = i.Options
 		nodeSoftware.initialized = true
 	}
 

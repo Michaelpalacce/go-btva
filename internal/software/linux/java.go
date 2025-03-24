@@ -11,8 +11,8 @@ import (
 
 // JavaSoftware is responsible for installing, removing and checking if java is installed
 type JavaSoftware struct {
-	OS      *os.OS
-	Options *args.Options
+	os      *os.OS
+	options *args.Options
 
 	initialized bool
 }
@@ -21,7 +21,7 @@ var javaSoftware *JavaSoftware = &JavaSoftware{}
 
 // Install will install java with apt
 func (s *JavaSoftware) Install() error {
-	return RunSudoCommand("apt", "install", "-y", fmt.Sprintf("openjdk-%s-jdk", s.Options.Software.LinuxJavaVersion))
+	return RunSudoCommand("apt", "install", "-y", fmt.Sprintf("openjdk-%s-jdk", s.options.Software.LinuxJavaVersion))
 }
 
 // Exists verifies if java is already installed.
@@ -34,14 +34,14 @@ func (s *JavaSoftware) Exists() bool {
 }
 
 func (s *JavaSoftware) GetName() string    { return software.JavaSoftwareKey }
-func (s *JavaSoftware) GetVersion() string { return s.Options.Software.LinuxJavaVersion }
+func (s *JavaSoftware) GetVersion() string { return s.options.Software.LinuxJavaVersion }
 
 // Java will return the JavaSoftware object that can be used to install, remove or check if java exists
 // Only a single instance of the JavaSoftware will be returned
 func (i *LinuxInstaller) Java() software.Software {
 	if !javaSoftware.initialized {
-		javaSoftware.OS = i.OS
-		javaSoftware.Options = i.Options
+		javaSoftware.os = i.OS
+		javaSoftware.options = i.Options
 		javaSoftware.initialized = true
 	}
 
