@@ -21,13 +21,8 @@ type JavaSoftware struct {
 var javaSoftware *JavaSoftware = &JavaSoftware{}
 
 // Install will install java with apt
-// @NOTE: Make sure you run the go process as sudo
 func (s *JavaSoftware) Install() error {
-	if err := linuxexec.RunSudoCommand("apt", "install", "-y", fmt.Sprintf("openjdk-%s-jdk", s.Options.Software.LinuxJavaVersion)); err != nil {
-		return fmt.Errorf("Error while running command. Error was %w", err)
-	}
-
-	return nil
+	return linuxexec.RunSudoCommand("apt", "install", "-y", fmt.Sprintf("openjdk-%s-jdk", s.Options.Software.LinuxJavaVersion))
 }
 
 // Exists verifies if java is already installed.

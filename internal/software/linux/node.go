@@ -22,7 +22,6 @@ type NodeSoftware struct {
 var nodeSoftware *NodeSoftware = &NodeSoftware{}
 
 // Install will install node with apt
-// @NOTE: Make sure you run the go process as sudo
 func (s *NodeSoftware) Install() error {
 	shell := osz.Getenv("SHELL")
 	if shell == "" {
@@ -30,7 +29,7 @@ func (s *NodeSoftware) Install() error {
 	}
 
 	if err := linuxexec.RunCommand(shell, "-c", fmt.Sprintf("curl -fsSL https://fnm.vercel.app/install | %s", shell)); err != nil {
-		return fmt.Errorf("Error while running command. Error was %w", err)
+		return err
 	}
 
 	var profile string
@@ -43,11 +42,7 @@ func (s *NodeSoftware) Install() error {
 		profile = "$HOME/.bashrc"
 	}
 
-	if err := linuxexec.RunCommand(shell, "-i", "-c", fmt.Sprintf("source %s && fnm install %s", profile, s.Options.Software.LinuxNodeVersion)); err != nil {
-		return fmt.Errorf("Error while running command. Error was %w", err)
-	}
-
-	return nil
+	return linuxexec.RunCommand(shell, "-i", "-c", fmt.Sprintf("source %s && fnm install %s", profile, s.Options.Software.LinuxNodeVersion))
 }
 
 // Exists verifies if node is already installed.

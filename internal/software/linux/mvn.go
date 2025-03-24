@@ -22,7 +22,6 @@ type MvnSoftware struct {
 var mvnSoftware *MvnSoftware = &MvnSoftware{}
 
 // Install will install mvn with apt
-// @NOTE: Make sure you run the go process as sudo
 func (s *MvnSoftware) Install() error {
 	if err := s.removeTempFiles(); err != nil {
 		return err
@@ -58,13 +57,7 @@ func (s *MvnSoftware) Exists() bool {
 
 // removeTempFiles is a helper that will remove the downloaded tar.gz files pre and post install
 func (s *MvnSoftware) removeTempFiles() error {
-	mvnRmCmd := exec.Command("rm", "-rf", fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.Options.Software.LinuxMvnVersion))
-
-	if output, err := mvnRmCmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("Error while running command. Error was %w, output was %s", err, output)
-	}
-
-	return nil
+	return linuxexec.RunCommand("rm", "-rf", fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.Options.Software.LinuxMvnVersion))
 }
 
 // ensureInstallZipExists will download the mvn tar.gz file if it does not exist
@@ -73,7 +66,7 @@ func (s *MvnSoftware) ensureInstallZipExists() error {
 		return nil
 	}
 
-	mvnWgetCmd := exec.Command(
+	return linuxexec.RunCommand(
 		"wget",
 		fmt.Sprintf(
 			"https://downloads.apache.org/maven/maven-3/%s/binaries/apache-maven-%s-bin.tar.gz",
@@ -83,12 +76,6 @@ func (s *MvnSoftware) ensureInstallZipExists() error {
 		"-P",
 		"/tmp",
 	)
-
-	if output, err := mvnWgetCmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("Error while running command. Error was %w, output was %s", err, output)
-	}
-
-	return nil
 }
 
 // getInstallZipPath is an internal function that will give us the download installer zip location
@@ -98,11 +85,7 @@ func (s *MvnSoftware) getInstallZipPath() string {
 
 // symlinkMvn will symlink the mvn binary to /usr/bin/mvn
 func (s *MvnSoftware) symlinkMvn() error {
-	if err := linuxexec.RunSudoCommand("ln", "-sf", fmt.Sprintf("/opt/apache-maven-%s/bin/mvn", s.Options.Software.LinuxMvnVersion), "/usr/bin/mvn"); err != nil {
-		return fmt.Errorf("Error while running command. Error was %w", err)
-	}
-
-	return nil
+	return linuxexec.RunSudoCommand("ln", "-sf", fmt.Sprintf("/opt/apache-maven-%s/bin/mvn", s.Options.Software.LinuxMvnVersion), "/usr/bin/mvn")
 }
 
 func (s *MvnSoftware) GetName() string    { return software.MvnSoftwareKey }
