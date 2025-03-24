@@ -56,7 +56,7 @@ func (s *MvnSoftware) Exists() bool {
 
 // removeTempFiles is a helper that will remove the downloaded tar.gz files pre and post install
 func (s *MvnSoftware) removeTempFiles() error {
-	return RunCommand("rm", "-rf", fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.options.Software.LinuxMvnVersion))
+	return runCommand("rm", "-rf", fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.options.Software.LinuxMvnVersion))
 }
 
 // ensureInstallZipExists will download the mvn tar.gz file if it does not exist
@@ -65,7 +65,7 @@ func (s *MvnSoftware) ensureInstallZipExists() error {
 		return nil
 	}
 
-	return RunCommand(
+	return runCommand(
 		"wget",
 		fmt.Sprintf(
 			"https://downloads.apache.org/maven/maven-3/%s/binaries/apache-maven-%s-bin.tar.gz",
@@ -84,7 +84,7 @@ func (s *MvnSoftware) getInstallZipPath() string {
 
 // symlinkMvn will symlink the mvn binary to /usr/bin/mvn
 func (s *MvnSoftware) symlinkMvn() error {
-	return RunSudoCommand("ln", "-sf", fmt.Sprintf("/opt/apache-maven-%s/bin/mvn", s.options.Software.LinuxMvnVersion), "/usr/bin/mvn")
+	return runSudoCommand("ln", "-sf", fmt.Sprintf("/opt/apache-maven-%s/bin/mvn", s.options.Software.LinuxMvnVersion), "/usr/bin/mvn")
 }
 
 func (s *MvnSoftware) GetName() string    { return software.MvnSoftwareKey }
@@ -106,7 +106,7 @@ func (i *LinuxInstaller) Mvn() software.Software {
 
 // untar works on a tar.gz file and untars it
 func untar(filename string, destination string) error {
-	if err := RunSudoCommand("tar", "xf", filename, "-C", destination); err != nil {
+	if err := runSudoCommand("tar", "xf", filename, "-C", destination); err != nil {
 		return fmt.Errorf("Error untarring file. Error was %w", err)
 	}
 

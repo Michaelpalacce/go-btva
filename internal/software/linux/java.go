@@ -21,7 +21,7 @@ var javaSoftware *JavaSoftware = &JavaSoftware{}
 
 // Install will install java with apt
 func (s *JavaSoftware) Install() error {
-	return RunSudoCommand("apt", "install", "-y", fmt.Sprintf("openjdk-%s-jdk", s.options.Software.LinuxJavaVersion))
+	return runSudoCommand("apt", "install", "-y", fmt.Sprintf("openjdk-%s-jdk", s.options.Software.LinuxJavaVersion))
 }
 
 // Exists verifies if java is already installed.

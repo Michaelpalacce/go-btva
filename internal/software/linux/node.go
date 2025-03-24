@@ -39,11 +39,11 @@ func (s *NodeSoftware) Install() error {
 		return fmt.Errorf("Shell %s is not supported", shell)
 	}
 
-	if err := RunCommand(shell, "-c", fmt.Sprintf("curl -fsSL https://fnm.vercel.app/install | %s", shell)); err != nil {
+	if err := runCommand(shell, "-c", fmt.Sprintf("curl -fsSL https://fnm.vercel.app/install | %s", shell)); err != nil {
 		return err
 	}
 
-	return RunCommand(shell, "-i", "-c", fmt.Sprintf("source %s && fnm install %s", profile, s.options.Software.LinuxNodeVersion))
+	return runCommand(shell, "-i", "-c", fmt.Sprintf("source %s && fnm install %s", profile, s.options.Software.LinuxNodeVersion))
 }
 
 // Exists verifies if node is already installed.

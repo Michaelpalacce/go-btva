@@ -7,11 +7,13 @@ import (
 	"os/exec"
 )
 
-func RunSudoCommand(command string, arguments ...string) error {
-	return RunCommand("sudo", append([]string{command}, arguments...)...)
+// runSudoCommand runs a linux command with sudo
+func runSudoCommand(command string, arguments ...string) error {
+	return runCommand("sudo", append([]string{command}, arguments...)...)
 }
 
-func RunCommand(command string, arguments ...string) error {
+// runCommand will run a command in the shell
+func runCommand(command string, arguments ...string) error {
 	var stdout, stderr bytes.Buffer
 
 	cmd := exec.Command(command, arguments...)
