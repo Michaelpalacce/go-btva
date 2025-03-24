@@ -16,6 +16,12 @@ Sets UP BTVA for local development.
     - Allows us to resume and skip parts
 - At the end, give details to the user what to do if needed
 
+## Action Items
+
+- [x] Implement Software installation Linux
+- [ ] Implement Environment Setup Linux
+- [ ] Implement Infra Setup Linux
+
 # Development
 
 We use `make` to run the program for dev
