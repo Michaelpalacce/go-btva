@@ -7,7 +7,6 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/software"
-	"github.com/Michaelpalacce/go-btva/pkg/exec/linuxexec"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
@@ -28,7 +27,7 @@ func (s *NodeSoftware) Install() error {
 		shell = "/bin/bash"
 	}
 
-	if err := linuxexec.RunCommand(shell, "-c", fmt.Sprintf("curl -fsSL https://fnm.vercel.app/install | %s", shell)); err != nil {
+	if err := RunCommand(shell, "-c", fmt.Sprintf("curl -fsSL https://fnm.vercel.app/install | %s", shell)); err != nil {
 		return err
 	}
 
@@ -42,7 +41,7 @@ func (s *NodeSoftware) Install() error {
 		profile = "$HOME/.bashrc"
 	}
 
-	return linuxexec.RunCommand(shell, "-i", "-c", fmt.Sprintf("source %s && fnm install %s", profile, s.Options.Software.LinuxNodeVersion))
+	return RunCommand(shell, "-i", "-c", fmt.Sprintf("source %s && fnm install %s", profile, s.Options.Software.LinuxNodeVersion))
 }
 
 // Exists verifies if node is already installed.

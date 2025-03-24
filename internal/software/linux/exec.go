@@ -1,4 +1,4 @@
-package linuxexec
+package linux
 
 import (
 	"bytes"

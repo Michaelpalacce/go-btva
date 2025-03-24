@@ -6,7 +6,6 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/software"
-	"github.com/Michaelpalacce/go-btva/pkg/exec/linuxexec"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
@@ -22,7 +21,7 @@ var javaSoftware *JavaSoftware = &JavaSoftware{}
 
 // Install will install java with apt
 func (s *JavaSoftware) Install() error {
-	return linuxexec.RunSudoCommand("apt", "install", "-y", fmt.Sprintf("openjdk-%s-jdk", s.Options.Software.LinuxJavaVersion))
+	return RunSudoCommand("apt", "install", "-y", fmt.Sprintf("openjdk-%s-jdk", s.Options.Software.LinuxJavaVersion))
 }
 
 // Exists verifies if java is already installed.
