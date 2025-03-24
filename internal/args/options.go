@@ -23,6 +23,12 @@ type Local struct {
 // Infra will hold different infra decisions that need to be taken
 type Infra struct {
 	MinimalInfrastructure bool `json:"minimalInfrastructure"`
+
+	SSHVMIP                 string `json:"sshVmIP"`
+	SSHUsername             string `json:"sshUsername"`
+	SSHPassword             string `json:"sshPassword"`
+	SSHPrivateKey           string `json:"sshPrivateKey"`
+	SSHPrivateKeyPassphrase string `json:"sshPrivateKeyPassphrase"`
 }
 
 // Options is a struct for options that the tool can accept.

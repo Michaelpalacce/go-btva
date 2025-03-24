@@ -9,6 +9,7 @@ import (
 	"github.com/Michaelpalacce/go-btva/internal/software/linux"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 	"github.com/Michaelpalacce/go-btva/pkg/state"
+	"github.com/melbahja/goph"
 )
 
 // Handler is a struct that orchestrates the setup process based on OS
@@ -114,6 +115,47 @@ func (h *Handler) SetupLocalEnv(c chan error) {
 
 // @TODO: Finish
 func (h *Handler) SetupInfra(c chan error) {
+	vmIP := h.options.Infra.SSHVMIP
+	username := h.options.Infra.SSHUsername
+	password := goph.Password(h.options.Infra.SSHPassword)
+	privateKey := h.options.Infra.SSHPrivateKey
+
+	var (
+		client *goph.Client
+		auth   goph.Auth
+		err    error
+	)
+
+	if privateKey != "" {
+		// Start new ssh connection with private key.
+		auth, err = goph.Key(privateKey, h.options.Infra.SSHPrivateKeyPassphrase)
+		if err != nil {
+			c <- fmt.Errorf("there was an error using the private key %s, err was: %w", privateKey, err)
+			return
+		}
+	} else {
+		fmt.Println(h.options.Infra.SSHPassword)
+		auth = password
+	}
+
+	if client, err = goph.New(username, vmIP, auth); err != nil {
+		c <- fmt.Errorf("there was an error while establishing connection to remote server for infra setup. Err was: %w", err)
+		return
+	}
+
+	// Defer closing the network connection.
+	defer client.Close()
+
+	// Execute your command.
+	out, err := client.Run("ls /tmp/")
+	if err != nil {
+		c <- err
+		return
+	}
+
+	// Get your output as []byte.
+	fmt.Println(string(out))
+
 	c <- nil
 }
 

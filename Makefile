@@ -37,7 +37,7 @@ build: ## Build the project
 
 .PHONY: run 
 run: ## Go run the project
-	go run cmd/main.go
+	go run cmd/main.go --minimalInfrastructure=false
 	# sudo $(GOEXEC) run cmd/main.go
 
 ##@ Cleanup. Linux only

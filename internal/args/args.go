@@ -28,7 +28,27 @@ func Args() *Options {
 	// Infra
 	flag.BoolVar(&options.Infra.MinimalInfrastructure, "minimalInfrastructure", true, "Do you want to spin up a mininmal infrastructure example?")
 
+	flag.StringVar(&options.Infra.SSHVMIP, "sshVmIp", "", "IP of the VM where to setup the minimal infrastructure example.")
+	flag.StringVar(&options.Infra.SSHUsername, "sshUsername", "", "Username of the user to ssh with.")
+	flag.StringVar(&options.Infra.SSHPassword, "sshPassword", "", "Password of the user to ssh with. Either this or sshPrivateKey must be provided.")
+	flag.StringVar(&options.Infra.SSHPrivateKey, "sshPrivateKey", "", "Private key to use for authentication. Either this or sshPassword must be provided.")
+	flag.StringVar(&options.Infra.SSHPrivateKeyPassphrase, "sshPrivateKeyPassphrase", "", "Passphrase for the private key if any. Optional")
+
 	flag.Parse()
+
+	if options.Infra.MinimalInfrastructure {
+		if options.Infra.SSHPrivateKey == "" && options.Infra.SSHPassword == "" {
+			panic("Either sshPrivateKey or sshPassword must be provided")
+		}
+
+		if options.Infra.SSHVMIP == "" {
+			panic("sshVmIp must be provided")
+		}
+
+		if options.Infra.SSHUsername == "" {
+			panic("sshUsername must be provided")
+		}
+	}
 
 	options.parsed = true
 
