@@ -2,6 +2,7 @@ package state
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"os"
 )
@@ -20,14 +21,15 @@ type JsonStorage struct {
 }
 
 // Commit will save the current State object to file
+// @NOTE: On windows the file permissions are ignored
 func (s *JsonStorage) Commit(state *State) error {
 	bytes, err := json.MarshalIndent(state, "", "\t")
 	if err != nil {
 		return err
 	}
-	slog.Debug("Committing", "state", string(bytes))
+	slog.Debug("Committing", "state", state.State)
 
-	return os.WriteFile(s.Filepath, bytes, 0o644)
+	return os.WriteFile(s.Filepath, bytes, 0o640)
 }
 
 // Load will load the state from a file if it exists.
@@ -41,9 +43,13 @@ func (s *JsonStorage) Load(state *State) error {
 		bytes = []byte("{}")
 	}
 
-	slog.Info("Loading previous state", "state", string(bytes))
+	if err = json.Unmarshal(bytes, state); err != nil {
+		return fmt.Errorf("error while loading previous state. Error was %w", err)
+	} else {
+		slog.Info("Loaded previous state", "state", state.State)
+	}
 
-	return json.Unmarshal(bytes, state)
+	return nil
 }
 
 // WithJsonStorage will make the State store data in JSON
