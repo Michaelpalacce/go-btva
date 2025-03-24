@@ -8,7 +8,7 @@ It returns a single object that should not be modified externally, but should in
 You can do:
 
 ```go
-software.GetOS()
+ос.GetOS()
 ```
 
 after which point you will have an object with all the relevant data
