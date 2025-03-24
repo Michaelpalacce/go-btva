@@ -13,9 +13,12 @@ func Args() *Options {
 	// Software
 	flag.BoolVar(&options.Software.InstallJava, "installJava", true, "Flag that will specify if you want to install the correct java version. If java already exists, regardless of which version, this is ignored")
 	flag.StringVar(&options.Software.LinuxJavaVersion, "linuxJavaVersion", "17", "Which version of java to install?")
-	flag.StringVar(&options.Software.LinuxMvnVersion, "linuxMvnVersion", "3.9.9", "Which version of mvn to install?")
+
 	flag.BoolVar(&options.Software.InstallMvn, "installMvn", true, "Flag that will specify if you want to install the correct mvn version. If mvn already exists, regardless of which version, this is ignored")
+	flag.StringVar(&options.Software.LinuxMvnVersion, "linuxMvnVersion", "3.9.9", "Which version of mvn to install?")
+
 	flag.BoolVar(&options.Software.InstallNode, "installNode", true, "Flag that will specify if you want to install the correct node version. This will work by installing fnm locally.")
+	flag.StringVar(&options.Software.LinuxNodeVersion, "linuxNodeVersion", "22", "Which version of node to install?")
 
 	// Local
 	flag.BoolVar(&options.Local.SetupM2, "setupM2", true, "Do you want to overwrite your current ~/.m2/settings.xml file with a proposed configuration from the tool?")

@@ -37,7 +37,8 @@ build: ## Build the project
 
 .PHONY: run 
 run: ## Go run the project
-	sudo $(GOEXEC) run cmd/main.go
+	go run cmd/main.go
+	# sudo $(GOEXEC) run cmd/main.go
 
 ##@ Cleanup. Linux only
 
@@ -50,12 +51,16 @@ cleanup-mvn: ## Removes mvn
 cleanup-java: ## Removes Java installation
 	sudo apt remove -y openjdk-17-jdk openjdk-17-jre openjdk-17-jdk-headless openjdk-17-jre-headless
 
+.PHONY: cleanup-node
+cleanup-node: ## Removes fnm and node
+	sudo rm -rf ~/.local/share/fnm
+
 .PHONY: cleanup-state
 cleanup-state: ## Removes the state file
 	rm -rf state.json5
 
 .PHONY: cleanup
-cleanup: cleanup-java cleanup-state cleanup-mvn ## Will cleanup the environment so we can rerun the tool
+cleanup: cleanup-java cleanup-state cleanup-mvn cleanup-node ## Will cleanup the environment so we can rerun the tool
 
 
 # go-install-tool will 'go install' any package with custom target and name of binary, if it doesn't exist

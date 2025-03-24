@@ -6,6 +6,7 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/software"
+	"github.com/Michaelpalacce/go-btva/pkg/exec/linuxexec"
 	"github.com/Michaelpalacce/go-btva/pkg/file"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
@@ -43,11 +44,6 @@ func (s *MvnSoftware) Install() error {
 		return err
 	}
 
-	return nil
-}
-
-// Remove will remove mvn
-func (s *MvnSoftware) Remove() error {
 	return nil
 }
 
@@ -102,10 +98,8 @@ func (s *MvnSoftware) getInstallZipPath() string {
 
 // symlinkMvn will symlink the mvn binary to /usr/bin/mvn
 func (s *MvnSoftware) symlinkMvn() error {
-	mvnLnCmd := exec.Command("ln", "-sf", fmt.Sprintf("/opt/apache-maven-%s/bin/mvn", s.Options.Software.LinuxMvnVersion), "/usr/bin/mvn")
-
-	if output, err := mvnLnCmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("Error while running command. Error was %w, output was %s", err, output)
+	if err := linuxexec.RunSudoCommand("ln", "-sf", fmt.Sprintf("/opt/apache-maven-%s/bin/mvn", s.Options.Software.LinuxMvnVersion), "/usr/bin/mvn"); err != nil {
+		return fmt.Errorf("Error while running command. Error was %w", err)
 	}
 
 	return nil
@@ -130,10 +124,8 @@ func (i *LinuxInstaller) Mvn() software.Software {
 
 // untar works on a tar.gz file and untars it
 func untar(filename string, destination string) error {
-	mvnExtractCmd := exec.Command("tar", "xf", filename, "-C", destination)
-
-	if output, err := mvnExtractCmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("Error untarring file. Error was %w, output was %s", err, output)
+	if err := linuxexec.RunSudoCommand("tar", "xf", filename, "-C", destination); err != nil {
+		return fmt.Errorf("Error untarring file. Error was %w", err)
 	}
 
 	return nil

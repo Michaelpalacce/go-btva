@@ -6,6 +6,7 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/software"
+	"github.com/Michaelpalacce/go-btva/pkg/exec/linuxexec"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
@@ -22,21 +23,8 @@ var javaSoftware *JavaSoftware = &JavaSoftware{}
 // Install will install java with apt
 // @NOTE: Make sure you run the go process as sudo
 func (s *JavaSoftware) Install() error {
-	cmd := exec.Command("apt", "install", "-y", fmt.Sprintf("openjdk-%s-jdk", s.Options.Software.LinuxJavaVersion))
-
-	if output, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("Error while running command. Error was %w, output was %s", err, output)
-	}
-
-	return nil
-}
-
-// Remove will remove java
-func (s *JavaSoftware) Remove() error {
-	cmd := exec.Command("apt", "remove", "-y", fmt.Sprintf("openjdk-%s-jdk", s.Options.Software.LinuxJavaVersion))
-
-	if output, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("Error while running command. Error was %w, output was %s", err, output)
+	if err := linuxexec.RunSudoCommand("apt", "install", "-y", fmt.Sprintf("openjdk-%s-jdk", s.Options.Software.LinuxJavaVersion)); err != nil {
+		return fmt.Errorf("Error while running command. Error was %w", err)
 	}
 
 	return nil

@@ -64,6 +64,13 @@ func (h *Handler) SetupSoftware(c chan error) {
 		}
 	}
 
+	if h.options.Software.InstallNode {
+		if err := h.installSoftware(h.installer.Node()); err != nil {
+			c <- err
+			return
+		}
+	}
+
 	c <- nil
 }
 

@@ -9,6 +9,7 @@ import (
 type Installer interface {
 	Java() software.Software
 	Mvn() software.Software
+	Node() software.Software
 
 	GetOS() *os.OS
 }

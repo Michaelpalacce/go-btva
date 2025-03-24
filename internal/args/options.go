@@ -10,6 +10,7 @@ type Software struct {
 	// Versions
 	LinuxJavaVersion string `json:"linuxJavaVersion"`
 	LinuxMvnVersion  string `json:"linuxMvnVersion"`
+	LinuxNodeVersion string `json:"linuxNodeVersion"`
 }
 
 // Local will hold different configurations for mvn that may be needed
