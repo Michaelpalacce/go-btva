@@ -128,17 +128,14 @@ func (h *Handler) SetupInfra(c chan error) {
 		return
 	}
 
-	// Defer closing the network connection.
 	defer client.Close()
 
-	// Execute your command.
 	out, err := client.Run("ls -lah /tmp")
 	if err != nil {
 		c <- fmt.Errorf("process exited with error. err was %w, output was:\n%s", err, out)
 		return
 	}
 
-	// Get your output as []byte.
 	fmt.Println(string(out))
 
 	c <- nil
