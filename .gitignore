@@ -21,7 +21,8 @@
 go.work
 go.work.sum
 
-# env file
+# env files
 .env
+.envrc
 
 state.json5
