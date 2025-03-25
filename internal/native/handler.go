@@ -121,6 +121,7 @@ func (h *Handler) SetupLocalEnv(c chan error) {
 
 // @TODO: Finish
 func (h *Handler) SetupInfra(c chan error) {
+	slog.Info("Trying to connect to VM via ssh", "vmIp", h.options.Infra.SSHVMIP)
 	infraOptions := h.options.Infra
 	client, err := ssh.GetClient(infraOptions.SSHVMIP, infraOptions.SSHUsername, infraOptions.SSHPassword, infraOptions.SSHPrivateKey, infraOptions.SSHPrivateKeyPassphrase)
 	if err != nil {
@@ -129,6 +130,7 @@ func (h *Handler) SetupInfra(c chan error) {
 	}
 
 	defer client.Close()
+	slog.Info("Connected to VM via ssh", "vmIp", h.options.Infra.SSHVMIP)
 
 	out, err := client.Run("ls -lah /tmp")
 	if err != nil {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"log/slog"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/native"
@@ -47,21 +48,21 @@ func main() {
 		select {
 		case err := <-softwareChan:
 			if err != nil {
-				log.Printf("Software setup error: %v", err)
+				slog.Error("Software setup error: %v", err)
 			} else {
-				log.Printf("Software setup done")
+				slog.Info("Software setup done")
 			}
 		case err := <-localEnvChan:
 			if err != nil {
-				log.Printf("Local environment setup error: %v", err)
+				slog.Error("Local environment setup error: %v", err)
 			} else {
-				log.Printf("Local Environemnt setup done")
+				slog.Info("Local Environemnt setup done")
 			}
 		case err := <-infraChan:
 			if err != nil {
-				log.Printf("Infrastructure setup error: %v", err)
+				slog.Error("Infrastructure setup error: %v", err)
 			} else {
-				log.Printf("Infra setup done")
+				slog.Info("Infra setup done")
 			}
 		}
 	}
