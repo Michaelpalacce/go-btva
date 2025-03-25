@@ -9,7 +9,17 @@ components and executing different tasks with them
 # Usage
 
 ```go
-native.NewHandler(os, options)
+handler, err := native.NewHandler(os, options)
+
+if err != nil { panic(err) }
+
+softwareChan := make(chan error)
+localEnvChan := make(chan error)
+infraChan := make(chan error)
+
+go handler.SetupSoftware(softwareChan)
+go handler.SetupLocalEnv(localEnvChan)
+go handler.SetupInfra(infraChan)
 ```
 
 After fetching the native handler, all the os ops must be handled through it
