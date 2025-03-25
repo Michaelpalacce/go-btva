@@ -51,30 +51,26 @@ func NewHandler(os *os.OS, options *args.Options) (*Handler, error) {
 // Setup Software Block
 
 // SetupSoftware will install all the needed software based on the os and options
-// @NOTE: This is meant to be ran async
-func (h *Handler) SetupSoftware(c chan error) {
+func (h *Handler) SetupSoftware() error {
 	if h.options.Software.InstallJava {
 		if err := h.installSoftware(h.installer.Java()); err != nil {
-			c <- err
-			return
+			return err
 		}
 	}
 
 	if h.options.Software.InstallMvn {
 		if err := h.installSoftware(h.installer.Mvn()); err != nil {
-			c <- err
-			return
+			return err
 		}
 	}
 
 	if h.options.Software.InstallNode {
 		if err := h.installSoftware(h.installer.Node()); err != nil {
-			c <- err
-			return
+			return err
 		}
 	}
 
-	c <- nil
+	return nil
 }
 
 // installSoftware is an internal function that can be used to install any software. It will run through a set of commands
@@ -109,8 +105,8 @@ func (h *Handler) installSoftware(soft software.Software) error {
 // Setup Local Env Block
 
 // @TODO: Finish
-func (h *Handler) SetupLocalEnv(c chan error) {
-	c <- nil
+func (h *Handler) SetupLocalEnv() error {
+	return nil
 }
 
 // END Setup Local Env Block
@@ -120,13 +116,16 @@ func (h *Handler) SetupLocalEnv(c chan error) {
 // Setup Infra Block
 
 // @TODO: Finish
-func (h *Handler) SetupInfra(c chan error) {
+func (h *Handler) SetupInfra() error {
+	if h.options.Infra.MinimalInfrastructure == false {
+		return nil
+	}
+
 	slog.Info("Trying to connect to VM via ssh", "vmIp", h.options.Infra.SSHVMIP)
 	infraOptions := h.options.Infra
 	client, err := ssh.GetClient(infraOptions.SSHVMIP, infraOptions.SSHUsername, infraOptions.SSHPassword, infraOptions.SSHPrivateKey, infraOptions.SSHPrivateKeyPassphrase)
 	if err != nil {
-		c <- fmt.Errorf("could not create client. err was %w", err)
-		return
+		return fmt.Errorf("could not create client. err was %w", err)
 	}
 
 	defer client.Close()
@@ -134,13 +133,12 @@ func (h *Handler) SetupInfra(c chan error) {
 
 	out, err := client.Run("ls -lah /tmp")
 	if err != nil {
-		c <- fmt.Errorf("process exited with error. err was %w, output was:\n%s", err, out)
-		return
+		return fmt.Errorf("process exited with error. err was %w, output was:\n%s", err, out)
 	}
 
 	fmt.Println(string(out))
 
-	c <- nil
+	return nil
 }
 
 // END Setup Infra Block
