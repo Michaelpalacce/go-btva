@@ -2,9 +2,14 @@ package args
 
 import (
 	"flag"
+	"fmt"
+	"syscall"
+
+	"golang.org/x/term"
 )
 
 // Args will parse the CLI arguments once and return the parsed options from then on
+// This will panic if there are any validation issues
 func Args() *Options {
 	if options.parsed {
 		return options
@@ -36,21 +41,40 @@ func Args() *Options {
 
 	flag.Parse()
 
-	if options.Infra.MinimalInfrastructure {
-		if options.Infra.SSHPrivateKey == "" && options.Infra.SSHPassword == "" {
-			panic("Either sshPrivateKey or sshPassword must be provided")
-		}
-
-		if options.Infra.SSHVMIP == "" {
-			panic("sshVmIp must be provided")
-		}
-
-		if options.Infra.SSHUsername == "" {
-			panic("sshUsername must be provided")
-		}
+	if err := validate(options); err != nil {
+		panic(err)
 	}
 
 	options.parsed = true
 
 	return options
+}
+
+// validate will validate the options and return an error if something is wrong
+func validate(options *Options) error {
+	if options.Infra.MinimalInfrastructure {
+		if options.Infra.SSHPrivateKey == "" && options.Infra.SSHPassword == "" {
+			var err error
+			if options.Infra.SSHPassword, err = askPass(); err != nil {
+				return err
+			}
+		}
+
+		if options.Infra.SSHVMIP == "" {
+			return fmt.Errorf("sshVmIp must be provided")
+		}
+
+		if options.Infra.SSHUsername == "" {
+			return fmt.Errorf("sshUsername must be provided")
+		}
+	}
+
+	return nil
+}
+
+// askPass will ask the user for a password
+func askPass() (string, error) {
+	fmt.Print("You did not provide sshPassword or sshPrivateKey, please type in password: ")
+	bytepw, err := term.ReadPassword(int(syscall.Stdin))
+	return string(bytepw), err
 }
