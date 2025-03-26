@@ -87,3 +87,65 @@ func (s *State) Init() {
 		s.State = make(map[string]internalState)
 	}
 }
+
+// State Options
+
+func WithDone(key string, done bool) SetStateOption {
+	return func(s *State) error {
+		if _, ok := s.State[key]; !ok {
+			s.State[key] = internalState{}
+		}
+
+		value := s.State[key]
+		value.Done = done
+		s.State[key] = value
+
+		return nil
+	}
+}
+
+func WithMsg(key string, msg string) SetStateOption {
+	return func(s *State) error {
+		if _, ok := s.State[key]; !ok {
+			s.State[key] = internalState{}
+		}
+
+		value := s.State[key]
+		value.Msg = msg
+		s.State[key] = value
+
+		return nil
+	}
+}
+
+func WithStep(key string, step int) SetStateOption {
+	return func(s *State) error {
+		if _, ok := s.State[key]; !ok {
+			s.State[key] = internalState{}
+		}
+
+		value := s.State[key]
+		value.Step = step
+		s.State[key] = value
+
+		return nil
+	}
+}
+
+func WithErr(key string, err error) SetStateOption {
+	return func(s *State) error {
+		if _, ok := s.State[key]; !ok {
+			s.State[key] = internalState{}
+		}
+
+		value := s.State[key]
+		value.Err = err
+
+		if err != nil {
+			value.Msg = err.Error()
+		}
+		s.State[key] = value
+
+		return nil
+	}
+}

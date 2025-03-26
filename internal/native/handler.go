@@ -5,9 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
-	"github.com/Michaelpalacce/go-btva/internal/software"
 	"github.com/Michaelpalacce/go-btva/internal/software/linux"
-	"github.com/Michaelpalacce/go-btva/internal/ssh"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 	"github.com/Michaelpalacce/go-btva/pkg/state"
 )
@@ -89,29 +87,38 @@ func (h *Handler) SetupLocalEnv() error {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Setup Infra Block
-
-// @TODO: Finish
 func (h *Handler) SetupInfra() error {
 	if h.options.Infra.MinimalInfrastructure == false {
 		return nil
 	}
 
+	if h.state.GetDone(h.isMinimalInfraDone()) {
+		slog.Info("Minimal infrastructure already done, skipping...")
+		return nil
+	}
+
+	slog.Info("Setting up minimal infrastructure on vm", "vmIp", h.options.Infra.SSHVMIP)
+
+	h.state.Set(
+		state.WithStep(MINIMAL_INFRA_STATE, 1),
+		state.WithMsg(MINIMAL_INFRA_STATE, "Connecting to VM"),
+	)
+
 	slog.Info("Trying to connect to VM via ssh", "vmIp", h.options.Infra.SSHVMIP)
-	infraOptions := h.options.Infra
-	client, err := ssh.GetClient(infraOptions.SSHVMIP, infraOptions.SSHUsername, infraOptions.SSHPassword, infraOptions.SSHPrivateKey, infraOptions.SSHPrivateKeyPassphrase)
+	client, err := h.getClient()
 	if err != nil {
-		return fmt.Errorf("could not create client. err was %w", err)
+		return err
 	}
 
 	defer client.Close()
 	slog.Info("Connected to VM via ssh", "vmIp", h.options.Infra.SSHVMIP)
 
-	out, err := client.Run("ls -lah /tmp")
-	if err != nil {
-		return fmt.Errorf("process exited with error. err was %w, output was:\n%s", err, out)
+	if err := h.runMinimalInfra(client); err != nil {
+		h.state.Set(state.WithDone(MINIMAL_INFRA_STATE, false), state.WithErr(MINIMAL_INFRA_STATE, err))
+		return err
 	}
 
-	fmt.Println(string(out))
+	h.state.Set(state.WithDone(MINIMAL_INFRA_STATE, true), state.WithMsg(MINIMAL_INFRA_STATE, "Finished Installation"), state.WithErr(MINIMAL_INFRA_STATE, nil))
 
 	return nil
 }
