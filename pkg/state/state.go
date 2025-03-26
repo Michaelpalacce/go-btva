@@ -6,6 +6,7 @@ type (
 
 	GetStateOption        func(*State) *internalState
 	GetSuccessStateOption func(*State) bool
+	GetStepStateOption    func(*State) int
 	GetMsgStateOption     func(*State) string
 	GetErrStateOption     func(*State) error
 )
@@ -65,6 +66,7 @@ func (s *State) Set(options ...SetStateOption) error {
 func (s *State) Get(option GetStateOption) *internalState  { return option(s) }
 func (s *State) GetDone(option GetSuccessStateOption) bool { return option(s) }
 func (s *State) GetMsg(option GetMsgStateOption) string    { return option(s) }
+func (s *State) GetStep(option GetStepStateOption) int     { return option(s) }
 func (s *State) GetErr(option GetErrStateOption) error     { return option(s) }
 
 // GetValue is used to get the internal state of a key... not recommended for direct use
@@ -118,6 +120,7 @@ func WithMsg(key string, msg string) SetStateOption {
 	}
 }
 
+// WithStep sets the step, however it will NOT decrement a step
 func WithStep(key string, step int) SetStateOption {
 	return func(s *State) error {
 		if _, ok := s.State[key]; !ok {
@@ -125,7 +128,9 @@ func WithStep(key string, step int) SetStateOption {
 		}
 
 		value := s.State[key]
-		value.Step = step
+		if value.Step < step {
+			value.Step = step
+		}
 		s.State[key] = value
 
 		return nil

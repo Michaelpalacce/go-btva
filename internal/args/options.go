@@ -21,6 +21,7 @@ type Local struct {
 }
 
 // Infra will hold different infra decisions that need to be taken
+// @TODO: This will need to work with Other providers EVENTUALLY
 type Infra struct {
 	MinimalInfrastructure bool `json:"minimalInfrastructure"`
 

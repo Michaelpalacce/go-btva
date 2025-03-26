@@ -87,6 +87,7 @@ func (h *Handler) SetupLocalEnv() error {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Setup Infra Block
+// @TODO: Minimal infra needs to be moved to a strategy of sorts.
 func (h *Handler) SetupInfra() error {
 	if h.options.Infra.MinimalInfrastructure == false {
 		return nil
@@ -99,11 +100,6 @@ func (h *Handler) SetupInfra() error {
 
 	slog.Info("Setting up minimal infrastructure on vm", "vmIp", h.options.Infra.SSHVMIP)
 
-	h.state.Set(
-		state.WithStep(MINIMAL_INFRA_STATE, 1),
-		state.WithMsg(MINIMAL_INFRA_STATE, "Connecting to VM"),
-	)
-
 	slog.Info("Trying to connect to VM via ssh", "vmIp", h.options.Infra.SSHVMIP)
 	client, err := h.getClient()
 	if err != nil {
@@ -113,12 +109,23 @@ func (h *Handler) SetupInfra() error {
 	defer client.Close()
 	slog.Info("Connected to VM via ssh", "vmIp", h.options.Infra.SSHVMIP)
 
+	h.state.Set(
+		state.WithStep(MINIMAL_INFRA_STATE, MINIMAL_INFRA_STEP_CONNECTION),
+		state.WithMsg(MINIMAL_INFRA_STATE, "Connected to VM"),
+	)
+
 	if err := h.runMinimalInfra(client); err != nil {
 		h.state.Set(state.WithDone(MINIMAL_INFRA_STATE, false), state.WithErr(MINIMAL_INFRA_STATE, err))
 		return err
 	}
 
-	h.state.Set(state.WithDone(MINIMAL_INFRA_STATE, true), state.WithMsg(MINIMAL_INFRA_STATE, "Finished Installation"), state.WithErr(MINIMAL_INFRA_STATE, nil))
+	// Wait for up
+
+	// Fetch gitlab password
+
+	// Do stuff
+
+	// h.state.Set(state.WithDone(MINIMAL_INFRA_STATE, true), state.WithMsg(MINIMAL_INFRA_STATE, "Finished Installation"), state.WithErr(MINIMAL_INFRA_STATE, nil))
 
 	return nil
 }
