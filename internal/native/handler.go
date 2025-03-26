@@ -73,31 +73,6 @@ func (h *Handler) SetupSoftware() error {
 	return nil
 }
 
-// installSoftware is an internal function that can be used to install any software. It will run through a set of commands
-func (h *Handler) installSoftware(soft software.Software) error {
-	if h.state.GetDone(software.IsSoftwareNotInstalled(soft)) && !soft.Exists() {
-		slog.Info("Software is not installed, installing", "name", soft.GetName(), "version", soft.GetVersion())
-
-		err := soft.Install()
-		if err != nil {
-			if err := h.state.Set(software.SoftwareInstalled(soft, err)); err != nil {
-				slog.Error("Error setting state", err)
-			}
-			return err
-		}
-
-		if err := h.state.Set(software.SoftwareInstalled(soft, nil)); err != nil {
-			slog.Error("Error setting state", err)
-		}
-
-		slog.Info("Software successfully installed", "name", soft.GetName(), "version", soft.GetVersion())
-	} else {
-		slog.Info("Software already installed, skipping...", "name", soft.GetName(), "version", soft.GetVersion())
-	}
-
-	return nil
-}
-
 // END Software Block
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

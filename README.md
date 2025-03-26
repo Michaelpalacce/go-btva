@@ -20,6 +20,7 @@ Sets UP BTVA for local development.
 
 - [x] Implement Software installation Linux
 - [ ] Implement Environment Setup Linux
+- [ ] Use https://pkg.go.dev/text/template for templating `settings.xml`
 
 - [ ] Implement Software installation Darwin
 - [ ] Implement Environment Setup Darwin
