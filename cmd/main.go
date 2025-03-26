@@ -33,19 +33,19 @@ func main() {
 	// Execution Block. Handles the actual execution of the program
 
 	if err := handler.SetupSoftware(); err != nil {
-		slog.Error("Software setup error: %v", err)
+		slog.Error("Software setup error", "err", err)
 	} else {
 		slog.Info("Software setup done")
 	}
 
 	if err := handler.SetupLocalEnv(); err != nil {
-		slog.Error("Local environment setup error: %v", err)
+		slog.Error("Local environment setup error", "err", err)
 	} else {
 		slog.Info("Local Environemnt setup done")
 	}
 
 	if err := handler.SetupInfra(); err != nil {
-		slog.Error("Infrastructure setup error: %v", err)
+		slog.Error("Infrastructure setup error", "err", err)
 	} else {
 		slog.Info("Infra setup done")
 	}
