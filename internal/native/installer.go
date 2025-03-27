@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/Michaelpalacce/go-btva/internal/software"
+	"github.com/Michaelpalacce/go-btva/internal/os/software"
 	"github.com/Michaelpalacce/go-btva/pkg/state"
 )
 

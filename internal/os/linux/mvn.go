@@ -5,7 +5,7 @@ import (
 	"os/exec"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
-	"github.com/Michaelpalacce/go-btva/internal/software"
+	"github.com/Michaelpalacce/go-btva/internal/os/software"
 	"github.com/Michaelpalacce/go-btva/pkg/command/unix"
 	"github.com/Michaelpalacce/go-btva/pkg/file"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
