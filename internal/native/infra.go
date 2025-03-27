@@ -35,7 +35,7 @@ func (h *Handler) runMinimalInfra(client *goph.Client) error {
 		return nil
 	}
 
-	h.state.Set(state.WithMsg(INFRA_STATE, "Running the minimal infrastructure installer."))
+	h.state.Set(state.WithMsg(INFRA_STATE, "Running the minimal infrastructure installer. This may take a few minutes as it waits for services to be healthy."))
 
 	out, err := client.Run("curl -o- https://raw.githubusercontent.com/vmware/build-tools-for-vmware-aria/refs/heads/refactor/minimal-infra-simplified-setup/infrastructure/install.sh | bash")
 	if err != nil {
