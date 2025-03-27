@@ -1,4 +1,4 @@
-package linux
+package darwin
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"os/exec"
 )
 
-// runSudoCommand runs a linux command with sudo
+// runSudoCommand runs a darwin command with sudo
 func runSudoCommand(command string, arguments ...string) error {
 	return runCommand("sudo", append([]string{command}, arguments...)...)
 }

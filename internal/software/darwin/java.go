@@ -1,4 +1,4 @@
-package linux
+package darwin
 
 import (
 	"fmt"
@@ -21,7 +21,7 @@ var javaSoftware *JavaSoftware = &JavaSoftware{}
 
 // Install will install java with apt
 func (s *JavaSoftware) Install() error {
-	return runSudoCommand("apt", "install", "-y", fmt.Sprintf("openjdk-%s-jdk", s.options.Software.JavaVersion))
+	return runCommand("brew", "install", fmt.Sprintf("openjdk@%s", s.options.Software.JavaVersion))
 }
 
 // Exists verifies if java is already installed.
@@ -38,7 +38,7 @@ func (s *JavaSoftware) GetVersion() string { return s.options.Software.JavaVersi
 
 // Java will return the JavaSoftware object that can be used to install, remove or check if java exists
 // Only a single instance of the JavaSoftware will be returned
-func (i *LinuxInstaller) Java() software.Software {
+func (i *DarwinInstaller) Java() software.Software {
 	if !javaSoftware.initialized {
 		javaSoftware.os = i.OS
 		javaSoftware.options = i.Options

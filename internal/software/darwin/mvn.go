@@ -1,4 +1,4 @@
-package linux
+package darwin
 
 import (
 	"fmt"
@@ -84,7 +84,7 @@ func (s *MvnSoftware) getInstallZipPath() string {
 
 // symlinkMvn will symlink the mvn binary to /usr/bin/mvn
 func (s *MvnSoftware) symlinkMvn() error {
-	return runSudoCommand("ln", "-sf", fmt.Sprintf("/opt/apache-maven-%s/bin/mvn", s.options.Software.MvnVersion), "/usr/bin/mvn")
+	return runSudoCommand("ln", "-sf", fmt.Sprintf("/opt/apache-maven-%s/bin/mvn", s.options.Software.MvnVersion), "/usr/local/bin/mvn")
 }
 
 func (s *MvnSoftware) GetName() string    { return software.MvnSoftwareKey }
@@ -92,7 +92,7 @@ func (s *MvnSoftware) GetVersion() string { return s.options.Software.MvnVersion
 
 // Java will return the MvnSoftware object that can be used to install, remove or check if mvn exists
 // Only a single instance of the MvnSoftware will be returned
-func (i *LinuxInstaller) Mvn() software.Software {
+func (i *DarwinInstaller) Mvn() software.Software {
 	if !mvnSoftware.initialized {
 		mvnSoftware.os = i.OS
 		mvnSoftware.options = i.Options

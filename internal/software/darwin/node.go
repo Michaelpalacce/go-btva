@@ -1,4 +1,4 @@
-package linux
+package darwin
 
 import (
 	"fmt"
@@ -59,7 +59,7 @@ func (s *NodeSoftware) GetVersion() string { return s.options.Software.NodeVersi
 
 // Node will return the NodeSoftware object that can be used to install, remove or check if node exists
 // Only a single instance of the NodeSoftware will be returned
-func (i *LinuxInstaller) Node() software.Software {
+func (i *DarwinInstaller) Node() software.Software {
 	if !nodeSoftware.initialized {
 		nodeSoftware.os = i.OS
 		nodeSoftware.options = i.Options
