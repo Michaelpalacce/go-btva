@@ -45,7 +45,7 @@ type settingsTemplate struct {
 	Infra infra
 }
 
-// prepareSettingsXml will create a temporary `settings.xml` file in the OS temp dir
+// prepareSettingsXml will replace the `settings.xml` in your `~/.m2` dir
 func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.State) error {
 	if h.state.GetStep(h.envStep()) >= ENV_STEP_SETTINGS_XML {
 		slog.Info("Skipping settings.xml configuration. Already done.")
@@ -57,16 +57,12 @@ func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.
 	templateSettingsPath := fmt.Sprintf("%s/configs/settings.xml", os.Cwd)
 	tmpSettingsPath := fmt.Sprintf("%s/settings.xml", os.TempDir)
 	if err := file.DeleteIfExists(tmpSettingsPath); err != nil {
-		h.state.Set(
-			state.WithErr(ENV_STATE, err),
-		)
+		h.state.Set(state.WithErr(ENV_STATE, err))
 		return fmt.Errorf("there was an existing settings file at: %s. Could not remove it. Err was %w", tmpSettingsPath, err)
 	}
 
 	if _, err := file.Copy(templateSettingsPath, fmt.Sprintf("%s/settings.xml", os.TempDir)); err != nil {
-		h.state.Set(
-			state.WithErr(ENV_STATE, err),
-		)
+		h.state.Set(state.WithErr(ENV_STATE, err))
 		return fmt.Errorf("could not copy settings.xml file to a temp dir. Err was %w", err)
 	}
 
@@ -90,17 +86,13 @@ func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.
 
 	settingsBytes, err := osz.ReadFile(templateSettingsPath)
 	if err != nil {
-		h.state.Set(
-			state.WithErr(ENV_STATE, err),
-		)
+		h.state.Set(state.WithErr(ENV_STATE, err))
 		return fmt.Errorf("could not read settings.xml file. Err was %w", err)
 	}
 
 	template, err := template.New("settings.xml").Parse(string(settingsBytes))
 	if err != nil {
-		h.state.Set(
-			state.WithErr(ENV_STATE, err),
-		)
+		h.state.Set(state.WithErr(ENV_STATE, err))
 		return fmt.Errorf("could not parse settings.xml file. Err was %w", err)
 	}
 
@@ -108,17 +100,13 @@ func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.
 
 	fo, err := osz.Create(m2SettingsPath)
 	if err != nil {
-		h.state.Set(
-			state.WithErr(ENV_STATE, err),
-		)
+		h.state.Set(state.WithErr(ENV_STATE, err))
 		return fmt.Errorf("could not open file %s for writing. Err was %w", m2SettingsPath, err)
 	}
 
 	err = template.Execute(fo, templateVars)
 	if err != nil {
-		h.state.Set(
-			state.WithErr(ENV_STATE, err),
-		)
+		h.state.Set(state.WithErr(ENV_STATE, err))
 		return fmt.Errorf("could replace template vars. Err was %w", err)
 	}
 
