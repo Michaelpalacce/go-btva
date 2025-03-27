@@ -39,7 +39,11 @@ func (s *NodeSoftware) Install() error {
 		return fmt.Errorf("Shell %s is not supported", shell)
 	}
 
-	if err := runCommand(shell, "-c", fmt.Sprintf("curl -fsSL https://fnm.vercel.app/install | %s", shell)); err != nil {
+	if err := runCommand("brew", "install", "fnm"); err != nil {
+		return err
+	}
+
+	if err := runCommand(shell, "-c", fmt.Sprintf("echo 'eval \"$(fnm env --use-on-cd)\"' >> %s", profile)); err != nil {
 		return err
 	}
 

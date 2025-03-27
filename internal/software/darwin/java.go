@@ -27,7 +27,7 @@ func (s *JavaSoftware) Install() error {
 // Exists verifies if java is already installed.
 // Relies on `which`, which returns exit code 0 if the program is found and 1 if not
 func (s *JavaSoftware) Exists() bool {
-	cmd := exec.Command("which", "java")
+	cmd := exec.Command("java", "-version")
 	_, err := cmd.CombinedOutput()
 
 	return err == nil

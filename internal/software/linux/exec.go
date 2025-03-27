@@ -1,8 +1,8 @@
 package linux
 
 import (
-	"bytes"
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 )
@@ -14,19 +14,17 @@ func runSudoCommand(command string, arguments ...string) error {
 
 // runCommand will run a command in the shell
 func runCommand(command string, arguments ...string) error {
-	var stdout, stderr bytes.Buffer
-
 	cmd := exec.Command(command, arguments...)
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
 	cmd.Stdin = os.Stdin
 
-	if err := cmd.Run(); err != nil {
-		// Collect output
-		outStr := stdout.String()
-		errStr := stderr.String()
-		return fmt.Errorf("error while running command '%s %v'. Error: %w\nStdout: %s\nStderr: %s", command, arguments, err, outStr, errStr)
+	var out []byte
+	var err error
+
+	if out, err = cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("error while running command '%s %v'. Error: %w\nStdout: %s", command, arguments, err, out)
 	}
+
+	slog.Debug(string(out))
 
 	return nil
 }

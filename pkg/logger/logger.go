@@ -14,10 +14,10 @@ func ConfigureLogging() {
 	w := os.Stderr
 
 	var level slog.Level
-	if os.Getenv("ENV") == "prod" {
-		level = slog.LevelInfo
-	} else {
+	if os.Getenv("ENV") == "dev" {
 		level = slog.LevelDebug
+	} else {
+		level = slog.LevelInfo
 	}
 
 	// set global logger with custom options
