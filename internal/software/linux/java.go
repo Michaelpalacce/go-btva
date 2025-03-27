@@ -6,6 +6,7 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/software"
+	"github.com/Michaelpalacce/go-btva/pkg/command/unix"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
@@ -21,13 +22,14 @@ var javaSoftware *JavaSoftware = &JavaSoftware{}
 
 // Install will install java with apt
 func (s *JavaSoftware) Install() error {
-	return runSudoCommand("apt", "install", "-y", fmt.Sprintf("openjdk-%s-jdk", s.options.Software.JavaVersion))
+	return unix.RunSudoCommand("apt", "install", "-y", fmt.Sprintf("openjdk-%s-jdk", s.options.Software.JavaVersion))
 }
 
 // Exists verifies if java is already installed.
-// Relies on `which`, which returns exit code 0 if the program is found and 1 if not
+// `java --version` will return 0 if java exists and is setup correctly
+// For example it will return `1` in case that `JAVA_HOME` is not configured ok
 func (s *JavaSoftware) Exists() bool {
-	cmd := exec.Command("which", "java")
+	cmd := exec.Command("java", "--version")
 	_, err := cmd.CombinedOutput()
 
 	return err == nil
@@ -36,7 +38,7 @@ func (s *JavaSoftware) Exists() bool {
 func (s *JavaSoftware) GetName() string    { return software.JavaSoftwareKey }
 func (s *JavaSoftware) GetVersion() string { return s.options.Software.JavaVersion }
 
-// Java will return the JavaSoftware object that can be used to install, remove or check if java exists
+// Java will return the JavaSoftware object that can be used to install and check if java exists
 // Only a single instance of the JavaSoftware will be returned
 func (i *LinuxInstaller) Java() software.Software {
 	if !javaSoftware.initialized {

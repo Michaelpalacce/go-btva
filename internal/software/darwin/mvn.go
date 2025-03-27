@@ -6,6 +6,7 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/software"
+	"github.com/Michaelpalacce/go-btva/pkg/command/unix"
 	"github.com/Michaelpalacce/go-btva/pkg/file"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
@@ -56,7 +57,7 @@ func (s *MvnSoftware) Exists() bool {
 
 // removeTempFiles is a helper that will remove the downloaded tar.gz files pre and post install
 func (s *MvnSoftware) removeTempFiles() error {
-	return runCommand("rm", "-rf", fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.options.Software.MvnVersion))
+	return unix.RunCommand("rm", "-rf", fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.options.Software.MvnVersion))
 }
 
 // ensureInstallZipExists will download the mvn tar.gz file if it does not exist
@@ -65,7 +66,7 @@ func (s *MvnSoftware) ensureInstallZipExists() error {
 		return nil
 	}
 
-	return runCommand(
+	return unix.RunCommand(
 		"wget",
 		fmt.Sprintf(
 			"https://downloads.apache.org/maven/maven-3/%s/binaries/apache-maven-%s-bin.tar.gz",
@@ -82,9 +83,10 @@ func (s *MvnSoftware) getInstallZipPath() string {
 	return fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.options.Software.MvnVersion)
 }
 
-// symlinkMvn will symlink the mvn binary to /usr/bin/mvn
+// symlinkMvn will symlink the mvn binary to /usr/local/bin/mvn
+// In the case of darwin, `/usr/bin` is more restricted
 func (s *MvnSoftware) symlinkMvn() error {
-	return runSudoCommand("ln", "-sf", fmt.Sprintf("/opt/apache-maven-%s/bin/mvn", s.options.Software.MvnVersion), "/usr/local/bin/mvn")
+	return unix.RunSudoCommand("ln", "-sf", fmt.Sprintf("/opt/apache-maven-%s/bin/mvn", s.options.Software.MvnVersion), "/usr/local/bin/mvn")
 }
 
 func (s *MvnSoftware) GetName() string    { return software.MvnSoftwareKey }
@@ -106,7 +108,7 @@ func (i *DarwinInstaller) Mvn() software.Software {
 
 // untar works on a tar.gz file and untars it
 func untar(filename string, destination string) error {
-	if err := runSudoCommand("tar", "xf", filename, "-C", destination); err != nil {
+	if err := unix.RunSudoCommand("tar", "xf", filename, "-C", destination); err != nil {
 		return fmt.Errorf("Error untarring file. Error was %w", err)
 	}
 

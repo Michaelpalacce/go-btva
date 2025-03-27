@@ -6,6 +6,7 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/software"
+	"github.com/Michaelpalacce/go-btva/pkg/command/unix"
 	"github.com/Michaelpalacce/go-btva/pkg/file"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
@@ -20,7 +21,7 @@ type MvnSoftware struct {
 
 var mvnSoftware *MvnSoftware = &MvnSoftware{}
 
-// Install will install mvn with apt
+// Install will install mvn by downloading the binaries
 func (s *MvnSoftware) Install() error {
 	if err := s.removeTempFiles(); err != nil {
 		return err
@@ -56,7 +57,7 @@ func (s *MvnSoftware) Exists() bool {
 
 // removeTempFiles is a helper that will remove the downloaded tar.gz files pre and post install
 func (s *MvnSoftware) removeTempFiles() error {
-	return runCommand("rm", "-rf", fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.options.Software.MvnVersion))
+	return unix.RunCommand("rm", "-rf", fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.options.Software.MvnVersion))
 }
 
 // ensureInstallZipExists will download the mvn tar.gz file if it does not exist
@@ -65,7 +66,7 @@ func (s *MvnSoftware) ensureInstallZipExists() error {
 		return nil
 	}
 
-	return runCommand(
+	return unix.RunCommand(
 		"wget",
 		fmt.Sprintf(
 			"https://downloads.apache.org/maven/maven-3/%s/binaries/apache-maven-%s-bin.tar.gz",
@@ -84,13 +85,13 @@ func (s *MvnSoftware) getInstallZipPath() string {
 
 // symlinkMvn will symlink the mvn binary to /usr/bin/mvn
 func (s *MvnSoftware) symlinkMvn() error {
-	return runSudoCommand("ln", "-sf", fmt.Sprintf("/opt/apache-maven-%s/bin/mvn", s.options.Software.MvnVersion), "/usr/bin/mvn")
+	return unix.RunSudoCommand("ln", "-sf", fmt.Sprintf("/opt/apache-maven-%s/bin/mvn", s.options.Software.MvnVersion), "/usr/bin/mvn")
 }
 
 func (s *MvnSoftware) GetName() string    { return software.MvnSoftwareKey }
 func (s *MvnSoftware) GetVersion() string { return s.options.Software.MvnVersion }
 
-// Java will return the MvnSoftware object that can be used to install, remove or check if mvn exists
+// Java will return the MvnSoftware object that can be used to install and check if mvn exists
 // Only a single instance of the MvnSoftware will be returned
 func (i *LinuxInstaller) Mvn() software.Software {
 	if !mvnSoftware.initialized {
@@ -106,7 +107,7 @@ func (i *LinuxInstaller) Mvn() software.Software {
 
 // untar works on a tar.gz file and untars it
 func untar(filename string, destination string) error {
-	if err := runSudoCommand("tar", "xf", filename, "-C", destination); err != nil {
+	if err := unix.RunSudoCommand("tar", "xf", filename, "-C", destination); err != nil {
 		return fmt.Errorf("Error untarring file. Error was %w", err)
 	}
 

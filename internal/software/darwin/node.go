@@ -7,6 +7,7 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/software"
+	"github.com/Michaelpalacce/go-btva/pkg/command/unix"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
@@ -39,15 +40,15 @@ func (s *NodeSoftware) Install() error {
 		return fmt.Errorf("Shell %s is not supported", shell)
 	}
 
-	if err := runCommand("brew", "install", "fnm"); err != nil {
+	if err := unix.RunCommand("brew", "install", "fnm"); err != nil {
 		return err
 	}
 
-	if err := runCommand(shell, "-c", fmt.Sprintf("echo 'eval \"$(fnm env --use-on-cd)\"' >> %s", profile)); err != nil {
+	if err := unix.RunCommand(shell, "-c", fmt.Sprintf("echo 'eval \"$(fnm env --use-on-cd)\"' >> %s", profile)); err != nil {
 		return err
 	}
 
-	return runCommand(shell, "-i", "-c", fmt.Sprintf("source %s && fnm install %s", profile, s.options.Software.NodeVersion))
+	return unix.RunCommand(shell, "-i", "-c", fmt.Sprintf("source %s && fnm install %s", profile, s.options.Software.NodeVersion))
 }
 
 // Exists verifies if node is already installed.

@@ -1,4 +1,4 @@
-package darwin
+package unix
 
 import (
 	"fmt"
@@ -7,13 +7,13 @@ import (
 	"os/exec"
 )
 
-// runSudoCommand runs a darwin command with sudo
-func runSudoCommand(command string, arguments ...string) error {
-	return runCommand("sudo", append([]string{command}, arguments...)...)
+// runSudoCommand runs a linux command with sudo
+func RunSudoCommand(command string, arguments ...string) error {
+	return RunCommand("sudo", append([]string{command}, arguments...)...)
 }
 
 // runCommand will run a command in the shell
-func runCommand(command string, arguments ...string) error {
+func RunCommand(command string, arguments ...string) error {
 	cmd := exec.Command(command, arguments...)
 	cmd.Stdin = os.Stdin
 

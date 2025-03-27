@@ -7,6 +7,7 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/software"
+	"github.com/Michaelpalacce/go-btva/pkg/command/unix"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
@@ -20,7 +21,8 @@ type NodeSoftware struct {
 
 var nodeSoftware *NodeSoftware = &NodeSoftware{}
 
-// Install will install node with apt
+// Install will install node with the help of `fnm`
+// After the execution of the tool, you will need to either source your zsh file or open a new terminal
 func (s *NodeSoftware) Install() error {
 	shell := osz.Getenv("SHELL")
 	if shell == "" {
@@ -39,11 +41,11 @@ func (s *NodeSoftware) Install() error {
 		return fmt.Errorf("Shell %s is not supported", shell)
 	}
 
-	if err := runCommand(shell, "-c", fmt.Sprintf("curl -fsSL https://fnm.vercel.app/install | %s", shell)); err != nil {
+	if err := unix.RunCommand(shell, "-c", fmt.Sprintf("curl -fsSL https://fnm.vercel.app/install | %s", shell)); err != nil {
 		return err
 	}
 
-	return runCommand(shell, "-i", "-c", fmt.Sprintf("source %s && fnm install %s", profile, s.options.Software.NodeVersion))
+	return unix.RunCommand(shell, "-i", "-c", fmt.Sprintf("source %s && fnm install %s", profile, s.options.Software.NodeVersion))
 }
 
 // Exists verifies if node is already installed.
@@ -57,7 +59,7 @@ func (s *NodeSoftware) Exists() bool {
 func (s *NodeSoftware) GetName() string    { return software.NodeSoftwareKey }
 func (s *NodeSoftware) GetVersion() string { return s.options.Software.NodeVersion }
 
-// Node will return the NodeSoftware object that can be used to install, remove or check if node exists
+// Node will return the NodeSoftware object that can be used to install and check if node exists
 // Only a single instance of the NodeSoftware will be returned
 func (i *LinuxInstaller) Node() software.Software {
 	if !nodeSoftware.initialized {

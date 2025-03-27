@@ -6,6 +6,7 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/software"
+	"github.com/Michaelpalacce/go-btva/pkg/command/unix"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
@@ -19,9 +20,9 @@ type JavaSoftware struct {
 
 var javaSoftware *JavaSoftware = &JavaSoftware{}
 
-// Install will install java with apt
+// Install will install java with brew. Brew will also configure the JAVA_HOME for us
 func (s *JavaSoftware) Install() error {
-	return runCommand("brew", "install", fmt.Sprintf("openjdk@%s", s.options.Software.JavaVersion))
+	return unix.RunCommand("brew", "install", fmt.Sprintf("openjdk@%s", s.options.Software.JavaVersion))
 }
 
 // Exists verifies if java is already installed.
