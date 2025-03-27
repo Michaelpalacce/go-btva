@@ -110,22 +110,25 @@ func (h *Handler) SetupInfra() error {
 	slog.Info("Connected to VM via ssh", "vmIp", h.options.Infra.SSHVMIP)
 
 	h.state.Set(
-		state.WithStep(MINIMAL_INFRA_STATE, MINIMAL_INFRA_STEP_CONNECTION),
-		state.WithMsg(MINIMAL_INFRA_STATE, "Connected to VM"),
+		state.WithStep(INFRA_STATE, INFRA_STEP_CONNECTION),
+		state.WithMsg(INFRA_STATE, "Connected to VM"),
 	)
 
 	if err := h.runMinimalInfra(client); err != nil {
-		h.state.Set(state.WithDone(MINIMAL_INFRA_STATE, false), state.WithErr(MINIMAL_INFRA_STATE, err))
+		h.state.Set(state.WithErr(INFRA_STATE, err))
 		return err
 	}
 
-	// Wait for up
+	if err := h.fetchGitlabPassword(client); err != nil {
+		h.state.Set(state.WithErr(INFRA_STATE, err))
+		return err
+	}
 
-	// Fetch gitlab password
-
-	// Do stuff
-
-	// h.state.Set(state.WithDone(MINIMAL_INFRA_STATE, true), state.WithMsg(MINIMAL_INFRA_STATE, "Finished Installation"), state.WithErr(MINIMAL_INFRA_STATE, nil))
+	h.state.Set(
+		state.WithDone(INFRA_STATE, true),
+		state.WithMsg(INFRA_STATE, "Finished infra setup"),
+		state.WithErr(INFRA_STATE, nil),
+	)
 
 	return nil
 }

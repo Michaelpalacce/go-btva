@@ -3,6 +3,7 @@ package native
 import (
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/Michaelpalacce/go-btva/internal/ssh"
 	"github.com/Michaelpalacce/go-btva/pkg/state"
@@ -10,13 +11,15 @@ import (
 )
 
 const (
-	MINIMAL_INFRA_STEP_CONNECTION = iota + 1
-	MINIMAL_INFRA_STEP_SETUP
-	MINIMAL_INFRA_STEP_UP
-	MINIMAL_INFRA_STEP_INFO_FETCHED
+	INFRA_STEP_CONNECTION = iota + 1
+	INFRA_STEP_SETUP
+	INFRA_STEP_INFO_FETCHED
 )
 
-const MINIMAL_INFRA_STATE = "MinimalInfra"
+const (
+	INFRA_STATE               = "MinimalInfra"
+	INFRA_GITLAB_PASSWORD_KEY = "gitlabPassword"
+)
 
 // getClient will retrieve a client, using the Infra options
 func (h *Handler) getClient() (*goph.Client, error) {
@@ -27,45 +30,58 @@ func (h *Handler) getClient() (*goph.Client, error) {
 // runMinimalInfra will fetch the BTVA minimal infra installer and run it
 // @TODO: Fix the branch
 func (h *Handler) runMinimalInfra(client *goph.Client) error {
-	if h.state.GetStep(h.getMinimalInfraStep()) >= MINIMAL_INFRA_STEP_SETUP {
+	if h.state.GetStep(h.getMinimalInfraStep()) >= INFRA_STEP_SETUP {
 		slog.Info("Skipping minimal infrastructure installer, step already done.")
 		return nil
 	}
 
-	h.state.Set(state.WithMsg(MINIMAL_INFRA_STATE, "Running the minimal infrastructure installer."))
-	slog.Info("Running the minimal infrastructure installer.")
+	h.state.Set(state.WithMsg(INFRA_STATE, "Running the minimal infrastructure installer."))
 
 	out, err := client.Run("curl -o- https://raw.githubusercontent.com/vmware/build-tools-for-vmware-aria/refs/heads/refactor/minimal-infra-simplified-setup/infrastructure/install.sh | bash")
 	if err != nil {
 		return fmt.Errorf("minimal infrastructure installer exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
 
-	slog.Info("Minimal infrastructure installer successfully set up.")
+	h.state.Set(
+		state.WithStep(INFRA_STATE, INFRA_STEP_SETUP),
+		state.WithMsg(INFRA_STATE, "Minimal infrastructure installer successfully set up."),
+	)
 
-	h.state.Set(state.WithStep(MINIMAL_INFRA_STATE, MINIMAL_INFRA_STEP_SETUP))
+	return nil
+}
+
+// fetchGitlabPassword will fetch the password for Gitlab and store it in the context store
+func (h *Handler) fetchGitlabPassword(client *goph.Client) error {
+	if h.state.GetStep(h.getMinimalInfraStep()) >= INFRA_STEP_INFO_FETCHED {
+		slog.Info("Skipping password fetching, step already done.")
+		return nil
+	}
+
+	h.state.Set(state.WithMsg(INFRA_STATE, "Fetching gitlab admin password"))
+
+	out, err := client.Run("docker exec gitlab-ce grep 'Password:' /etc/gitlab/initial_root_password | awk '{print $2}'")
+	if err != nil {
+		return fmt.Errorf("gitlab admin password fetching exited unsuccessfully. err was %w, output was:\n%s", err, out)
+	}
+
+	h.state.Set(
+		state.WithStep(INFRA_STATE, INFRA_STEP_INFO_FETCHED),
+		state.WithContextProp(INFRA_STATE, INFRA_GITLAB_PASSWORD_KEY, strings.TrimSpace(string(out))),
+		state.WithMsg(INFRA_STATE, "Gitlab admin password fetched successfully."),
+	)
 
 	return nil
 }
 
 // isMinimalInfraDone will give us a state.GetSuccessStateOption that will check if the minimal infra is done
 func (h *Handler) isMinimalInfraDone() state.GetSuccessStateOption {
-	return func(s *state.State) bool {
-		value := s.GetValue(MINIMAL_INFRA_STATE)
-		if value == nil {
-			return false
-		}
-
-		return value.Done
-	}
+	return state.GetDone(INFRA_STATE)
 }
 
 func (h *Handler) getMinimalInfraStep() state.GetStepStateOption {
-	return func(s *state.State) int {
-		value := s.GetValue(MINIMAL_INFRA_STATE)
-		if value == nil {
-			return 0
-		}
+	return state.GetStep(INFRA_STATE)
+}
 
-		return value.Step
-	}
+func (h *Handler) getGitlabAdminPassword() state.GetContextPropStateOption {
+	return state.GetContextProp(INFRA_STATE, INFRA_GITLAB_PASSWORD_KEY)
 }
