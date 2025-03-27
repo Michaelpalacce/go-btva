@@ -18,12 +18,14 @@ Sets UP BTVA for local development.
 
 ## Action Items
 
+- [ ] Prompts to ask for Aria connection, to configure it nicely
+
+### Nice To Haves
+
 - [ ] Register Gitlab Runner
 - [ ] No mandatory args
 - [ ] Window pop up
 - [ ] Executable
-
-- [ ] Initial Nexus wizard - Doesn't seem like I can do it with an API call? It was meant to be done manually
 
 # State
 
