@@ -84,8 +84,10 @@ func (h *Handler) SetupLocalEnv() error {
 		return nil
 	}
 
-	if err := h.prepareSettingsXml(h.os, h.options, h.state); err != nil {
-		return err
+	if h.options.Local.SetupM2 {
+		if err := h.prepareSettingsXml(h.os, h.options, h.state); err != nil {
+			return err
+		}
 	}
 
 	h.state.Set(
