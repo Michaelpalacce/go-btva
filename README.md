@@ -18,21 +18,12 @@ Sets UP BTVA for local development.
 
 ## Action Items
 
-- [x] Implement Software installation Linux
-- [ ] Implement Environment Setup Linux
-- [ ] Use https://pkg.go.dev/text/template for templating `settings.xml`
-
-- [x] Implement Software installation Darwin
-- [ ] Implement Environment Setup Darwin
-
-- [x] Implement Infra Setup
-
-### Nice to have
-
 - [ ] Register Gitlab Runner
 - [ ] No mandatory args
 - [ ] Window pop up
 - [ ] Executable
+
+- [ ] Initial Nexus wizard - Doesn't seem like I can do it with an API call? It was meant to be done manually
 
 # Development
 
