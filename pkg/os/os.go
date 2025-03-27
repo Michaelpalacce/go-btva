@@ -18,6 +18,8 @@ type OS struct {
 	ShellProfile string
 
 	TempDir string
+	Cwd     string
+	HomeDir string
 }
 
 // os has a single instance.
@@ -44,7 +46,9 @@ func initializeOS() error {
 		return fmt.Errorf("error while trying to determine shell. Err was %w", err)
 	}
 
-	os.TempDir = osz.TempDir()
+	if err := determineCommonDirectories(); err != nil {
+		return fmt.Errorf("error trying to determine common directories. Err was %w", err)
+	}
 
 	os.initialized = true
 
@@ -78,6 +82,26 @@ func determineShell() error {
 		os.Shell = shell
 		os.ShellProfile = profile
 	}
+
+	return nil
+}
+
+func determineCommonDirectories() error {
+	cwd, err := osz.Getwd()
+	if err != nil {
+		return fmt.Errorf("error trying to get cwd. Err was %w", err)
+	}
+
+	os.Cwd = cwd
+
+	homeDir, err := osz.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("error trying to determine user home dir. Err was %w", err)
+	}
+
+	os.HomeDir = homeDir
+
+	os.TempDir = osz.TempDir()
 
 	return nil
 }
