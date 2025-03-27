@@ -7,12 +7,12 @@
     <servers>
         <server>
             <id>central</id>
-            <username>root</username>
+            <username>admin</username>
             <password>{{ .Nexus.Password }}</password>
         </server>
         <server>
             <id>snapshots</id>
-            <username>root</username>
+            <username>admin</username>
             <password>{{ .Nexus.Password }}</password>
         </server>
 
