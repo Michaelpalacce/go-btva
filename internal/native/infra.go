@@ -63,7 +63,7 @@ func (h *Handler) fetchGitlabPassword(client *goph.Client) error {
 
 	h.state.Set(state.WithMsg(INFRA_STATE, "Fetching gitlab admin password"))
 
-	out, err := client.Run("docker exec gitlab-ce test -f /etc/gitlab/initial_root_passwords && docker exec gitlab-ce grep 'Password:' /etc/gitlab/initial_root_password | awk '{print $2}'")
+	out, err := client.Run("docker exec gitlab-ce test -f /etc/gitlab/initial_root_password && docker exec gitlab-ce grep 'Password:' /etc/gitlab/initial_root_password | awk '{print $2}'")
 	if err != nil {
 		return fmt.Errorf("gitlab admin password fetching exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
