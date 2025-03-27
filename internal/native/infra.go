@@ -104,10 +104,12 @@ func (h *Handler) infraDone() state.GetSuccessStateOption {
 	return state.GetDone(INFRA_STATE)
 }
 
+// infraStep gets the current step for the infra setup that we are on
 func (h *Handler) infraStep() state.GetStepStateOption {
 	return state.GetStep(INFRA_STATE)
 }
 
+// gitlabAdminPassword will retrieve the gitlabAdminPassword from the context
 func (h *Handler) gitlabAdminPassword() state.GetContextPropStateOption {
 	return state.GetContextProp(INFRA_STATE, INFRA_GITLAB_PASSWORD_KEY)
 }

@@ -140,3 +140,11 @@ func (h *Handler) SetupInfra() error {
 }
 
 // END Setup Infra Block
+
+// Final Block
+
+func (h *Handler) Final() error {
+	return nil
+}
+
+// END Final Block

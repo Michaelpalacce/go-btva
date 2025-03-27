@@ -9,14 +9,14 @@ Software package contains:
 ```go
 
 	switch os.Distro {
-	case "linux":
-		handler.installer = &linux.LinuxInstaller{OS: os, Options: options}
-	case "windows":
-		fallthrough
-	case "darwin":
-		fallthrough
-	default:
-		return nil, fmt.Errorf("OS %s is not supported", os.Distro)
+	    case "linux":
+	        handler.installer = &linux.LinuxInstaller{OS: os, Options: options}
+	    case "darwin":
+	        handler.installer = &darwin.DarwinInstaller{OS:os, Options:options}
+	    case "windows":
+	        fallthrough
+	    default:
+	        return nil, fmt.Errorf("OS %s is not supported", os.Distro)
 	}
 
 ```

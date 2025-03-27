@@ -49,4 +49,8 @@ func main() {
 	} else {
 		slog.Info("Local Environemnt setup done")
 	}
+
+	if err := handler.Final(); err != nil {
+		slog.Error("Error while displaying final instructions", "err", err)
+	}
 }
