@@ -6,10 +6,6 @@ import (
 	"github.com/Michaelpalacce/go-btva/pkg/state"
 )
 
-const (
-	SOFTWARE_STATE_INSTALLED = "Installed"
-)
-
 // SoftwareInstalled will set the state of the given software
 func SoftwareInstalled(software Software, err error) state.SetStateOption {
 	return func(s *state.State) error {
@@ -21,7 +17,7 @@ func SoftwareInstalled(software Software, err error) state.SetStateOption {
 			msg = fmt.Sprintf("Error installing %s:%s. Error was %v", software.GetName(), software.GetVersion(), err)
 			step = 0
 		} else {
-			msg = fmt.Sprintf(SOFTWARE_STATE_INSTALLED)
+			msg = fmt.Sprintf("Software %s:%s was installed", software.GetName(), software.GetVersion())
 			step = 1
 		}
 
