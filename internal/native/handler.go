@@ -125,6 +125,11 @@ func (h *Handler) SetupInfra() error {
 		return err
 	}
 
+	if err := h.fetchNexusPassword(client); err != nil {
+		h.state.Set(state.WithErr(INFRA_STATE, err))
+		return err
+	}
+
 	h.state.Set(
 		state.WithDone(INFRA_STATE, true),
 		state.WithMsg(INFRA_STATE, "Finished infra setup"),

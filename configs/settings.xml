@@ -7,13 +7,13 @@
     <servers>
         <server>
             <id>central</id>
-            <username></username>
-            <password></password>
+            <username>root</username>
+            <password>{{ .Gitlab.Password }}</password>
         </server>
         <server>
             <id>snapshots</id>
-            <username></username>
-            <password></password>
+            <username>root</username>
+            <password>{{ .Gitlab.Password }}</password>
         </server>
 
         <server>

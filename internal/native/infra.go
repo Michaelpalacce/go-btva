@@ -14,12 +14,14 @@ const (
 	INFRA_STEP_CONNECTION = iota + 1
 	INFRA_STEP_SETUP
 	INFRA_STEP_INFO_FETCHED
+	INFRA_STEP_INFO_FETCHED_NEXUS
 )
 
 const (
 	INFRA_STATE = "MinimalInfra"
 
 	INFRA_GITLAB_PASSWORD_KEY = "gitlabPassword"
+	INFRA_NEXUS_PASSWORD_KEY  = "nexusPassword"
 )
 
 // getClient will retrieve a client, using the Infra options
@@ -38,7 +40,7 @@ func (h *Handler) runMinimalInfra(client *goph.Client) error {
 
 	h.state.Set(state.WithMsg(INFRA_STATE, "Running the minimal infrastructure installer. This may take a few minutes as it waits for services to be healthy."))
 
-	out, err := client.Run("curl -o- https://raw.githubusercontent.com/vmware/build-tools-for-vmware-aria/refs/heads/refactor/minimal-infra-simplified-setup/infrastructure/install.sh | bash")
+	out, err := client.Run(fmt.Sprintf("curl -o- https://raw.githubusercontent.com/vmware/build-tools-for-vmware-aria/refs/heads/refactor/minimal-infra-simplified-setup/infrastructure/install.sh %s %s | bash", "stefangenov", "Password"))
 	if err != nil {
 		return fmt.Errorf("minimal infrastructure installer exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
@@ -54,7 +56,7 @@ func (h *Handler) runMinimalInfra(client *goph.Client) error {
 // fetchGitlabPassword will fetch the password for Gitlab and store it in the context store
 func (h *Handler) fetchGitlabPassword(client *goph.Client) error {
 	if h.state.GetStep(h.infraStep()) >= INFRA_STEP_INFO_FETCHED {
-		slog.Info("Skipping password fetching, step already done.")
+		slog.Info("Skipping gitlab password fetching, step already done.")
 		return nil
 	}
 
@@ -69,6 +71,29 @@ func (h *Handler) fetchGitlabPassword(client *goph.Client) error {
 		state.WithStep(INFRA_STATE, INFRA_STEP_INFO_FETCHED),
 		state.WithContextProp(INFRA_STATE, INFRA_GITLAB_PASSWORD_KEY, strings.TrimSpace(string(out))),
 		state.WithMsg(INFRA_STATE, "Gitlab admin password fetched successfully."),
+	)
+
+	return nil
+}
+
+// fetchNexusPassword will fetch the password for Nexus and store it in the context store
+func (h *Handler) fetchNexusPassword(client *goph.Client) error {
+	if h.state.GetStep(h.infraStep()) >= INFRA_STEP_INFO_FETCHED_NEXUS {
+		slog.Info("Skipping nexus password fetching, step already done.")
+		return nil
+	}
+
+	h.state.Set(state.WithMsg(INFRA_STATE, "Fetching nexus admin password"))
+
+	out, err := client.Run("docker exec nexus cat /nexus-data/admin.password")
+	if err != nil {
+		return fmt.Errorf("nexus admin password fetching exited unsuccessfully. err was %w, output was:\n%s", err, out)
+	}
+
+	h.state.Set(
+		state.WithStep(INFRA_STATE, INFRA_STEP_INFO_FETCHED_NEXUS),
+		state.WithContextProp(INFRA_STATE, INFRA_NEXUS_PASSWORD_KEY, strings.TrimSpace(string(out))),
+		state.WithMsg(INFRA_STATE, "Nexus admin password fetched successfully."),
 	)
 
 	return nil

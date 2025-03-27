@@ -38,15 +38,15 @@ func main() {
 		slog.Info("Software setup done")
 	}
 
-	if err := handler.SetupLocalEnv(); err != nil {
-		slog.Error("Local environment setup error", "err", err)
-	} else {
-		slog.Info("Local Environemnt setup done")
-	}
-
 	if err := handler.SetupInfra(); err != nil {
 		slog.Error("Infrastructure setup error", "err", err)
 	} else {
 		slog.Info("Infra setup done")
+	}
+
+	if err := handler.SetupLocalEnv(); err != nil {
+		slog.Error("Local environment setup error", "err", err)
+	} else {
+		slog.Info("Local Environemnt setup done")
 	}
 }

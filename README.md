@@ -26,6 +26,14 @@ Sets UP BTVA for local development.
 - [ ] Implement Environment Setup Darwin
 
 - [ ] Implement Infra Setup
+- [ ] Fetch nexus admin pass
+
+### Nice to have
+
+- [ ] Register Gitlab Runner
+- [ ] No mandatory args
+- [ ] Window pop up
+- [ ] Executable
 
 # Development
 
