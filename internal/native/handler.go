@@ -78,8 +78,22 @@ func (h *Handler) SetupSoftware() error {
 
 // Setup Local Env Block
 
-// @TODO: Finish
 func (h *Handler) SetupLocalEnv() error {
+	if h.state.GetDone(h.envDone()) {
+		slog.Info("Environment setup already done, skipping...")
+		return nil
+	}
+
+	if err := h.prepareSettingsXml(h.os, h.options, h.state); err != nil {
+		return err
+	}
+
+	h.state.Set(
+		state.WithDone(ENV_STATE, true),
+		state.WithMsg(ENV_STATE, "Finished environment setup."),
+		state.WithErr(ENV_STATE, nil),
+	)
+
 	return nil
 }
 
