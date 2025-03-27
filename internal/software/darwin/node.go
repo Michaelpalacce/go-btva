@@ -2,7 +2,6 @@ package darwin
 
 import (
 	"fmt"
-	osz "os"
 	"os/exec"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
@@ -23,22 +22,8 @@ var nodeSoftware *NodeSoftware = &NodeSoftware{}
 
 // Install will install node with apt
 func (s *NodeSoftware) Install() error {
-	shell := osz.Getenv("SHELL")
-	if shell == "" {
-		shell = "/bin/bash"
-	}
-
-	var profile string
-	switch shell {
-	case "/bin/zsh":
-		profile = "$HOME/.zshrc"
-	case "/bin/fish":
-		profile = "$HOME/.config/fish/config.fish"
-	case "/bin/bash":
-		profile = "$HOME/.bashrc"
-	default:
-		return fmt.Errorf("Shell %s is not supported", shell)
-	}
+	shell := s.os.Shell
+	profile := s.os.ShellProfile
 
 	if err := unix.RunCommand("brew", "install", "fnm"); err != nil {
 		return err

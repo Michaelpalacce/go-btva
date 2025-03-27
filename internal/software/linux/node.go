@@ -2,7 +2,6 @@ package linux
 
 import (
 	"fmt"
-	osz "os"
 	"os/exec"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
@@ -24,22 +23,8 @@ var nodeSoftware *NodeSoftware = &NodeSoftware{}
 // Install will install node with the help of `fnm`
 // After the execution of the tool, you will need to either source your zsh file or open a new terminal
 func (s *NodeSoftware) Install() error {
-	shell := osz.Getenv("SHELL")
-	if shell == "" {
-		shell = "/bin/bash"
-	}
-
-	var profile string
-	switch shell {
-	case "/bin/zsh":
-		profile = "$HOME/.zshrc"
-	case "/bin/fish":
-		profile = "$HOME/.config/fish/config.fish"
-	case "/bin/bash":
-		profile = "$HOME/.bashrc"
-	default:
-		return fmt.Errorf("Shell %s is not supported", shell)
-	}
+	shell := s.os.Shell
+	profile := s.os.ShellProfile
 
 	if err := unix.RunCommand(shell, "-c", fmt.Sprintf("curl -fsSL https://fnm.vercel.app/install | %s", shell)); err != nil {
 		return err
