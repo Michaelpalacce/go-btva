@@ -21,7 +21,12 @@ func SoftwareInstalled(software Software, err error) state.SetStateOption {
 			step = 1
 		}
 
-		s.SetValue(software.GetName(), err == nil, msg, step, err)
+		s.Set(
+			state.WithDone(software.GetName(), err == nil),
+			state.WithMsg(software.GetName(), msg),
+			state.WithErr(software.GetName(), err),
+			state.WithStep(software.GetName(), step),
+		)
 
 		return nil
 	}

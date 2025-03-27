@@ -27,7 +27,6 @@ func (s *JsonStorage) Commit(state *State) error {
 	if err != nil {
 		return err
 	}
-	slog.Debug("Committing", "state", state.State)
 
 	return os.WriteFile(s.Filepath, bytes, 0o640)
 }

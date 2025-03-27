@@ -84,11 +84,6 @@ func (s *State) GetValue(key string) *internalState {
 	}
 }
 
-// SetValue is used to directly set a key in the internal storage... not recommended for direct use
-func (s *State) SetValue(key string, done bool, msg string, step int, err error) {
-	s.State[key] = internalState{Done: done, Msg: msg, Step: step, Err: err, Context: make(map[string]string)}
-}
-
 // Init can be used to initialize the internals of the State object
 func (s *State) Init() {
 	if s.State == nil {
