@@ -23,6 +23,15 @@
         </server>
     </servers>
 
+    <mirrors>
+        <mirror>
+            <id>nexus</id>
+            <mirrorOf>*</mirrorOf> <!-- Use '*' for all repositories or 'central,snapshots' to specify -->
+            <name>Mirror of Central Repository</name>
+            <url>https://repo1.maven.org/maven2/</url>
+        </mirror>
+    </mirrors>
+
     <profiles>
         <profile>
             <id>packaging</id>
@@ -62,7 +71,7 @@
         </profile>
 
         <profile>
-            <id>artifactory</id>
+            <id>nexus</id>
 
             <properties>
                 <releaseRepositoryUrl>
@@ -157,6 +166,6 @@
 
     </profiles>
     <activeProfiles>
-        <activeProfile>artifactory</activeProfile>
+        <activeProfile>nexus</activeProfile>
     </activeProfiles>
 </settings>
