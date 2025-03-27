@@ -57,7 +57,7 @@ cleanup-node: ## Removes fnm and node
 
 .PHONY: cleanup-state
 cleanup-state: ## Removes the state file
-	rm -rf state.json5
+	rm -rf go-btva.state.json
 
 .PHONY: cleanup
 cleanup: cleanup-java cleanup-state cleanup-mvn cleanup-node ## Will cleanup the environment so we can rerun the tool

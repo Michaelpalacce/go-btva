@@ -25,4 +25,4 @@ go.work.sum
 .env
 .envrc
 
-state.json5
+go-btva.state.json

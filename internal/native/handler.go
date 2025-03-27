@@ -22,14 +22,8 @@ type Handler struct {
 }
 
 // NewHandler will return a new native Handler that will be used to manage and execute os operations
-func NewHandler(os *os.OS, options *args.Options) (*Handler, error) {
-	handler := &Handler{os: os, state: state.NewState(), options: options}
-
-	if options.Local.SaveState {
-		if err := handler.state.Modify(state.WithJsonStorage(options.Local.StateJson, true)); err != nil {
-			return nil, err
-		}
-	}
+func NewHandler(os *os.OS, state *state.State, options *args.Options) (*Handler, error) {
+	handler := &Handler{os: os, state: state, options: options}
 
 	switch os.Distro {
 	case "linux":
@@ -160,6 +154,15 @@ func (h *Handler) SetupInfra() error {
 // Final Block
 
 func (h *Handler) Final() error {
+	slog.Info("==========================================================================")
+	slog.Info("==========================================================================")
+	slog.Info("==========================================================================")
+	slog.Info("Everything is setup.")
+	slog.Info("Nexus has an initial setup wizard that needs to be followed through the UI.")
+	slog.Info(fmt.Sprintf("Please visit: http://%s:8081/nexus", h.options.Infra.SSHVMIP))
+	slog.Info("Username: admin")
+	slog.Info(fmt.Sprintf("Password: %s", h.state.GetContextKey(state.GetContextProp(INFRA_STATE, INFRA_NEXUS_PASSWORD_KEY))))
+
 	return nil
 }
 

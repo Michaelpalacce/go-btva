@@ -88,6 +88,10 @@ func (h *Handler) fetchNexusPassword(client *goph.Client) error {
 
 	out, err := client.Run("docker exec nexus cat /nexus-data/admin.password")
 	if err != nil {
+		if isNoSuchFileOrDirectoryErr(string(out)) {
+			panic("cannot recover/continue from this error. You've already done the initial setup and the nexus admin password file has been deleted.")
+		}
+
 		return fmt.Errorf("nexus admin password fetching exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
 
@@ -113,4 +117,8 @@ func (h *Handler) infraStep() state.GetStepStateOption {
 // gitlabAdminPassword will retrieve the gitlabAdminPassword from the context
 func (h *Handler) gitlabAdminPassword() state.GetContextPropStateOption {
 	return state.GetContextProp(INFRA_STATE, INFRA_GITLAB_PASSWORD_KEY)
+}
+
+func isNoSuchFileOrDirectoryErr(msg string) bool {
+	return strings.Contains(msg, "No such file or directory")
 }

@@ -1,6 +1,10 @@
 package state
 
-import "log/slog"
+import (
+	"log/slog"
+
+	"github.com/Michaelpalacce/go-btva/internal/args"
+)
 
 // SetStateOption follows the famous functional options pattern. It returns an error if there was an issue performing an operation on the state
 type (
@@ -32,17 +36,24 @@ type internalState struct {
 type State struct {
 	State map[string]internalState `json:"state"`
 
+	// Options are stored here so we can preserve them between multiple runs
+	Options *args.Options `json:"options,omitempty"`
+
 	// storage is an array, as you may want to store the state in multiple places
 	storage []Storage
 }
 
 // NewState will return a new state object, ready to be used
-func NewState() *State {
+func NewState(options ...SetStateOption) (*State, error) {
 	state := &State{}
 
 	state.Init()
 
-	return state
+	if err := state.Set(options...); err != nil {
+		return nil, err
+	}
+
+	return state, nil
 }
 
 // Modify is used to modify the internal configuration of the State object.

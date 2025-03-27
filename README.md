@@ -25,6 +25,14 @@ Sets UP BTVA for local development.
 
 - [ ] Initial Nexus wizard - Doesn't seem like I can do it with an API call? It was meant to be done manually
 
+# State
+
+State is managed by a state file that is created where the tool is ran. After the initial run of the tool, CLI arguments are ignored and
+instead the ones stored in the state file are used. If you want to do any changes, do the changes in the state file.
+
+This tool **is not** a desired state machine. Instead it allows for a resumable process. You can however modify the state if you wish
+certain steps to be repeated.
+
 # Development
 
 We use `make` to run the program for dev
@@ -53,3 +61,4 @@ make test
 ## Makefile
 
 The `Makefile` contains a bunch of different helper methods. You can run `make help` to get a description of what is available.
+

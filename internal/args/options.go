@@ -15,13 +15,10 @@ type Software struct {
 
 // Local will hold different configurations for mvn that may be needed
 type Local struct {
-	SetupM2   bool   `json:"setupM2"`
-	SaveState bool   `json:"saveState"`
-	StateJson string `json:"stateJson"`
+	SetupM2 bool `json:"setupM2"`
 }
 
 // Infra will hold different infra decisions that need to be taken
-// @TODO: This will need to work with Other providers EVENTUALLY
 type Infra struct {
 	MinimalInfrastructure bool `json:"minimalInfrastructure"`
 

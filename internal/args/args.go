@@ -27,8 +27,6 @@ func Args() *Options {
 
 	// Local
 	flag.BoolVar(&options.Local.SetupM2, "setupM2", true, "Do you want to overwrite your current ~/.m2/settings.xml file with a proposed configuration from the tool?")
-	flag.BoolVar(&options.Local.SaveState, "saveState", true, "Do you want to preserve the state of the machine execution? Allows you to resume in case of failures.")
-	flag.StringVar(&options.Local.StateJson, "stateJson", "state.json5", "The file to store the current state in")
 
 	// Infra
 	flag.BoolVar(&options.Infra.MinimalInfrastructure, "minimalInfrastructure", true, "Do you want to spin up a mininmal infrastructure example?")
