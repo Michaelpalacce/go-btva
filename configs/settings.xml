@@ -8,12 +8,12 @@
         <server>
             <id>central</id>
             <username>root</username>
-            <password>{{ .Gitlab.Password }}</password>
+            <password>{{ .Nexus.Password }}</password>
         </server>
         <server>
             <id>snapshots</id>
             <username>root</username>
-            <password>{{ .Gitlab.Password }}</password>
+            <password>{{ .Nexus.Password }}</password>
         </server>
 
         <server>
@@ -66,15 +66,15 @@
 
             <properties>
                 <releaseRepositoryUrl>
-                    VIRTUAL</releaseRepositoryUrl>
+                    {{.Infra.Artifactory.ReleaseRepo}}</releaseRepositoryUrl>
                 <snapshotRepositoryUrl>
-                    VIRTUAL</snapshotRepositoryUrl>
+                    {{.Infra.Artifactory.SnapshotRepo}}</snapshotRepositoryUrl>
             </properties>
 
             <repositories>
                 <repository>
                     <id>central</id>
-                    <url>VIRTUAL</url>
+                    <url>{{.Infra.Artifactory.GroupRepo}}</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
@@ -84,7 +84,7 @@
                 </repository>
                 <repository>
                     <id>snapshots</id>
-                    <url>VIRTUAL</url>
+                    <url>{{.Infra.Artifactory.GroupRepo}}</url>
                     <releases>
                         <enabled>false</enabled>
                     </releases>
@@ -97,7 +97,7 @@
             <pluginRepositories>
                 <pluginRepository>
                     <id>central</id>
-                    <url>VIRTUAL</url>
+                    <url>{{.Infra.Artifactory.GroupRepo}}</url>
                 </pluginRepository>
             </pluginRepositories>
         </profile>
@@ -105,12 +105,18 @@
         <profile>
             <id>dev</id>
             <properties>
+
+                <!--Aria
+                Orchestrator -->
                 <vro.host>vra-l-01a.corp.local</vro.host>
                 <vro.auth>vra</vro.auth>
                 <vro.authHost>vra-l-01a.corp.local</vro.authHost>
                 <vro.port>443</vro.port>
                 <vro.username>configurationadmin</vro.username>
                 <vro.password>VMware1!</vro.password>
+
+                <!--Aria
+                Automations -->
                 <vrang.host>vra-l-01a.corp.local</vrang.host>
                 <vrang.auth.host>vra-l-01a.corp.local</vrang.auth.host>
                 <vrang.username>configurationadmin</vrang.username>
@@ -124,6 +130,8 @@
                 <vrealize.ssl.ignore.certificate>true</vrealize.ssl.ignore.certificate>
                 <http.connection.timeout>10000000</http.connection.timeout>
 
+                <!--Aria
+                Operations -->
                 <vrops.host>vrops-l-02a</vrops.host>
                 <vrops.port>443</vrops.port>
                 <vrops.username>root</vrops.username>
@@ -144,12 +152,6 @@
                 <vrli.vropsUser>admin</vrli.vropsUser>
                 <vrli.vropsPassword>VMware1!</vrli.vropsPassword>
                 <vrli.vropsAuthSource>local</vrli.vropsAuthSource>
-
-                <ssh.host></ssh.host>
-                <ssh.port>22</ssh.port>
-                <ssh.username>root</ssh.username>
-                <ssh.password>VMware1!</ssh.password>
-                <ssh.directory>/test</ssh.directory>
             </properties>
         </profile>
 

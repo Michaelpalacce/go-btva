@@ -5,8 +5,8 @@ import (
 	"log/slog"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
-	"github.com/Michaelpalacce/go-btva/internal/software/darwin"
-	"github.com/Michaelpalacce/go-btva/internal/software/linux"
+	"github.com/Michaelpalacce/go-btva/internal/os/darwin"
+	"github.com/Michaelpalacce/go-btva/internal/os/linux"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 	"github.com/Michaelpalacce/go-btva/pkg/state"
 )
