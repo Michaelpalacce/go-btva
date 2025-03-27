@@ -31,7 +31,8 @@ State is managed by a state file that is created where the tool is ran. After th
 instead the ones stored in the state file are used. If you want to do any changes, do the changes in the state file.
 
 This tool **is not** a desired state machine. Instead it allows for a resumable process. You can however modify the state if you wish
-certain steps to be repeated.
+certain steps to be repeated. For example, to repeat something, like installing node, you can remove that from the state and it will be
+re-applied.
 
 # Development
 

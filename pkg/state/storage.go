@@ -47,7 +47,7 @@ func (s *JsonStorage) Load(state *State) error {
 	if err = json.Unmarshal(bytes, state); err != nil {
 		return fmt.Errorf("error while loading previous state. Error was %w", err)
 	} else {
-		slog.Info("Loaded previous state", "state", state.State)
+		slog.Debug("Loaded previous state", "state", state.State)
 	}
 
 	return nil
