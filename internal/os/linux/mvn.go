@@ -31,7 +31,7 @@ func (s *MvnSoftware) Install() error {
 		return err
 	}
 
-	if err := untar(fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.options.Software.MvnVersion), "/opt"); err != nil {
+	if err := untar(fmt.Sprintf("%s/apache-maven-%s-bin.tar.gz", s.os.TempDir, s.options.Software.MvnVersion), "/opt"); err != nil {
 		return err
 	}
 
@@ -57,7 +57,7 @@ func (s *MvnSoftware) Exists() bool {
 
 // removeTempFiles is a helper that will remove the downloaded tar.gz files pre and post install
 func (s *MvnSoftware) removeTempFiles() error {
-	return unix.RunCommand("rm", "-rf", fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.options.Software.MvnVersion))
+	return unix.RunCommand("rm", "-rf", fmt.Sprintf("%s/apache-maven-%s-bin.tar.gz", s.os.TempDir, s.options.Software.MvnVersion))
 }
 
 // ensureInstallZipExists will download the mvn tar.gz file if it does not exist
@@ -74,13 +74,13 @@ func (s *MvnSoftware) ensureInstallZipExists() error {
 			s.options.Software.MvnVersion,
 		),
 		"-P",
-		"/tmp",
+		s.os.TempDir,
 	)
 }
 
 // getInstallZipPath is an internal function that will give us the download installer zip location
 func (s *MvnSoftware) getInstallZipPath() string {
-	return fmt.Sprintf("/tmp/apache-maven-%s-bin.tar.gz", s.options.Software.MvnVersion)
+	return fmt.Sprintf("%s/apache-maven-%s-bin.tar.gz", s.os.TempDir, s.options.Software.MvnVersion)
 }
 
 // symlinkMvn will symlink the mvn binary to /usr/bin/mvn

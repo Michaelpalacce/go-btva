@@ -16,6 +16,8 @@ type OS struct {
 
 	Shell        string
 	ShellProfile string
+
+	TempDir string
 }
 
 // os has a single instance.
@@ -39,8 +41,10 @@ func GetOS() *OS {
 // initializeOS will initialize the OS with data from the current OS
 func initializeOS() error {
 	if err := determineShell(); err != nil {
-		return fmt.Errorf("error while trying to determine shell: %w", err)
+		return fmt.Errorf("error while trying to determine shell. Err was %w", err)
 	}
+
+	os.TempDir = osz.TempDir()
 
 	os.initialized = true
 
