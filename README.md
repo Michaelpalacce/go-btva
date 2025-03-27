@@ -22,11 +22,10 @@ Sets UP BTVA for local development.
 - [ ] Implement Environment Setup Linux
 - [ ] Use https://pkg.go.dev/text/template for templating `settings.xml`
 
-- [ ] Implement Software installation Darwin
+- [x] Implement Software installation Darwin
 - [ ] Implement Environment Setup Darwin
 
-- [ ] Implement Infra Setup
-- [ ] Fetch nexus admin pass
+- [x] Implement Infra Setup
 
 ### Nice to have
 
