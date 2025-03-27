@@ -6,8 +6,8 @@ import (
 	"github.com/Michaelpalacce/go-btva/pkg/state"
 )
 
-// SoftwareInstalled will set the state of the given software
-func SoftwareInstalled(software Software, err error) state.SetStateOption {
+// WithSoftwareInstalled will set the state of the given software
+func WithSoftwareInstalled(software Software, err error) state.SetStateOption {
 	return func(s *state.State) error {
 		var (
 			msg  string
@@ -32,8 +32,8 @@ func SoftwareInstalled(software Software, err error) state.SetStateOption {
 	}
 }
 
-// IsSoftwareInstalled checks if the current software is installed
-func IsSoftwareInstalled(software Software) state.GetSuccessStateOption {
+// SoftwareDone checks if the current software is Done
+func SoftwareDone(software Software) state.GetSuccessStateOption {
 	return func(s *state.State) bool {
 		value := s.GetValue(software.GetName())
 		if value == nil {
@@ -41,17 +41,5 @@ func IsSoftwareInstalled(software Software) state.GetSuccessStateOption {
 		}
 
 		return value.Done
-	}
-}
-
-// IsSoftwareNotInstalled checks if the current software is not installed
-func IsSoftwareNotInstalled(software Software) state.GetSuccessStateOption {
-	return func(s *state.State) bool {
-		value := s.GetValue(software.GetName())
-		if value == nil {
-			return true
-		}
-
-		return !value.Done
 	}
 }

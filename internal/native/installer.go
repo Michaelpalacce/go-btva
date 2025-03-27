@@ -15,13 +15,13 @@ type Installer interface {
 
 // installSoftware is an internal function that can be used to install any software. It will run through a set of commands
 func (h *Handler) installSoftware(soft software.Software) error {
-	if h.state.GetDone(software.IsSoftwareInstalled(soft)) {
+	if h.state.GetDone(software.SoftwareDone(soft)) {
 		slog.Info("Software already installed, skipping...", "name", soft.GetName(), "version", soft.GetVersion())
 		return nil
 	}
 
 	if soft.Exists() {
-		h.state.Set(software.SoftwareInstalled(soft, nil))
+		h.state.Set(software.WithSoftwareInstalled(soft, nil))
 		return nil
 	}
 
@@ -29,11 +29,11 @@ func (h *Handler) installSoftware(soft software.Software) error {
 
 	err := soft.Install()
 	if err != nil {
-		h.state.Set(software.SoftwareInstalled(soft, err))
+		h.state.Set(software.WithSoftwareInstalled(soft, err))
 		return err
 	}
 
-	h.state.Set(software.SoftwareInstalled(soft, nil))
+	h.state.Set(software.WithSoftwareInstalled(soft, nil))
 
 	return nil
 }

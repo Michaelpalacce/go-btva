@@ -17,7 +17,8 @@ const (
 )
 
 const (
-	INFRA_STATE               = "MinimalInfra"
+	INFRA_STATE = "MinimalInfra"
+
 	INFRA_GITLAB_PASSWORD_KEY = "gitlabPassword"
 )
 
@@ -30,7 +31,7 @@ func (h *Handler) getClient() (*goph.Client, error) {
 // runMinimalInfra will fetch the BTVA minimal infra installer and run it
 // @TODO: Fix the branch
 func (h *Handler) runMinimalInfra(client *goph.Client) error {
-	if h.state.GetStep(h.getMinimalInfraStep()) >= INFRA_STEP_SETUP {
+	if h.state.GetStep(h.infraStep()) >= INFRA_STEP_SETUP {
 		slog.Info("Skipping minimal infrastructure installer, step already done.")
 		return nil
 	}
@@ -52,7 +53,7 @@ func (h *Handler) runMinimalInfra(client *goph.Client) error {
 
 // fetchGitlabPassword will fetch the password for Gitlab and store it in the context store
 func (h *Handler) fetchGitlabPassword(client *goph.Client) error {
-	if h.state.GetStep(h.getMinimalInfraStep()) >= INFRA_STEP_INFO_FETCHED {
+	if h.state.GetStep(h.infraStep()) >= INFRA_STEP_INFO_FETCHED {
 		slog.Info("Skipping password fetching, step already done.")
 		return nil
 	}
@@ -73,15 +74,15 @@ func (h *Handler) fetchGitlabPassword(client *goph.Client) error {
 	return nil
 }
 
-// isMinimalInfraDone will give us a state.GetSuccessStateOption that will check if the minimal infra is done
-func (h *Handler) isMinimalInfraDone() state.GetSuccessStateOption {
+// infraDone will give us a state.GetSuccessStateOption that will check if the minimal infra is done
+func (h *Handler) infraDone() state.GetSuccessStateOption {
 	return state.GetDone(INFRA_STATE)
 }
 
-func (h *Handler) getMinimalInfraStep() state.GetStepStateOption {
+func (h *Handler) infraStep() state.GetStepStateOption {
 	return state.GetStep(INFRA_STATE)
 }
 
-func (h *Handler) getGitlabAdminPassword() state.GetContextPropStateOption {
+func (h *Handler) gitlabAdminPassword() state.GetContextPropStateOption {
 	return state.GetContextProp(INFRA_STATE, INFRA_GITLAB_PASSWORD_KEY)
 }

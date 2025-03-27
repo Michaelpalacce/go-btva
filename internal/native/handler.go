@@ -93,7 +93,7 @@ func (h *Handler) SetupInfra() error {
 		return nil
 	}
 
-	if h.state.GetDone(h.isMinimalInfraDone()) {
+	if h.state.GetDone(h.infraDone()) {
 		slog.Info("Minimal infrastructure already done, skipping...")
 		return nil
 	}
