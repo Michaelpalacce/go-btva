@@ -7,8 +7,8 @@ import (
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/os/darwin"
 	"github.com/Michaelpalacce/go-btva/internal/os/linux"
+	"github.com/Michaelpalacce/go-btva/internal/state"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
-	"github.com/Michaelpalacce/go-btva/pkg/state"
 )
 
 // Handler is a struct that orchestrates the setup process based on OS

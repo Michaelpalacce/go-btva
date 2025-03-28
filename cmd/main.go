@@ -4,11 +4,10 @@ import (
 	"log"
 	"log/slog"
 
-	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/native"
+	"github.com/Michaelpalacce/go-btva/internal/state"
 	"github.com/Michaelpalacce/go-btva/pkg/logger"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
-	"github.com/Michaelpalacce/go-btva/pkg/state"
 )
 
 func main() {
@@ -26,16 +25,9 @@ func main() {
 
 	// Init Block. Used for fetching and creating needed structs
 
-	if s, err = state.NewState(state.WithDefaultJsonStorage(true)); err != nil {
+	if s, err = state.NewState(state.WithDefaultJsonStorage(true), state.WithCliArgs()); err != nil {
 		slog.Error("Error while loading state.", "err", err)
 		return
-	}
-
-	if s.Options == nil {
-		slog.Info("State file missing or options are not present. Reading arguments.")
-		s.Options = args.Args()
-	} else {
-		slog.Info("State file detected and options loaded. Ignoring arguments passed.")
 	}
 
 	osPtr = os.GetOS()

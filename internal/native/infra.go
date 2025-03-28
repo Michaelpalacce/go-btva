@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/Michaelpalacce/go-btva/internal/ssh"
-	"github.com/Michaelpalacce/go-btva/pkg/state"
+	"github.com/Michaelpalacce/go-btva/internal/state"
 	"github.com/melbahja/goph"
 )
 

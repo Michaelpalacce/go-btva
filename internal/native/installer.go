@@ -5,7 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/Michaelpalacce/go-btva/internal/os/software"
-	"github.com/Michaelpalacce/go-btva/pkg/state"
+	"github.com/Michaelpalacce/go-btva/internal/state"
 )
 
 // Installer is a common interface implemented by the installers of all the major systems
