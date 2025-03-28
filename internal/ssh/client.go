@@ -1,12 +1,10 @@
 package ssh
 
 import (
-	"bufio"
 	"fmt"
 	"net"
-	"os"
-	"strings"
 
+	"github.com/Michaelpalacce/go-btva/pkg/prompt"
 	"github.com/melbahja/goph"
 	"golang.org/x/crypto/ssh"
 )
@@ -50,23 +48,25 @@ func VerifyHost(host string, remote net.Addr, key ssh.PublicKey) error {
 		return nil
 	}
 
+	if host == "" {
+		return fmt.Errorf("host is an empty string.")
+	}
+
 	if askIsHostTrusted(host, key) == false {
-		return fmt.Errorf("You didn't trust the host, exiting.")
+		return fmt.Errorf("you didn't trust host %s, exiting.", host)
 	}
 
 	return goph.AddKnownHost(host, remote, key, "")
 }
 
 func askIsHostTrusted(host string, key ssh.PublicKey) bool {
-	reader := bufio.NewReader(os.Stdin)
-
 	fmt.Printf("Unknown Host: %s \nFingerprint: %s \n", host, ssh.FingerprintSHA256(key))
 	fmt.Print("Would you like to add it? type yes or no: ")
 
-	a, err := reader.ReadString('\n')
+	a, err := prompt.AskText()
 	if err != nil {
 		return false
 	}
 
-	return strings.ToLower(strings.TrimSpace(a)) == "yes" || strings.ToLower(strings.TrimSpace(a)) == "y"
+	return prompt.IsYesAnswer(a)
 }

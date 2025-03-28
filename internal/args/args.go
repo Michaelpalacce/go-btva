@@ -3,9 +3,8 @@ package args
 import (
 	"flag"
 	"fmt"
-	"syscall"
 
-	"golang.org/x/term"
+	"github.com/Michaelpalacce/go-btva/pkg/prompt"
 )
 
 // Args will parse the CLI arguments once and return the parsed options from then on
@@ -54,39 +53,27 @@ func validate(options *Options) error {
 		var err error
 
 		if options.Infra.SSHVMIP == "" {
-			fmt.Println("MinimalInfrastructure selected, but you did not provide sshVmIp, please type in the IP: ")
-			if options.Infra.SSHVMIP, err = askText(); err != nil {
+			fmt.Print("MinimalInfrastructure selected, but you did not provide sshVmIp, please type in the IP: ")
+			if options.Infra.SSHVMIP, err = prompt.AskText(); err != nil {
 				return fmt.Errorf("sshVmIp must be provided. Err: %w", err)
 			}
 		}
 
 		if options.Infra.SSHPrivateKey == "" && options.Infra.SSHPassword == "" {
-			fmt.Println("MinimalInfrastructure selected, but you did not provide sshPassword or sshPrivateKey, please type in password: ")
-			if options.Infra.SSHPassword, err = askPass(); err != nil {
+			fmt.Print("MinimalInfrastructure selected, but you did not provide sshPassword or sshPrivateKey, please type in password: ")
+			if options.Infra.SSHPassword, err = prompt.AskPass(); err != nil {
 				return fmt.Errorf("sshPassword must be provided. Err: %w", err)
 			}
+			fmt.Println("")
 		}
 
 		if options.Infra.SSHUsername == "" {
-			fmt.Println("MinimalInfrastructure selected, but you did not provide sshUsername, please type in the username of root or a passwordless sudo user")
-			if options.Infra.SSHUsername, err = askText(); err != nil {
+			fmt.Print("MinimalInfrastructure selected, but you did not provide sshUsername, please type in the username of root or a passwordless sudo user")
+			if options.Infra.SSHUsername, err = prompt.AskText(); err != nil {
 				return fmt.Errorf("sshUsername must be provided. Err: %w", err)
 			}
 		}
 	}
 
 	return nil
-}
-
-// askPass will ask the user for a password
-func askPass() (string, error) {
-	bytepw, err := term.ReadPassword(int(syscall.Stdin))
-	return string(bytepw), err
-}
-
-// askText will ask the user for text
-func askText() (string, error) {
-	var text string
-	_, err := fmt.Scanln(&text)
-	return text, err
 }

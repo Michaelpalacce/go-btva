@@ -7,6 +7,7 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/ssh"
 	"github.com/Michaelpalacce/go-btva/internal/state"
+	"github.com/Michaelpalacce/go-btva/pkg/prompt"
 	"github.com/melbahja/goph"
 )
 
@@ -89,10 +90,17 @@ func (h *Handler) fetchNexusPassword(client *goph.Client) error {
 	out, err := client.Run("docker exec nexus cat /nexus-data/admin.password")
 	if err != nil {
 		if isNoSuchFileOrDirectoryErr(string(out)) {
-			panic("cannot recover/continue from this error. You've already done the initial setup and the nexus admin password file has been deleted.")
-		}
+			slog.Warn("You've already gone through the initial install wizard of Nexus. Unfortunately the `/nexus-data/admin.password` is deleted.")
+			fmt.Print("In order to continue execution, please provide nexus password manually:")
+			pass, err := prompt.AskPass()
+			if err != nil {
+				return fmt.Errorf("error while providing nexus password. err was %w", err, out)
+			}
 
-		return fmt.Errorf("nexus admin password fetching exited unsuccessfully. err was %w, output was:\n%s", err, out)
+			out = []byte(pass)
+		} else {
+			return fmt.Errorf("nexus admin password fetching exited unsuccessfully. err was %w, output was:\n%s", err, out)
+		}
 	}
 
 	h.state.Set(
