@@ -49,7 +49,7 @@ func NewState(options ...SetStateOption) (*State, error) {
 
 	state.Init()
 
-	if err := state.Set(options...); err != nil {
+	if err := state.Modify(options...); err != nil {
 		return nil, err
 	}
 
