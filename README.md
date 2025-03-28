@@ -36,6 +36,12 @@ This tool **is not** a desired state machine. Instead it allows for a resumable 
 certain steps to be repeated. For example, to repeat something, like installing node, you can remove that from the state and it will be
 re-applied.
 
+
+<details>
+    <summary>Finished state</summary>
+    <img src="assets/state-finished.png"/>
+</details>
+
 # Development
 
 We use `make` to run the program for dev
