@@ -53,17 +53,17 @@ func validate(options *Options) error {
 	if options.Infra.MinimalInfrastructure {
 		var err error
 
-		if options.Infra.SSHPrivateKey == "" && options.Infra.SSHPassword == "" {
-			fmt.Println("MinimalInfrastructure selected, but you did not provide sshPassword or sshPrivateKey, please type in password: ")
-			if options.Infra.SSHPassword, err = askPass(); err != nil {
-				return fmt.Errorf("sshPassword must be provided. Err: %w", err)
-			}
-		}
-
 		if options.Infra.SSHVMIP == "" {
 			fmt.Println("MinimalInfrastructure selected, but you did not provide sshVmIp, please type in the IP: ")
 			if options.Infra.SSHVMIP, err = askText(); err != nil {
 				return fmt.Errorf("sshVmIp must be provided. Err: %w", err)
+			}
+		}
+
+		if options.Infra.SSHPrivateKey == "" && options.Infra.SSHPassword == "" {
+			fmt.Println("MinimalInfrastructure selected, but you did not provide sshPassword or sshPrivateKey, please type in password: ")
+			if options.Infra.SSHPassword, err = askPass(); err != nil {
+				return fmt.Errorf("sshPassword must be provided. Err: %w", err)
 			}
 		}
 
