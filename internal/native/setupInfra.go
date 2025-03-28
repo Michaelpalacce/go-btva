@@ -90,9 +90,7 @@ func (h *Handler) fetchNexusPassword(client *goph.Client) error {
 	out, err := client.Run("docker exec nexus cat /nexus-data/admin.password")
 	if err != nil {
 		if isNoSuchFileOrDirectoryErr(string(out)) {
-			slog.Warn("You've already gone through the initial install wizard of Nexus. Unfortunately the `/nexus-data/admin.password` is deleted.")
-			fmt.Print("In order to continue execution, please provide nexus password manually:")
-			pass, err := prompt.AskPass()
+			pass, err := prompt.AskPass("In order to continue execution, please provide nexus password manually:")
 			if err != nil {
 				return fmt.Errorf("error while providing nexus password. err was %w", err, out)
 			}

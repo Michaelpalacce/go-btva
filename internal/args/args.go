@@ -53,23 +53,20 @@ func validate(options *Options) error {
 		var err error
 
 		if options.Infra.SSHVMIP == "" {
-			fmt.Print("MinimalInfrastructure selected, but you did not provide sshVmIp, please type in the IP: ")
-			if options.Infra.SSHVMIP, err = prompt.AskText(); err != nil {
+			if options.Infra.SSHVMIP, err = prompt.AskText("MinimalInfrastructure selected, but you did not provide sshVmIp, please type in the IP: "); err != nil {
 				return fmt.Errorf("sshVmIp must be provided. Err: %w", err)
 			}
 		}
 
 		if options.Infra.SSHPrivateKey == "" && options.Infra.SSHPassword == "" {
-			fmt.Print("MinimalInfrastructure selected, but you did not provide sshPassword or sshPrivateKey, please type in password: ")
-			if options.Infra.SSHPassword, err = prompt.AskPass(); err != nil {
+			if options.Infra.SSHPassword, err = prompt.AskPass("MinimalInfrastructure selected, but you did not provide sshPassword or sshPrivateKey, please type in password: "); err != nil {
 				return fmt.Errorf("sshPassword must be provided. Err: %w", err)
 			}
 			fmt.Println("")
 		}
 
 		if options.Infra.SSHUsername == "" {
-			fmt.Print("MinimalInfrastructure selected, but you did not provide sshUsername, please type in the username of root or a passwordless sudo user")
-			if options.Infra.SSHUsername, err = prompt.AskText(); err != nil {
+			if options.Infra.SSHUsername, err = prompt.AskText("MinimalInfrastructure selected, but you did not provide sshUsername, please type in the username of root or a passwordless sudo user"); err != nil {
 				return fmt.Errorf("sshUsername must be provided. Err: %w", err)
 			}
 		}
