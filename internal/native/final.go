@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	FINAL_STATE = "Instructions"
+	FINAL_STATE = "Final"
 
 	FINAL_INSTRUCTIONS_NEXUS_STEP = iota + 1
 )
@@ -18,6 +18,11 @@ func (h *Handler) Instructions() error {
 		return nil
 	}
 
+	nexusPassword := state.Get(h.state, state.GetContextProp(INFRA_STATE, INFRA_NEXUS_PASSWORD_KEY))
+	if nexusPassword == "" {
+		return fmt.Errorf("nexus password is an empty string. Was it deleted? Rerunning the infra may help.")
+	}
+
 	slog.Info("==========================================================================")
 	slog.Info("==========================================================================")
 	slog.Info("==========================================================================")
@@ -25,14 +30,14 @@ func (h *Handler) Instructions() error {
 	slog.Info("Nexus has an initial setup wizard that needs to be followed through the UI.")
 	slog.Info(fmt.Sprintf("Please visit: http://%s:8081/nexus", h.options.Infra.SSHVMIP))
 	slog.Info("Username: admin")
-	slog.Info(fmt.Sprintf("Password: %s", state.Get(h.state, state.GetContextProp(INFRA_STATE, INFRA_NEXUS_PASSWORD_KEY))))
+	slog.Info(fmt.Sprintf("Password: %s", nexusPassword))
 
 	h.state.Set(
 		state.WithStep(FINAL_STATE, FINAL_INSTRUCTIONS_NEXUS_STEP),
 		state.WithQuietMsg(FINAL_STATE, "Printed Nexus instructions"),
 	)
 
-	return fmt.Errorf("temp")
+	return nil
 }
 
 // finalDone will give us a state.GetSuccessStateOption that will check if the final part was ran before
