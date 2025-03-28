@@ -73,7 +73,7 @@ func (h *Handler) SetupSoftware() error {
 // Setup Local Env Block
 
 func (h *Handler) SetupLocalEnv() error {
-	if h.state.GetDone(h.envDone()) {
+	if state.Get(h.state, envDone()) {
 		slog.Info("Environment setup already done, skipping...")
 		return nil
 	}
@@ -104,7 +104,7 @@ func (h *Handler) SetupInfra() error {
 		return nil
 	}
 
-	if h.state.GetDone(h.infraDone()) {
+	if state.Get(h.state, infraDone()) {
 		slog.Info("Minimal infrastructure already done, skipping...")
 		return nil
 	}
@@ -118,11 +118,10 @@ func (h *Handler) SetupInfra() error {
 	}
 
 	defer client.Close()
-	slog.Info("Connected to VM via ssh", "vmIp", h.options.Infra.SSHVMIP)
 
 	h.state.Set(
 		state.WithStep(INFRA_STATE, INFRA_STEP_CONNECTION),
-		state.WithMsg(INFRA_STATE, "Connected to VM"),
+		state.WithMsg(INFRA_STATE, fmt.Sprintf("Connected to VM (%s) via ssh", h.options.Infra.SSHVMIP)),
 	)
 
 	if err := h.runMinimalInfra(client); err != nil {
@@ -153,17 +152,22 @@ func (h *Handler) SetupInfra() error {
 
 // Final Block
 
+// Final will print out some instructions to the user
+// If it was done already, it won't log anything
 func (h *Handler) Final() error {
-	slog.Info("==========================================================================")
-	slog.Info("==========================================================================")
-	slog.Info("==========================================================================")
-	slog.Info("Everything is setup.")
-	slog.Info("Nexus has an initial setup wizard that needs to be followed through the UI.")
-	slog.Info(fmt.Sprintf("Please visit: http://%s:8081/nexus", h.options.Infra.SSHVMIP))
-	slog.Info("Username: admin")
-	slog.Info(fmt.Sprintf("Password: %s", h.state.GetContextKey(state.GetContextProp(INFRA_STATE, INFRA_NEXUS_PASSWORD_KEY))))
+	if state.Get(h.state, finalDone()) == true {
+		return nil
+	}
+
+	if err := h.Instructions(); err != nil {
+		return err
+	}
+
+	h.state.Set(
+		state.WithDone(FINAL_STATE, true),
+		state.WithMsg(FINAL_STATE, "Finished entire setup"),
+		state.WithErr(FINAL_STATE, nil),
+	)
 
 	return nil
 }
-
-// END Final Block

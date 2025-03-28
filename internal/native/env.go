@@ -47,7 +47,7 @@ type settingsTemplate struct {
 
 // prepareSettingsXml will replace the `settings.xml` in your `~/.m2` dir
 func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.State) error {
-	if h.state.GetStep(h.envStep()) >= ENV_STEP_SETTINGS_XML {
+	if state.Get(h.state, envStep()) >= ENV_STEP_SETTINGS_XML {
 		slog.Info("Skipping settings.xml configuration. Already done.")
 		return nil
 	}
@@ -70,10 +70,10 @@ func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.
 
 	templateVars := settingsTemplate{
 		Nexus: nexus{
-			Password: s.GetContextKey(state.GetContextProp(INFRA_STATE, INFRA_NEXUS_PASSWORD_KEY)),
+			Password: state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_NEXUS_PASSWORD_KEY)),
 		},
 		Gitlab: gitlab{
-			Password: s.GetContextKey(state.GetContextProp(INFRA_STATE, INFRA_GITLAB_PASSWORD_KEY)),
+			Password: state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_PASSWORD_KEY)),
 		},
 		Infra: infra{
 			Artifactory: artifactory{
@@ -119,10 +119,10 @@ func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.
 	return nil
 }
 
-func (h *Handler) envDone() state.GetSuccessStateOption {
+func envDone() state.GetSuccessStateOption {
 	return state.GetDone(ENV_STATE)
 }
 
-func (h *Handler) envStep() state.GetStepStateOption {
+func envStep() state.GetStepStateOption {
 	return state.GetStep(ENV_STATE)
 }

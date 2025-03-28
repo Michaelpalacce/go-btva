@@ -34,7 +34,7 @@ func (h *Handler) getClient() (*goph.Client, error) {
 // runMinimalInfra will fetch the BTVA minimal infra installer and run it
 // @TODO: Fix the branch
 func (h *Handler) runMinimalInfra(client *goph.Client) error {
-	if h.state.GetStep(h.infraStep()) >= INFRA_STEP_SETUP {
+	if state.Get(h.state, infraStep()) >= INFRA_STEP_SETUP {
 		slog.Info("Skipping minimal infrastructure installer, step already done.")
 		return nil
 	}
@@ -57,7 +57,7 @@ func (h *Handler) runMinimalInfra(client *goph.Client) error {
 // fetchGitlabPassword will fetch the password for Gitlab and store it in the context store
 // Command looks a bit big, but it's all so we can fail in case the file doesn't exists or the container is not started
 func (h *Handler) fetchGitlabPassword(client *goph.Client) error {
-	if h.state.GetStep(h.infraStep()) >= INFRA_STEP_INFO_FETCHED {
+	if state.Get(h.state, infraStep()) >= INFRA_STEP_INFO_FETCHED {
 		slog.Info("Skipping gitlab password fetching, step already done.")
 		return nil
 	}
@@ -80,7 +80,7 @@ func (h *Handler) fetchGitlabPassword(client *goph.Client) error {
 
 // fetchNexusPassword will fetch the password for Nexus and store it in the context store
 func (h *Handler) fetchNexusPassword(client *goph.Client) error {
-	if h.state.GetStep(h.infraStep()) >= INFRA_STEP_INFO_FETCHED_NEXUS {
+	if state.Get(h.state, infraStep()) >= INFRA_STEP_INFO_FETCHED_NEXUS {
 		slog.Info("Skipping nexus password fetching, step already done.")
 		return nil
 	}
@@ -113,17 +113,17 @@ func (h *Handler) fetchNexusPassword(client *goph.Client) error {
 }
 
 // infraDone will give us a state.GetSuccessStateOption that will check if the minimal infra is done
-func (h *Handler) infraDone() state.GetSuccessStateOption {
+func infraDone() state.GetSuccessStateOption {
 	return state.GetDone(INFRA_STATE)
 }
 
 // infraStep gets the current step for the infra setup that we are on
-func (h *Handler) infraStep() state.GetStepStateOption {
+func infraStep() state.GetStepStateOption {
 	return state.GetStep(INFRA_STATE)
 }
 
 // gitlabAdminPassword will retrieve the gitlabAdminPassword from the context
-func (h *Handler) gitlabAdminPassword() state.GetContextPropStateOption {
+func gitlabAdminPassword() state.GetContextPropStateOption {
 	return state.GetContextProp(INFRA_STATE, INFRA_GITLAB_PASSWORD_KEY)
 }
 

@@ -17,7 +17,7 @@ type Installer interface {
 
 // installSoftware is an internal function that can be used to install any software. It will run through a set of commands
 func (h *Handler) installSoftware(soft software.Software) error {
-	if h.state.GetDone(softwareDone(soft)) {
+	if state.Get(h.state, softwareDone(soft)) {
 		slog.Info("Software already installed, skipping...", "name", soft.GetName(), "version", soft.GetVersion())
 		return nil
 	}

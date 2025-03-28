@@ -20,3 +20,5 @@ func WithCliArgs() SetStateOption {
 		return nil
 	}
 }
+
+// @TODO: Expand with other storage if deemed necessary

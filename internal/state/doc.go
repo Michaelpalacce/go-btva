@@ -7,10 +7,10 @@ The `state` package is used to contain the execution state of the program. It wi
 
 ```go
 
-	 state := state.NewState()
-
-	// This will also load the state file
-	state.Modify(state.WithJsonStorage("file.json", true))
+	if s, err = state.NewState(state.WithDefaultJsonStorage(true), state.WithCliArgs()); err != nil {
+		slog.Error("Error while loading state.", "err", err)
+		return
+	}
 
 ```
 */

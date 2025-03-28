@@ -79,14 +79,14 @@ func (s *State) Set(options ...SetStateOption) error {
 
 	return nil
 }
-func (s *State) Get(option GetStateOption) *internalState              { return option(s) }
-func (s *State) GetDone(option GetSuccessStateOption) bool             { return option(s) }
-func (s *State) GetMsg(option GetMsgStateOption) string                { return option(s) }
-func (s *State) GetStep(option GetStepStateOption) int                 { return option(s) }
-func (s *State) GetErr(option GetErrStateOption) error                 { return option(s) }
-func (s *State) GetContextKey(option GetContextPropStateOption) string { return option(s) }
 
-// GetValue is used to get the internal state of a key... not recommended for direct use
+// Get is used to get the internal state of a key
+// You can pass any of the State Options provided above or write your own one
+func Get[T any](s *State, option func(*State) T) T {
+	return option(s)
+}
+
+// GetValue is used to get the internal state of a key... not recommended for direct use, unless writing your own GetOptions
 func (s *State) GetValue(key string) *internalState {
 	if value, ok := s.State[key]; !ok {
 		return nil
@@ -164,9 +164,17 @@ func WithDone(key string, done bool) SetStateOption {
 	}
 }
 
-// WithMsg sets the message of the state.
-// @NOTE: It will also log the message, as setting a message is for human consumption
+// WithMsg wraps WithQuietMsg but it will also log the message
 func WithMsg(key string, msg string) SetStateOption {
+	return func(s *State) error {
+		slog.Info(msg)
+
+		return WithQuietMsg(key, msg)(s)
+	}
+}
+
+// WithQuietMsg sets the message of the state
+func WithQuietMsg(key string, msg string) SetStateOption {
 	return func(s *State) error {
 		if _, ok := s.State[key]; !ok {
 			s.State[key] = internalState{}
