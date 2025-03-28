@@ -51,19 +51,27 @@ func Args() *Options {
 // validate will validate the options and return an error if something is wrong
 func validate(options *Options) error {
 	if options.Infra.MinimalInfrastructure {
+		var err error
+
 		if options.Infra.SSHPrivateKey == "" && options.Infra.SSHPassword == "" {
-			var err error
+			fmt.Println("MinimalInfrastructure selected, but you did not provide sshPassword or sshPrivateKey, please type in password: ")
 			if options.Infra.SSHPassword, err = askPass(); err != nil {
-				return err
+				return fmt.Errorf("sshPassword must be provided. Err: %w", err)
 			}
 		}
 
 		if options.Infra.SSHVMIP == "" {
-			return fmt.Errorf("sshVmIp must be provided")
+			fmt.Println("MinimalInfrastructure selected, but you did not provide sshVmIp, please type in the IP: ")
+			if options.Infra.SSHVMIP, err = askText(); err != nil {
+				return fmt.Errorf("sshVmIp must be provided. Err: %w", err)
+			}
 		}
 
 		if options.Infra.SSHUsername == "" {
-			return fmt.Errorf("sshUsername must be provided")
+			fmt.Println("MinimalInfrastructure selected, but you did not provide sshUsername, please type in the username of root or a passwordless sudo user")
+			if options.Infra.SSHUsername, err = askText(); err != nil {
+				return fmt.Errorf("sshUsername must be provided. Err: %w", err)
+			}
 		}
 	}
 
@@ -72,7 +80,13 @@ func validate(options *Options) error {
 
 // askPass will ask the user for a password
 func askPass() (string, error) {
-	fmt.Print("You did not provide sshPassword or sshPrivateKey, please type in password: ")
 	bytepw, err := term.ReadPassword(int(syscall.Stdin))
 	return string(bytepw), err
+}
+
+// askText will ask the user for text
+func askText() (string, error) {
+	var text string
+	_, err := fmt.Scanln(&text)
+	return text, err
 }
