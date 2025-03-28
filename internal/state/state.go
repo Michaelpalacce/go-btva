@@ -184,8 +184,6 @@ func WithQuietMsg(key string, msg string) SetStateOption {
 		value.Msg = msg
 		s.State[key] = value
 
-		slog.Info(msg)
-
 		return nil
 	}
 }
