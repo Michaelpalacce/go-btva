@@ -1,6 +1,7 @@
 package native
 
 import (
+	"embed"
 	"fmt"
 	"log/slog"
 	osz "os"
@@ -8,7 +9,6 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/state"
-	"github.com/Michaelpalacce/go-btva/pkg/file"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
@@ -38,12 +38,15 @@ type gitlab struct {
 	Password string
 }
 
-type settingsTemplate struct {
+type settingsInventory struct {
 	Nexus  nexus
 	Gitlab gitlab
 
 	Infra infra
 }
+
+//go:embed templates/*
+var templates embed.FS
 
 // prepareSettingsXml will replace the `settings.xml` in your `~/.m2` dir
 func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.State) error {
@@ -53,22 +56,9 @@ func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.
 	}
 
 	slog.Info("Configuring `settings.xml`.")
-
-	templateSettingsPath := fmt.Sprintf("%s/configs/settings.xml", os.Cwd)
-	tmpSettingsPath := fmt.Sprintf("%s/settings.xml", os.TempDir)
-	if err := file.DeleteIfExists(tmpSettingsPath); err != nil {
-		h.state.Set(state.WithErr(ENV_STATE, err))
-		return fmt.Errorf("there was an existing settings file at: %s. Could not remove it. Err was %w", tmpSettingsPath, err)
-	}
-
-	if _, err := file.Copy(templateSettingsPath, fmt.Sprintf("%s/settings.xml", os.TempDir)); err != nil {
-		h.state.Set(state.WithErr(ENV_STATE, err))
-		return fmt.Errorf("could not copy settings.xml file to a temp dir. Err was %w", err)
-	}
-
 	baseURL := fmt.Sprintf("http://%s/nexus/repository/", options.Infra.SSHVMIP)
 
-	templateVars := settingsTemplate{
+	templateVars := settingsInventory{
 		Nexus: nexus{
 			Password: state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_NEXUS_PASSWORD_KEY)),
 		},
@@ -84,13 +74,7 @@ func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.
 		},
 	}
 
-	settingsBytes, err := osz.ReadFile(templateSettingsPath)
-	if err != nil {
-		h.state.Set(state.WithErr(ENV_STATE, err))
-		return fmt.Errorf("could not read settings.xml file. Err was %w", err)
-	}
-
-	template, err := template.New("settings.xml").Parse(string(settingsBytes))
+	template, err := template.New("settings.xml").ParseFS(templates, "templates/settings.xml")
 	if err != nil {
 		h.state.Set(state.WithErr(ENV_STATE, err))
 		return fmt.Errorf("could not parse settings.xml file. Err was %w", err)

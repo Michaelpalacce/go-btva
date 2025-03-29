@@ -3,6 +3,7 @@ package file
 import (
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 )
 
@@ -24,10 +25,15 @@ func Copy(src, dst string) (int64, error) {
 	}
 	defer source.Close()
 
+	return CopyFile(source, dst)
+}
+
+// CopyFile copies a fs.File ptr to a dest
+func CopyFile(src fs.File, dst string) (int64, error) {
 	destination, err := os.Create(dst)
 	if err != nil {
 		return 0, err
 	}
 	defer destination.Close()
-	return io.Copy(destination, source)
+	return io.Copy(destination, src)
 }
