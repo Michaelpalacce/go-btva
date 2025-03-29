@@ -25,6 +25,8 @@ const (
 	INFRA_NEXUS_PASSWORD_KEY  = "nexusPassword"
 )
 
+const BTVA_INSTALL_DIR_INFRA = "/opt/build-tools-for-vmware-aria/infrastructure"
+
 // getClient will retrieve a client, using the Infra options
 func (h *Handler) getClient() (*goph.Client, error) {
 	infraOptions := h.options.Infra
@@ -44,6 +46,16 @@ func (h *Handler) runMinimalInfra(client *goph.Client) error {
 	out, err := client.Run(fmt.Sprintf("curl -o- https://raw.githubusercontent.com/vmware/build-tools-for-vmware-aria/refs/heads/refactor/minimal-infra-simplified-setup/infrastructure/install.sh | bash -s -- %s %q", h.options.Infra.DockerUsername, h.options.Infra.DockerPAT))
 	if err != nil {
 		return fmt.Errorf("minimal infrastructure installer exited unsuccessfully. err was %w, output was:\n%s", err, out)
+	}
+
+	url := fmt.Sprintf("http://%s:8082/gitlab", h.options.Infra.SSHVMIP)
+
+	if out, err := client.Run(fmt.Sprintf("sed -i \"s|external_url 'http://infra.corp.local/gitlab'|external_url '%q'|\" %s/docker-compose.yml", url, BTVA_INSTALL_DIR_INFRA)); err != nil {
+		return fmt.Errorf("failed to modify compose file. err was %w, output was:\n%s", err, out)
+	}
+
+	if out, err := client.Run(fmt.Sprintf("docker compose -f %s/docker-compose.yml up -d --wait", BTVA_INSTALL_DIR_INFRA)); err != nil {
+		return fmt.Errorf("failed to start containers. err was %w, output was:\n%s", err, out)
 	}
 
 	h.state.Set(

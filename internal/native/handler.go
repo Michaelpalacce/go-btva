@@ -159,7 +159,13 @@ func (h *Handler) Final() error {
 		return nil
 	}
 
-	if err := h.Instructions(); err != nil {
+	if err := h.NexusInstructions(); err != nil {
+		h.state.Set(state.WithErr(FINAL_STATE, err))
+		return err
+	}
+
+	if err := h.GitlabInstructions(); err != nil {
+		h.state.Set(state.WithErr(FINAL_STATE, err))
 		return err
 	}
 
