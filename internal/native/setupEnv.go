@@ -87,6 +87,7 @@ func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.
 		h.state.Set(state.WithErr(ENV_STATE, err))
 		return fmt.Errorf("could not open file %s for writing. Err was %w", m2SettingsPath, err)
 	}
+	defer fo.Close()
 
 	err = template.Execute(fo, templateVars)
 	if err != nil {
