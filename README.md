@@ -18,7 +18,6 @@ Sets UP BTVA for local development.
 
 ## Action Items
 
-- [ ] Docker Username + Password prompts
 - [ ] Prompts to ask for Aria connection, to configure it nicely
 
 ### Nice To Haves

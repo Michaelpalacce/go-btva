@@ -35,6 +35,8 @@ func Args() *Options {
 	flag.StringVar(&options.Infra.SSHPassword, "sshPassword", "", "Password of the user to ssh with. Either this or sshPrivateKey must be provided.")
 	flag.StringVar(&options.Infra.SSHPrivateKey, "sshPrivateKey", "", "Private key to use for authentication. Either this or sshPassword must be provided.")
 	flag.StringVar(&options.Infra.SSHPrivateKeyPassphrase, "sshPrivateKeyPassphrase", "", "Passphrase for the private key if any. Optional")
+	flag.StringVar(&options.Infra.DockerUsername, "dockerUsername", "", "Docker username to use when setting up the minimal infra.")
+	flag.StringVar(&options.Infra.DockerPAT, "dockerPat", "", "Docker Public Access Token to use when setting up the minimal infra. If dockerUsername is provided and this isn't, you will be prompted.")
 
 	flag.Parse()
 
@@ -49,9 +51,8 @@ func Args() *Options {
 
 // validate will validate the options and return an error if something is wrong
 func validate(options *Options) error {
+	var err error
 	if options.Infra.MinimalInfrastructure {
-		var err error
-
 		if options.Infra.SSHVMIP == "" {
 			if options.Infra.SSHVMIP, err = prompt.AskText("MinimalInfrastructure selected, but you did not provide sshVmIp, please type in the IP: "); err != nil {
 				return fmt.Errorf("sshVmIp must be provided. Err: %w", err)
@@ -62,13 +63,18 @@ func validate(options *Options) error {
 			if options.Infra.SSHPassword, err = prompt.AskPass("MinimalInfrastructure selected, but you did not provide sshPassword or sshPrivateKey, please type in password: "); err != nil {
 				return fmt.Errorf("sshPassword must be provided. Err: %w", err)
 			}
-			fmt.Println("")
 		}
 
 		if options.Infra.SSHUsername == "" {
 			if options.Infra.SSHUsername, err = prompt.AskText("MinimalInfrastructure selected, but you did not provide sshUsername, please type in the username of root or a passwordless sudo user"); err != nil {
 				return fmt.Errorf("sshUsername must be provided. Err: %w", err)
 			}
+		}
+	}
+
+	if options.Infra.DockerUsername != "" && options.Infra.DockerPAT == "" {
+		if options.Infra.DockerPAT, err = prompt.AskPass("dockerUsername passed, but you did not provide dockerPat, please type in password: "); err != nil {
+			return fmt.Errorf("dockerPat must be provided with dockerUsername. Err: %w", err)
 		}
 	}
 

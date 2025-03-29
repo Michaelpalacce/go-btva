@@ -27,6 +27,9 @@ type Infra struct {
 	SSHPassword             string `json:"sshPassword"`
 	SSHPrivateKey           string `json:"sshPrivateKey"`
 	SSHPrivateKeyPassphrase string `json:"sshPrivateKeyPassphrase"`
+
+	DockerUsername string `json:"dockerUsername"`
+	DockerPAT      string `json:"dockerPat"`
 }
 
 // Options is a struct for options that the tool can accept.

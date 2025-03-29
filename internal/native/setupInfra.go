@@ -41,7 +41,7 @@ func (h *Handler) runMinimalInfra(client *goph.Client) error {
 
 	h.state.Set(state.WithMsg(INFRA_STATE, "Running the minimal infrastructure installer. This may take a few minutes as it waits for services to be healthy."))
 
-	out, err := client.Run(fmt.Sprintf("curl -o- https://raw.githubusercontent.com/vmware/build-tools-for-vmware-aria/refs/heads/refactor/minimal-infra-simplified-setup/infrastructure/install.sh %s %s | bash", "stefangenov", "Password"))
+	out, err := client.Run(fmt.Sprintf("curl -o- https://raw.githubusercontent.com/vmware/build-tools-for-vmware-aria/refs/heads/refactor/minimal-infra-simplified-setup/infrastructure/install.sh | bash -s -- %s %q", h.options.Infra.DockerUsername, h.options.Infra.DockerPAT))
 	if err != nil {
 		return fmt.Errorf("minimal infrastructure installer exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
