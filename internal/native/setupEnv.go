@@ -74,7 +74,7 @@ func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.
 		},
 	}
 
-	template, err := template.New("settings.xml").ParseFS(templates, "templates/settings.xml")
+	template, err := template.New("").ParseFS(templates, "templates/settings.xml")
 	if err != nil {
 		h.state.Set(state.WithErr(ENV_STATE, err))
 		return fmt.Errorf("could not parse settings.xml file. Err was %w", err)
