@@ -45,7 +45,7 @@ func (h *Handler) GitlabInstructions() error {
 		return nil
 	}
 
-	gitlabPassword := state.Get(h.state, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_PASSWORD_KEY))
+	gitlabPassword := state.Get(h.state, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_ADMIN_PASSWORD_KEY))
 	if gitlabPassword == "" {
 		return fmt.Errorf("gitlab password is an empty string. Was it deleted? Rerunning the infra may help.")
 	}
@@ -53,9 +53,8 @@ func (h *Handler) GitlabInstructions() error {
 	slog.Info("==========================================================================")
 	slog.Info("==========================================================================")
 	slog.Info("==========================================================================")
-	slog.Warn("@TODO: For now you will need to manually register the new gitlab runner.")
-	slog.Warn("In the future, this will be automated.")
-	slog.Info(fmt.Sprintf("Please visit: http://%s:8081/gitlab", h.options.Infra.SSHVMIP))
+	slog.Info("Gitlab setup with a CI/CD runner")
+	slog.Info(fmt.Sprintf("Gitlab: http://%s:8081/gitlab", h.options.Infra.SSHVMIP))
 	slog.Info("Username: root")
 	slog.Info(fmt.Sprintf("Password: %s", gitlabPassword))
 

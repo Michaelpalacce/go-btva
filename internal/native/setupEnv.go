@@ -26,23 +26,23 @@ type artifactory struct {
 	GroupRepo    string
 }
 
-type infra struct {
+type infraInventory struct {
 	Artifactory artifactory
 }
 
-type nexus struct {
+type nexusInventory struct {
 	Password string
 }
 
-type gitlab struct {
+type gitlabInventory struct {
 	Password string
 }
 
 type settingsInventory struct {
-	Nexus  nexus
-	Gitlab gitlab
+	Nexus  nexusInventory
+	Gitlab gitlabInventory
 
-	Infra infra
+	Infra infraInventory
 }
 
 //go:embed templates/*
@@ -51,7 +51,6 @@ var templates embed.FS
 // prepareSettingsXml will replace the `settings.xml` in your `~/.m2` dir
 func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.State) error {
 	if state.Get(h.state, envStep()) >= ENV_STEP_SETTINGS_XML {
-		slog.Info("Skipping settings.xml configuration. Already done.")
 		return nil
 	}
 
@@ -59,13 +58,13 @@ func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.
 	baseURL := fmt.Sprintf("http://%s/nexus/repository/", options.Infra.SSHVMIP)
 
 	templateVars := settingsInventory{
-		Nexus: nexus{
+		Nexus: nexusInventory{
 			Password: state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_NEXUS_PASSWORD_KEY)),
 		},
-		Gitlab: gitlab{
-			Password: state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_PASSWORD_KEY)),
+		Gitlab: gitlabInventory{
+			Password: state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_ADMIN_PASSWORD_KEY)),
 		},
-		Infra: infra{
+		Infra: infraInventory{
 			Artifactory: artifactory{
 				ReleaseRepo:  baseURL + "maven-releases",
 				SnapshotRepo: baseURL + "maven-snapshots",
@@ -74,7 +73,7 @@ func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.
 		},
 	}
 
-	template, err := template.New("").ParseFS(templates, "templates/settings.xml")
+	template, err := template.New("settings.xml").ParseFS(templates, "templates/settings.xml")
 	if err != nil {
 		h.state.Set(state.WithErr(ENV_STATE, err))
 		return fmt.Errorf("could not parse settings.xml file. Err was %w", err)

@@ -134,6 +134,21 @@ func (h *Handler) SetupInfra() error {
 		return err
 	}
 
+	if err := h.createGitlabPat(client); err != nil {
+		h.state.Set(state.WithErr(INFRA_STATE, err))
+		return err
+	}
+
+	if err := h.getRunnerAuthToken(); err != nil {
+		h.state.Set(state.WithErr(INFRA_STATE, err))
+		return err
+	}
+
+	if err := h.registerGitlabRunner(client); err != nil {
+		h.state.Set(state.WithErr(INFRA_STATE, err))
+		return err
+	}
+
 	if err := h.fetchNexusPassword(client); err != nil {
 		h.state.Set(state.WithErr(INFRA_STATE, err))
 		return err
