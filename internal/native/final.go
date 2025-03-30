@@ -4,22 +4,21 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/Michaelpalacce/go-btva/internal/native/components/infra"
 	"github.com/Michaelpalacce/go-btva/internal/state"
 )
 
 const (
-	FINAL_STATE = "Final"
-
 	FINAL_INSTRUCTIONS_NEXUS_STEP = iota + 1
 	FINAL_INSTRUCTIONS_GITLAB_STEP
 )
 
-func (h *Handler) NexusInstructions() error {
+func (h *Handler) nexusInstructions() error {
 	if state.Get(h.state, finalStep()) >= FINAL_INSTRUCTIONS_NEXUS_STEP {
 		return nil
 	}
 
-	nexusPassword := nexusAdminPassword(h.state)
+	nexusPassword := infra.NexusAdminPassword(h.state)
 	if nexusPassword == "" {
 		return fmt.Errorf("nexus password is an empty string. Was it deleted? Rerunning the infra may help.")
 	}
@@ -40,12 +39,12 @@ func (h *Handler) NexusInstructions() error {
 	return nil
 }
 
-func (h *Handler) GitlabInstructions() error {
+func (h *Handler) gitlabInstructions() error {
 	if state.Get(h.state, finalStep()) >= FINAL_INSTRUCTIONS_GITLAB_STEP {
 		return nil
 	}
 
-	gitlabPassword := gitlabAdminPassword(h.state)
+	gitlabPassword := infra.GitlabAdminPassword(h.state)
 	if gitlabPassword == "" {
 		return fmt.Errorf("gitlab password is an empty string. Was it deleted? Rerunning the infra may help.")
 	}

@@ -18,6 +18,8 @@ Sets UP BTVA for local development.
 
 ## Action Items
 
+- [ ] Move handler components with bussiness logic to components packages
+- [ ] Make minimal infra install idempotent
 - [ ] Prompts to ask for Aria connection, to configure it nicely
 
 ### Nice To Haves

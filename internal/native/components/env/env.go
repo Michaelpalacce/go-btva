@@ -1,16 +1,27 @@
-package native
+package env
 
 import (
 	"embed"
 	"fmt"
+	"html/template"
 	"log/slog"
-	osz "os"
-	"text/template"
+	"os"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
+	"github.com/Michaelpalacce/go-btva/internal/native/components/infra"
 	"github.com/Michaelpalacce/go-btva/internal/state"
-	"github.com/Michaelpalacce/go-btva/pkg/os"
+	osl "github.com/Michaelpalacce/go-btva/pkg/os"
 )
+
+type Env struct {
+	os      *osl.OS
+	state   *state.State
+	options *args.Options
+}
+
+func NewNev(os *osl.OS, state *state.State, options *args.Options) *Env {
+	return &Env{os: os, state: state, options: options}
+}
 
 const (
 	ENV_STEP_SETTINGS_XML = iota + 1
@@ -48,21 +59,21 @@ type settingsInventory struct {
 //go:embed templates/*
 var templates embed.FS
 
-// prepareSettingsXml will replace the `settings.xml` in your `~/.m2` dir
-func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.State) error {
-	if state.Get(h.state, envStep()) >= ENV_STEP_SETTINGS_XML {
+// SettingsXml will replace the `settings.xml` in your `~/.m2` dir
+func (e *Env) SettingsXml() error {
+	if state.Get(e.state, envStep()) >= ENV_STEP_SETTINGS_XML {
 		return nil
 	}
 
 	slog.Info("Configuring `settings.xml`.")
-	baseURL := fmt.Sprintf("http://%s/nexus/repository/", options.Infra.SSHVMIP)
+	baseURL := fmt.Sprintf("http://%s/nexus/repository/", e.options.Infra.SSHVMIP)
 
 	templateVars := settingsInventory{
 		Nexus: nexusInventory{
-			Password: state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_NEXUS_PASSWORD_KEY)),
+			Password: infra.NexusAdminPassword(e.state),
 		},
 		Gitlab: gitlabInventory{
-			Password: state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_ADMIN_PASSWORD_KEY)),
+			Password: infra.GitlabAdminPassword(e.state),
 		},
 		Infra: infraInventory{
 			Artifactory: artifactory{
@@ -75,26 +86,23 @@ func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.
 
 	template, err := template.New("settings.xml").ParseFS(templates, "templates/settings.xml")
 	if err != nil {
-		h.state.Set(state.WithErr(ENV_STATE, err))
 		return fmt.Errorf("could not parse settings.xml file. Err was %w", err)
 	}
 
-	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", os.HomeDir)
+	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", e.os.HomeDir)
 
-	fo, err := osz.Create(m2SettingsPath)
+	fo, err := os.Create(m2SettingsPath)
 	if err != nil {
-		h.state.Set(state.WithErr(ENV_STATE, err))
 		return fmt.Errorf("could not open file %s for writing. Err was %w", m2SettingsPath, err)
 	}
 	defer fo.Close()
 
 	err = template.Execute(fo, templateVars)
 	if err != nil {
-		h.state.Set(state.WithErr(ENV_STATE, err))
 		return fmt.Errorf("could replace template vars. Err was %w", err)
 	}
 
-	h.state.Set(
+	e.state.Set(
 		state.WithMsg(ENV_STATE, "Finished configuring settings.xml"),
 		state.WithStep(ENV_STATE, ENV_STEP_SETTINGS_XML),
 		state.WithErr(ENV_STATE, nil),

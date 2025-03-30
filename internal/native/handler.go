@@ -4,11 +4,15 @@ import (
 	"fmt"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
+	"github.com/Michaelpalacce/go-btva/internal/native/components/env"
+	"github.com/Michaelpalacce/go-btva/internal/native/components/infra"
 	"github.com/Michaelpalacce/go-btva/internal/os/darwin"
 	"github.com/Michaelpalacce/go-btva/internal/os/linux"
 	"github.com/Michaelpalacce/go-btva/internal/state"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
+
+type stepFunc func() error
 
 // Handler is a struct that orchestrates the setup process based on OS
 type Handler struct {
@@ -47,6 +51,7 @@ func NewHandler(os *os.OS, state *state.State, options *args.Options) (*Handler,
 func (h *Handler) SetupSoftware() error {
 	for _, software := range h.installer.GetAllSoftware() {
 		if err := h.installSoftware(software); err != nil {
+			h.state.Set(withSoftwareInstalled(software, err))
 			return err
 		}
 	}
@@ -61,8 +66,11 @@ func (h *Handler) SetupSoftware() error {
 // Setup Local Env Block
 
 func (h *Handler) SetupLocalEnv() error {
+	envComponent := env.NewNev(h.os, h.state, h.options)
+
 	if h.options.Local.SetupM2 {
-		if err := h.prepareSettingsXml(h.os, h.options, h.state); err != nil {
+		if err := envComponent.SettingsXml(); err != nil {
+			h.state.Set(state.WithErr(ENV_STATE, err))
 			return err
 		}
 	}
@@ -80,52 +88,34 @@ func (h *Handler) SetupLocalEnv() error {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Setup Infra Block
-// @TODO: Minimal infra needs to be moved to a strategy of sorts.
 func (h *Handler) SetupInfra() error {
 	if h.options.Infra.MinimalInfrastructure == false {
 		return nil
 	}
 
-	client, err := h.getClient()
+	client, err := infra.GetClient(h.options, h.state)
 	if err != nil {
+		h.state.Set(state.WithErr(INFRA_STATE, err))
 		return err
 	}
 
 	defer client.Close()
 
-	h.state.Set(
-		state.WithStep(INFRA_STATE, INFRA_STEP_CONNECTION),
-		state.WithMsg(INFRA_STATE, fmt.Sprintf("Connected to VM (%s) via ssh", h.options.Infra.SSHVMIP)),
-	)
+	infraComponent := infra.NewInfra(h.os, h.state, h.options, client)
 
-	if err := h.runMinimalInfra(client); err != nil {
-		h.state.Set(state.WithErr(INFRA_STATE, err))
-		return err
+	steps := []stepFunc{
+		infraComponent.RunMinimalInfra,
+		infraComponent.FetchGitlabPassword,
+		infraComponent.CreateGitlabPat,
+		infraComponent.GetRunnerAuthToken,
+		infraComponent.RegisterGitlabRunner,
+		infraComponent.FetchNexusPassword,
 	}
-
-	if err := h.fetchGitlabPassword(client); err != nil {
-		h.state.Set(state.WithErr(INFRA_STATE, err))
-		return err
-	}
-
-	if err := h.createGitlabPat(client); err != nil {
-		h.state.Set(state.WithErr(INFRA_STATE, err))
-		return err
-	}
-
-	if err := h.getRunnerAuthToken(); err != nil {
-		h.state.Set(state.WithErr(INFRA_STATE, err))
-		return err
-	}
-
-	if err := h.registerGitlabRunner(client); err != nil {
-		h.state.Set(state.WithErr(INFRA_STATE, err))
-		return err
-	}
-
-	if err := h.fetchNexusPassword(client); err != nil {
-		h.state.Set(state.WithErr(INFRA_STATE, err))
-		return err
+	for _, step := range steps {
+		if err := step(); err != nil {
+			h.state.Set(state.WithErr(INFRA_STATE, err))
+			return err
+		}
 	}
 
 	h.state.Set(
@@ -143,14 +133,15 @@ func (h *Handler) SetupInfra() error {
 // Final will print out some instructions to the user
 // If it was done already, it won't log anything
 func (h *Handler) Final() error {
-	if err := h.NexusInstructions(); err != nil {
-		h.state.Set(state.WithErr(FINAL_STATE, err))
-		return err
+	steps := []stepFunc{
+		h.nexusInstructions,
+		h.gitlabInstructions,
 	}
-
-	if err := h.GitlabInstructions(); err != nil {
-		h.state.Set(state.WithErr(FINAL_STATE, err))
-		return err
+	for _, step := range steps {
+		if err := step(); err != nil {
+			h.state.Set(state.WithErr(FINAL_STATE, err))
+			return err
+		}
 	}
 
 	h.state.Set(

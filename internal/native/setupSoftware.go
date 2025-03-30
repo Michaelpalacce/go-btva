@@ -30,7 +30,6 @@ func (h *Handler) installSoftware(soft software.Software) error {
 	slog.Info("Software is not installed, installing", "name", soft.GetName(), "version", soft.GetVersion())
 
 	if err := soft.Install(); err != nil {
-		h.state.Set(withSoftwareInstalled(soft, err))
 		return err
 	}
 
