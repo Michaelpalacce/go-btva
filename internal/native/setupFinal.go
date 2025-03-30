@@ -19,15 +19,15 @@ func (h *Handler) NexusInstructions() error {
 		return nil
 	}
 
-	nexusPassword := state.Get(h.state, state.GetContextProp(INFRA_STATE, INFRA_NEXUS_PASSWORD_KEY))
+	nexusPassword := nexusAdminPassword(h.state)
 	if nexusPassword == "" {
 		return fmt.Errorf("nexus password is an empty string. Was it deleted? Rerunning the infra may help.")
 	}
 
-	slog.Info("==========================================================================")
-	slog.Info("==========================================================================")
-	slog.Info("==========================================================================")
-	slog.Info("Nexus has an initial setup wizard that needs to be followed through the UI.")
+	slog.Info("===============================================================")
+	slog.Info("============================ NEXUS ============================")
+	slog.Info("===============================================================")
+	slog.Warn("Nexus has an initial setup wizard that needs to be followed through the UI.")
 	slog.Info(fmt.Sprintf("Please visit: http://%s:8081/nexus", h.options.Infra.SSHVMIP))
 	slog.Info("Username: admin")
 	slog.Info(fmt.Sprintf("Password: %s", nexusPassword))
@@ -45,14 +45,14 @@ func (h *Handler) GitlabInstructions() error {
 		return nil
 	}
 
-	gitlabPassword := state.Get(h.state, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_ADMIN_PASSWORD_KEY))
+	gitlabPassword := gitlabAdminPassword(h.state)
 	if gitlabPassword == "" {
 		return fmt.Errorf("gitlab password is an empty string. Was it deleted? Rerunning the infra may help.")
 	}
 
-	slog.Info("==========================================================================")
-	slog.Info("==========================================================================")
-	slog.Info("==========================================================================")
+	slog.Info("===============================================================")
+	slog.Info("============================ GITLAB ===========================")
+	slog.Info("===============================================================")
 	slog.Info("Gitlab setup with a CI/CD runner")
 	slog.Info(fmt.Sprintf("Gitlab: http://%s:8081/gitlab", h.options.Infra.SSHVMIP))
 	slog.Info("Username: root")

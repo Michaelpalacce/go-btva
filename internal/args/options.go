@@ -3,10 +3,6 @@ package args
 // Software holds a list of all the software that needs to be installed, so that means that this struct should contain all the possible
 // software the tool supports.
 type Software struct {
-	InstallJava bool `json:"installJava"`
-	InstallMvn  bool `json:"installMvn"`
-	InstallNode bool `json:"installNode"`
-
 	// Versions
 	JavaVersion string `json:"javaVersion"`
 	MvnVersion  string `json:"mvnVersion"`

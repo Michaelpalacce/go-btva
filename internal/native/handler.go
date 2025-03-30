@@ -44,21 +44,10 @@ func NewHandler(os *os.OS, state *state.State, options *args.Options) (*Handler,
 // Setup Software Block
 
 // SetupSoftware will install all the needed software based on the os and options
+// Each software has it's own state.
 func (h *Handler) SetupSoftware() error {
-	if h.options.Software.InstallJava {
-		if err := h.installSoftware(h.installer.Java()); err != nil {
-			return err
-		}
-	}
-
-	if h.options.Software.InstallMvn {
-		if err := h.installSoftware(h.installer.Mvn()); err != nil {
-			return err
-		}
-	}
-
-	if h.options.Software.InstallNode {
-		if err := h.installSoftware(h.installer.Node()); err != nil {
+	for _, software := range h.installer.GetAllSoftware() {
+		if err := h.installSoftware(software); err != nil {
 			return err
 		}
 	}
@@ -104,10 +93,10 @@ func (h *Handler) SetupInfra() error {
 		return nil
 	}
 
-	if state.Get(h.state, infraDone()) {
-		slog.Info("Minimal infrastructure already done, skipping...")
-		return nil
-	}
+	// if infraDone(h.state) {
+	// 	slog.Info("Minimal infrastructure already done, skipping...")
+	// 	return nil
+	// }
 
 	slog.Info("Setting up minimal infrastructure on vm", "vmIp", h.options.Infra.SSHVMIP)
 
@@ -170,9 +159,9 @@ func (h *Handler) SetupInfra() error {
 // Final will print out some instructions to the user
 // If it was done already, it won't log anything
 func (h *Handler) Final() error {
-	if state.Get(h.state, finalDone()) == true {
-		return nil
-	}
+	// if state.Get(h.state, finalDone()) == true {
+	// 	return nil
+	// }
 
 	if err := h.NexusInstructions(); err != nil {
 		h.state.Set(state.WithErr(FINAL_STATE, err))

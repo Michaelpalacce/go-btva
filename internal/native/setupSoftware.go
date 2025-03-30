@@ -13,16 +13,19 @@ type Installer interface {
 	Java() software.Software
 	Mvn() software.Software
 	Node() software.Software
+
+	GetAllSoftware() []software.Software
 }
 
 // installSoftware is an internal function that can be used to install any software. It will run through a set of commands
+// @NOTE: If the version of the software is empty, then we skip installation
 func (h *Handler) installSoftware(soft software.Software) error {
 	if state.Get(h.state, softwareDone(soft)) {
 		slog.Info("Software already installed, skipping...", "name", soft.GetName(), "version", soft.GetVersion())
 		return nil
 	}
 
-	if soft.Exists() {
+	if soft.Exists() || soft.GetVersion() == "" {
 		h.state.Set(withSoftwareInstalled(soft, nil))
 		return nil
 	}

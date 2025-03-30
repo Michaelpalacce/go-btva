@@ -41,7 +41,7 @@ func (h *Handler) getClient() (*goph.Client, error) {
 // runMinimalInfra will fetch the BTVA minimal infra installer and run it
 // @TODO: Fix the branch
 func (h *Handler) runMinimalInfra(client *goph.Client) error {
-	if state.Get(h.state, infraStep()) >= INFRA_STEP_SETUP {
+	if infraStep(h.state) >= INFRA_STEP_SETUP {
 		return nil
 	}
 
@@ -73,7 +73,7 @@ func (h *Handler) runMinimalInfra(client *goph.Client) error {
 // fetchGitlabPassword will fetch the password for Gitlab and store it in the context store
 // Command looks a bit big, but it's all so we can fail in case the file doesn't exists or the container is not started
 func (h *Handler) fetchGitlabPassword(client *goph.Client) error {
-	if state.Get(h.state, infraStep()) >= INFRA_STEP_INFO_FETCHED_GITLAB {
+	if infraStep(h.state) >= INFRA_STEP_INFO_FETCHED_GITLAB {
 		return nil
 	}
 
@@ -95,7 +95,7 @@ func (h *Handler) fetchGitlabPassword(client *goph.Client) error {
 
 // createGitlabPat with the help of ruby on the gitlab container will generate a new Public Access Token
 func (h *Handler) createGitlabPat(client *goph.Client) error {
-	if state.Get(h.state, infraStep()) >= INFRA_STEP_GITLAB_PAT_CREATED {
+	if infraStep(h.state) >= INFRA_STEP_GITLAB_PAT_CREATED {
 		return nil
 	}
 
@@ -123,7 +123,7 @@ func (h *Handler) createGitlabPat(client *goph.Client) error {
 
 // getRunnerAuthToken will fetch an auth token that can be used to register a new gitlab runner
 func (h *Handler) getRunnerAuthToken() error {
-	if state.Get(h.state, infraStep()) >= INFRA_STEP_GITLAB_RUNNER_AUTH_TOKEN {
+	if infraStep(h.state) >= INFRA_STEP_GITLAB_RUNNER_AUTH_TOKEN {
 		return nil
 	}
 
@@ -152,7 +152,7 @@ func (h *Handler) getRunnerAuthToken() error {
 
 // getRunnerAuthToken will fetch an auth token that can be used to register a new gitlab runner
 func (h *Handler) registerGitlabRunner(client *goph.Client) error {
-	if state.Get(h.state, infraStep()) >= INFRA_STEP_GITLAB_RUNNER_REGISTERED {
+	if infraStep(h.state) >= INFRA_STEP_GITLAB_RUNNER_REGISTERED {
 		return nil
 	}
 
@@ -180,7 +180,7 @@ func (h *Handler) registerGitlabRunner(client *goph.Client) error {
 
 // fetchNexusPassword will fetch the password for Nexus and store it in the context store
 func (h *Handler) fetchNexusPassword(client *goph.Client) error {
-	if state.Get(h.state, infraStep()) >= INFRA_STEP_INFO_FETCHED_NEXUS {
+	if infraStep(h.state) >= INFRA_STEP_INFO_FETCHED_NEXUS {
 		return nil
 	}
 
@@ -210,18 +210,21 @@ func (h *Handler) fetchNexusPassword(client *goph.Client) error {
 }
 
 // infraDone will give us a state.GetSuccessStateOption that will check if the minimal infra is done
-func infraDone() state.GetSuccessStateOption {
-	return state.GetDone(INFRA_STATE)
+func infraDone(s *state.State) bool {
+	return state.Get(s, state.GetDone(INFRA_STATE))
 }
 
 // infraStep gets the current step for the infra setup that we are on
-func infraStep() state.GetStepStateOption {
-	return state.GetStep(INFRA_STATE)
+func infraStep(s *state.State) int {
+	return state.Get(s, state.GetStep(INFRA_STATE))
 }
 
-// gitlabAdminPassword will retrieve the gitlabAdminPassword from the context
-func gitlabAdminPassword() state.GetContextPropStateOption {
-	return state.GetContextProp(INFRA_STATE, INFRA_GITLAB_ADMIN_PASSWORD_KEY)
+func gitlabAdminPassword(s *state.State) string {
+	return state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_ADMIN_PASSWORD_KEY))
+}
+
+func nexusAdminPassword(s *state.State) string {
+	return state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_NEXUS_PASSWORD_KEY))
 }
 
 func isNoSuchFileOrDirectoryErr(msg string) bool {
