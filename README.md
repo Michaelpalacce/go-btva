@@ -18,6 +18,7 @@ Sets UP BTVA for local development.
 
 ## Action Items
 
+- [ ] Encrypt state file variables that are secret
 - [ ] Make minimal infra install idempotent
 
 ### Nice To Haves
