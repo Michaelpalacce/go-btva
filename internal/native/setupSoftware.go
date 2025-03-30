@@ -8,8 +8,8 @@ import (
 	"github.com/Michaelpalacce/go-btva/internal/state"
 )
 
-// Installer is a common interface implemented by the installers of all the major systems
-type Installer interface {
+// installer is a common interface implemented by the installers of all the major systems
+type installer interface {
 	Java() software.Software
 	Mvn() software.Software
 	Node() software.Software

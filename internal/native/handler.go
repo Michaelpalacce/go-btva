@@ -21,7 +21,7 @@ type Handler struct {
 	options *args.Options
 
 	// installer is a pointer
-	installer Installer
+	installer installer
 }
 
 // NewHandler will return a new native Handler that will be used to manage and execute os operations

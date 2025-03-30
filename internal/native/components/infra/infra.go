@@ -241,22 +241,6 @@ func infraStep(s *state.State) int {
 	return state.Get(s, state.GetStep(INFRA_STATE))
 }
 
-func GitlabAdminPassword(s *state.State) string {
-	return state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_ADMIN_PASSWORD_KEY))
-}
-
-func GitlabPat(s *state.State) string {
-	return state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_ADMIN_PAT_KEY))
-}
-
-func GitlabRunnerAuthToken(s *state.State) string {
-	return state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_RUNNER_AUTH_TOKEN_KEY))
-}
-
-func NexusAdminPassword(s *state.State) string {
-	return state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_NEXUS_PASSWORD_KEY))
-}
-
 func isNoSuchFileOrDirectoryErr(msg string) bool {
 	return strings.Contains(msg, "No such file or directory")
 }
