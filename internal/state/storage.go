@@ -11,8 +11,9 @@ const JSON_STORAGE_FILE = "go-btva.state.json"
 
 // Storage is an interface that defines how to store and load the state
 type Storage interface {
-	// Commit will store the state
-	Commit(state *State) error
+	// Commit will store the state.
+	// Don't use pointers, when saving no changes should happen
+	Commit(state State) error
 	// Load will load the state
 	Load(state *State) error
 }
@@ -24,7 +25,7 @@ type JsonStorage struct {
 
 // Commit will save the current State object to file
 // @NOTE: On windows the file permissions are ignored
-func (s *JsonStorage) Commit(state *State) error {
+func (s *JsonStorage) Commit(state State) error {
 	bytes, err := json.MarshalIndent(state, "", "\t")
 	if err != nil {
 		return err

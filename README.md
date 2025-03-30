@@ -35,6 +35,8 @@ This tool **is not** a desired state machine. Instead it allows for a resumable 
 certain steps to be repeated. For example, to repeat something, like installing node, you can remove that from the state and it will be
 re-applied.
 
+> State contains sensitive information for now. Be carefull when opening it.
+
 
 <details>
     <summary>Finished state</summary>

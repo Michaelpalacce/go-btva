@@ -74,7 +74,7 @@ func (s *State) Set(options ...SetStateOption) error {
 	}
 
 	for _, storage := range s.storage {
-		storage.Commit(s)
+		storage.Commit(*s)
 	}
 
 	return nil
