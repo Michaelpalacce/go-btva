@@ -30,9 +30,9 @@ func NewHandler(os *os.OS, state *state.State, options *args.Options) (*Handler,
 
 	switch os.Distro {
 	case "linux":
-		handler.installer = &linux.LinuxInstaller{OS: os, Options: options}
+		handler.installer = &linux.Installer{OS: os, Options: options}
 	case "darwin":
-		handler.installer = &darwin.DarwinInstaller{OS: os, Options: options}
+		handler.installer = &darwin.Installer{OS: os, Options: options}
 	case "windows":
 		fallthrough
 	default:

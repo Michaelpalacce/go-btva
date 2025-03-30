@@ -49,7 +49,7 @@ func (s *NodeSoftware) GetVersion() string { return s.options.Software.NodeVersi
 
 // Node will return the NodeSoftware object that can be used to install, remove or check if node exists
 // Only a single instance of the NodeSoftware will be returned
-func (i *DarwinInstaller) Node() software.Software {
+func (i *Installer) Node() software.Software {
 	if !nodeSoftware.initialized {
 		nodeSoftware.os = i.OS
 		nodeSoftware.options = i.Options

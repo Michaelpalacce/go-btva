@@ -6,12 +6,12 @@ import (
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
-type DarwinInstaller struct {
+type Installer struct {
 	OS      *os.OS
 	Options *args.Options
 }
 
 // GetAllSoftware will return all the software in order that need to be installed
-func (i *DarwinInstaller) GetAllSoftware() []software.Software {
+func (i *Installer) GetAllSoftware() []software.Software {
 	return []software.Software{i.Java(), i.Mvn(), i.Node()}
 }

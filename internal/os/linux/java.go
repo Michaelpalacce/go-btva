@@ -40,7 +40,7 @@ func (s *JavaSoftware) GetVersion() string { return s.options.Software.JavaVersi
 
 // Java will return the JavaSoftware object that can be used to install and check if java exists
 // Only a single instance of the JavaSoftware will be returned
-func (i *LinuxInstaller) Java() software.Software {
+func (i *Installer) Java() software.Software {
 	if !javaSoftware.initialized {
 		javaSoftware.os = i.OS
 		javaSoftware.options = i.Options

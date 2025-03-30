@@ -94,7 +94,7 @@ func (s *MvnSoftware) GetVersion() string { return s.options.Software.MvnVersion
 
 // Java will return the MvnSoftware object that can be used to install, remove or check if mvn exists
 // Only a single instance of the MvnSoftware will be returned
-func (i *DarwinInstaller) Mvn() software.Software {
+func (i *Installer) Mvn() software.Software {
 	if !mvnSoftware.initialized {
 		mvnSoftware.os = i.OS
 		mvnSoftware.options = i.Options
