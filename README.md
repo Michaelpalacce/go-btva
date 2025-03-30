@@ -22,7 +22,6 @@ Sets UP BTVA for local development.
 
 ### Nice To Haves
 
-- [ ] Register Gitlab Runner
 - [ ] Window pop up
 - [ ] Executable
 

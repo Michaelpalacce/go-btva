@@ -27,7 +27,7 @@ type internalState struct {
 	// Err is the State-Step error if any
 	Err error `json:"-"`
 	// Context is a container for additional data that must be stored for the state
-	Context map[string]string `json:"data"`
+	Context map[string]string `json:"data,omitempty"`
 }
 
 // State contains the current state of the application
@@ -162,6 +162,7 @@ func WithQuietMsg(key string, msg string) SetStateOption {
 }
 
 // WithStep sets the step, however it will NOT decrement a step
+// @WARN: The incremental only is very very important so we don't repeat some other steps, just fix ones that are broken
 func WithStep(key string, step int) SetStateOption {
 	return func(s *State) error {
 		if _, ok := s.State[key]; !ok {

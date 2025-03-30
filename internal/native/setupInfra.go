@@ -73,7 +73,7 @@ func (h *Handler) runMinimalInfra(client *goph.Client) error {
 // fetchGitlabPassword will fetch the password for Gitlab and store it in the context store
 // Command looks a bit big, but it's all so we can fail in case the file doesn't exists or the container is not started
 func (h *Handler) fetchGitlabPassword(client *goph.Client) error {
-	if infraStep(h.state) >= INFRA_STEP_INFO_FETCHED_GITLAB {
+	if infraStep(h.state) >= INFRA_STEP_INFO_FETCHED_GITLAB && gitlabAdminPassword(h.state) != "" {
 		return nil
 	}
 
@@ -95,7 +95,7 @@ func (h *Handler) fetchGitlabPassword(client *goph.Client) error {
 
 // createGitlabPat with the help of ruby on the gitlab container will generate a new Public Access Token
 func (h *Handler) createGitlabPat(client *goph.Client) error {
-	if infraStep(h.state) >= INFRA_STEP_GITLAB_PAT_CREATED {
+	if infraStep(h.state) >= INFRA_STEP_GITLAB_PAT_CREATED && gitlabPat(h.state) != "" {
 		return nil
 	}
 
@@ -109,7 +109,9 @@ func (h *Handler) createGitlabPat(client *goph.Client) error {
 
 	out, err := client.Run(fmt.Sprintf("docker exec gitlab-ce gitlab-rails runner 'token = User.find_by_username(\"root\").personal_access_tokens.create(scopes: [:read_user, :read_repository, :api, :create_runner, :manage_runner, :sudo, :admin_mode], name: \"Automation token\", expires_at: 356.days.from_now); token.set_token(\"%s\"); token.save! '", gitlabPat))
 	if err != nil {
-		return fmt.Errorf("gitlab admin public access token creation exited unsuccessfully. err was %w, output was:\n%s", err, out)
+		if !isDuplicateKeyGitlab(string(out)) {
+			return fmt.Errorf("gitlab admin public access token creation exited unsuccessfully. err was %w, output was:\n%s", err, out)
+		}
 	}
 
 	h.state.Set(
@@ -123,13 +125,13 @@ func (h *Handler) createGitlabPat(client *goph.Client) error {
 
 // getRunnerAuthToken will fetch an auth token that can be used to register a new gitlab runner
 func (h *Handler) getRunnerAuthToken() error {
-	if infraStep(h.state) >= INFRA_STEP_GITLAB_RUNNER_AUTH_TOKEN {
+	if infraStep(h.state) >= INFRA_STEP_GITLAB_RUNNER_AUTH_TOKEN && gitlabRunnerAuthToken(h.state) != "" {
 		return nil
 	}
 
 	h.state.Set(state.WithMsg(INFRA_STATE, "Creating a auth token for the gitlab runner."))
 
-	gitlabPat := state.Get(h.state, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_ADMIN_PAT_KEY))
+	gitlabPat := gitlabPat(h.state)
 	if gitlabPat == "" {
 		return fmt.Errorf("gitlab pat is an empty string. Was it deleted? Rerunning the infra may help.")
 	}
@@ -180,7 +182,7 @@ func (h *Handler) registerGitlabRunner(client *goph.Client) error {
 
 // fetchNexusPassword will fetch the password for Nexus and store it in the context store
 func (h *Handler) fetchNexusPassword(client *goph.Client) error {
-	if infraStep(h.state) >= INFRA_STEP_INFO_FETCHED_NEXUS {
+	if infraStep(h.state) >= INFRA_STEP_INFO_FETCHED_NEXUS && nexusAdminPassword(h.state) != "" {
 		return nil
 	}
 
@@ -189,7 +191,7 @@ func (h *Handler) fetchNexusPassword(client *goph.Client) error {
 	out, err := client.Run("docker exec nexus cat /nexus-data/admin.password")
 	if err != nil {
 		if isNoSuchFileOrDirectoryErr(string(out)) {
-			pass, err := prompt.AskPass("In order to continue execution, please provide nexus password manually:")
+			pass, err := prompt.AskPass("You've already went through the nexus initial wizard.", "In order to continue execution, please provide nexus password manually:")
 			if err != nil {
 				return fmt.Errorf("error while providing nexus password. err was %w", err, out)
 			}
@@ -218,10 +220,24 @@ func gitlabAdminPassword(s *state.State) string {
 	return state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_ADMIN_PASSWORD_KEY))
 }
 
+func gitlabPat(s *state.State) string {
+	return state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_ADMIN_PAT_KEY))
+}
+
+func gitlabRunnerAuthToken(s *state.State) string {
+	return state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_RUNNER_AUTH_TOKEN_KEY))
+}
+
 func nexusAdminPassword(s *state.State) string {
 	return state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_NEXUS_PASSWORD_KEY))
 }
 
 func isNoSuchFileOrDirectoryErr(msg string) bool {
 	return strings.Contains(msg, "No such file or directory")
+}
+
+// isDuplicateKeyGitlab is a case where the gitlabPat was deleted for some reason from the state file and when we are creating it we are
+// getting an error that it's a duplicate. If that is the case, we can assume that it is the one we are trying to pass anyway
+func isDuplicateKeyGitlab(msg string) bool {
+	return strings.Contains(msg, "duplicate key value violates unique constraint")
 }
