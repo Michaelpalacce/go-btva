@@ -93,10 +93,10 @@ func (h *Handler) SetupInfra() error {
 		return nil
 	}
 
-	// if infraDone(h.state) {
-	// 	slog.Info("Minimal infrastructure already done, skipping...")
-	// 	return nil
-	// }
+	if infraDone(h.state) {
+		slog.Info("Minimal infrastructure already done, skipping...")
+		return nil
+	}
 
 	slog.Info("Setting up minimal infrastructure on vm", "vmIp", h.options.Infra.SSHVMIP)
 
@@ -159,9 +159,9 @@ func (h *Handler) SetupInfra() error {
 // Final will print out some instructions to the user
 // If it was done already, it won't log anything
 func (h *Handler) Final() error {
-	// if state.Get(h.state, finalDone()) == true {
-	// 	return nil
-	// }
+	if state.Get(h.state, finalDone()) == true {
+		return nil
+	}
 
 	if err := h.NexusInstructions(); err != nil {
 		h.state.Set(state.WithErr(FINAL_STATE, err))
