@@ -66,11 +66,6 @@ func (h *Handler) GitlabInstructions() error {
 	return nil
 }
 
-// finalDone will give us a state.GetSuccessStateOption that will check if the final part was ran before
-func finalDone() state.GetSuccessStateOption {
-	return state.GetDone(FINAL_STATE)
-}
-
 func finalStep() state.GetStepStateOption {
 	return state.GetStep(FINAL_STATE)
 }

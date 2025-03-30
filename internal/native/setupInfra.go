@@ -209,11 +209,6 @@ func (h *Handler) fetchNexusPassword(client *goph.Client) error {
 	return nil
 }
 
-// infraDone will give us a state.GetSuccessStateOption that will check if the minimal infra is done
-func infraDone(s *state.State) bool {
-	return state.Get(s, state.GetDone(INFRA_STATE))
-}
-
 // infraStep gets the current step for the infra setup that we are on
 func infraStep(s *state.State) int {
 	return state.Get(s, state.GetStep(INFRA_STATE))

@@ -20,8 +20,6 @@ type (
 
 // internalState is a struct that contains the internal state of a state key
 type internalState struct {
-	// Done signifies that the current state is complete
-	Done bool `json:"done"`
 	// Msg is any human readable message that was or was not added
 	Msg string `json:"msg"`
 	// Step signifies at which step of the execution we are
@@ -137,32 +135,7 @@ func GetStep(key string) GetStepStateOption {
 	}
 }
 
-func GetDone(key string) GetSuccessStateOption {
-	return func(s *State) bool {
-		value := s.GetValue(key)
-		if value == nil {
-			return false
-		}
-
-		return value.Done
-	}
-}
-
 // State Options
-
-func WithDone(key string, done bool) SetStateOption {
-	return func(s *State) error {
-		if _, ok := s.State[key]; !ok {
-			s.State[key] = internalState{}
-		}
-
-		value := s.State[key]
-		value.Done = done
-		s.State[key] = value
-
-		return nil
-	}
-}
 
 // WithMsg wraps WithQuietMsg but it will also log the message
 func WithMsg(key string, msg string) SetStateOption {

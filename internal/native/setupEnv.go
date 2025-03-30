@@ -103,10 +103,6 @@ func (h *Handler) prepareSettingsXml(os *os.OS, options *args.Options, s *state.
 	return nil
 }
 
-func envDone() state.GetSuccessStateOption {
-	return state.GetDone(ENV_STATE)
-}
-
 func envStep() state.GetStepStateOption {
 	return state.GetStep(ENV_STATE)
 }

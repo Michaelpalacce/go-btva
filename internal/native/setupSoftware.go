@@ -20,13 +20,10 @@ type Installer interface {
 // installSoftware is an internal function that can be used to install any software. It will run through a set of commands
 // @NOTE: If the version of the software is empty, then we skip installation
 func (h *Handler) installSoftware(soft software.Software) error {
-	if state.Get(h.state, softwareDone(soft)) {
-		slog.Info("Software already installed, skipping...", "name", soft.GetName(), "version", soft.GetVersion())
-		return nil
-	}
-
 	if soft.Exists() || soft.GetVersion() == "" {
-		h.state.Set(withSoftwareInstalled(soft, nil))
+		h.state.Set(
+			state.WithMsg(soft.GetName(), fmt.Sprintf("Software (%s:%s) already installed, skipping...", soft.GetName(), soft.GetVersion())),
+		)
 		return nil
 	}
 
@@ -45,37 +42,18 @@ func (h *Handler) installSoftware(soft software.Software) error {
 // withSoftwareInstalled will set the state of the given software
 func withSoftwareInstalled(soft software.Software, err error) state.SetStateOption {
 	return func(s *state.State) error {
-		var (
-			msg  string
-			step int
-		)
+		var msg string
 		if err != nil {
 			msg = fmt.Sprintf("Error installing %s:%s. Error was %v", soft.GetName(), soft.GetVersion(), err)
-			step = 0
 		} else {
 			msg = fmt.Sprintf("Software %s:%s was installed", soft.GetName(), soft.GetVersion())
-			step = 1
 		}
 
 		s.Set(
-			state.WithDone(soft.GetName(), err == nil),
 			state.WithMsg(soft.GetName(), msg),
 			state.WithErr(soft.GetName(), err),
-			state.WithStep(soft.GetName(), step),
 		)
 
 		return nil
-	}
-}
-
-// softwareDone checks if the current software is Done
-func softwareDone(soft software.Software) state.GetSuccessStateOption {
-	return func(s *state.State) bool {
-		value := s.GetValue(soft.GetName())
-		if value == nil {
-			return false
-		}
-
-		return value.Done
 	}
 }
