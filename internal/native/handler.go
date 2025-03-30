@@ -99,8 +99,6 @@ func (h *Handler) SetupInfra() error {
 	}
 
 	slog.Info("Setting up minimal infrastructure on vm", "vmIp", h.options.Infra.SSHVMIP)
-
-	slog.Info("Trying to connect to VM via ssh", "vmIp", h.options.Infra.SSHVMIP)
 	client, err := h.getClient()
 	if err != nil {
 		return err
