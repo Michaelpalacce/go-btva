@@ -13,6 +13,7 @@ const (
 	FINAL_INSTRUCTIONS_GITLAB_STEP
 )
 
+// nexusInstructions will print out details for nexus
 func (h *Handler) nexusInstructions() error {
 	if state.Get(h.state, finalStep()) >= FINAL_INSTRUCTIONS_NEXUS_STEP {
 		return nil
@@ -39,6 +40,7 @@ func (h *Handler) nexusInstructions() error {
 	return nil
 }
 
+// gitlabInstructions will print out gitlab details
 func (h *Handler) gitlabInstructions() error {
 	if state.Get(h.state, finalStep()) >= FINAL_INSTRUCTIONS_GITLAB_STEP {
 		return nil

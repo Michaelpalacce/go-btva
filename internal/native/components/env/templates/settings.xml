@@ -15,18 +15,12 @@
             <username>admin</username>
             <password>{{ .Nexus.Password }}</password>
         </server>
-
-        <server>
-            <id>vro</id>
-            <username>configurationadmin@System Domain</username>
-            <password>VMware1!</password>
-        </server>
     </servers>
 
     <mirrors>
         <mirror>
             <id>nexus</id>
-            <mirrorOf>*</mirrorOf> <!-- Use '*' for all repositories or 'central,snapshots' to specify -->
+            <mirrorOf>*</mirrorOf>
             <name>Mirror of Central Repository</name>
             <url>https://repo1.maven.org/maven2/</url>
         </mirror>
@@ -114,53 +108,24 @@
         <profile>
             <id>dev</id>
             <properties>
-
-                <!--Aria
-                Orchestrator -->
-                <vro.host>vra-l-01a.corp.local</vro.host>
+                <vro.host>{{ .Aria.FQDN }}</vro.host>
                 <vro.auth>vra</vro.auth>
-                <vro.authHost>vra-l-01a.corp.local</vro.authHost>
-                <vro.port>443</vro.port>
-                <vro.username>configurationadmin</vro.username>
-                <vro.password>VMware1!</vro.password>
+                <vro.authHost>{{ .Aria.FQDN }}</vro.authHost>
+                <vro.port>{{ .Aria.FQDN }}</vro.port>
+                <vro.username>{{ .Aria.Username }}</vro.username>
+                <vro.password>{{ .Aria.Password }}</vro.password>
 
-                <!--Aria
-                Automations -->
-                <vrang.host>vra-l-01a.corp.local</vrang.host>
-                <vrang.auth.host>vra-l-01a.corp.local</vrang.auth.host>
-                <vrang.username>configurationadmin</vrang.username>
-                <vrang.password>VMware1!</vrang.password>
-                <vrang.port>443</vrang.port>
-                <vrang.project.name>dev</vrang.project.name>
-                <vrang.org.name>vidm-l-01a</vrang.org.name>
-                <!-- <vrang.import.timeout>600000</vrang.import.timeout> -->
+                <vrang.host>{{ .Aria.FQDN }}</vrang.host>
+                <vrang.auth.host>{{ .Aria.FQDN }}</vrang.auth.host>
+                <vrang.username>{{ .Aria.Username }}</vrang.username>
+                <vrang.password>{{ .Aria.Password }}</vrang.password>
+                <vrang.port>{{ .Aria.FQDN }}</vrang.port>
+                <vrang.project.name>{{ .Aria.ProjectName }}</vrang.project.name>
+                <vrang.org.name>{{ .Aria.OrgName }}</vrang.org.name>
 
                 <vrealize.ssl.ignore.hostname>true</vrealize.ssl.ignore.hostname>
                 <vrealize.ssl.ignore.certificate>true</vrealize.ssl.ignore.certificate>
                 <http.connection.timeout>10000000</http.connection.timeout>
-
-                <!--Aria
-                Operations -->
-                <vrops.host>vrops-l-02a</vrops.host>
-                <vrops.port>443</vrops.port>
-                <vrops.username>root</vrops.username>
-                <vrops.password>VMware1!</vrops.password>
-                <vrops.restUser>admin</vrops.restUser>
-                <vrops.restPassword>VMware1!</vrops.restPassword>
-                <vrops.dashboardUser>admin</vrops.dashboardUser>
-                <vrops.sshPort>22</vrops.sshPort>
-
-                <!--vRLI -->
-                <vrli.host>vrli-l-01a.corp.local</vrli.host>
-                <vrli.port>443</vrli.port>
-                <vrli.username>admin</vrli.username>
-                <vrli.password>VMware1!</vrli.password>
-                <vrli.provider>Local</vrli.provider>
-                <vrli.vropsHost>vrops-l-01a.corp.local</vrli.vropsHost>
-                <vrli.vropsPort>443</vrli.vropsPort>
-                <vrli.vropsUser>admin</vrli.vropsUser>
-                <vrli.vropsPassword>VMware1!</vrli.vropsPassword>
-                <vrli.vropsAuthSource>local</vrli.vropsAuthSource>
             </properties>
         </profile>
 
