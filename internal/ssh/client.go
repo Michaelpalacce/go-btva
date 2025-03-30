@@ -60,10 +60,10 @@ func VerifyHost(host string, remote net.Addr, key ssh.PublicKey) error {
 }
 
 func askIsHostTrusted(host string, key ssh.PublicKey) bool {
-	a, err := prompt.AskText(fmt.Sprintf("Unknown Host: %s \nFingerprint: %s \n", host, ssh.FingerprintSHA256(key)), fmt.Sprintf("Would you like to add it? type yes or no: "))
+	a, err := prompt.AskYesNo(fmt.Sprintf("Unknown Host: %s \nFingerprint: %s \n", host, ssh.FingerprintSHA256(key)), fmt.Sprintf("Would you like to add it?"))
 	if err != nil {
 		return false
 	}
 
-	return prompt.IsYesAnswer(a)
+	return a
 }

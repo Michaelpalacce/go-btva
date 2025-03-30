@@ -10,7 +10,9 @@ import (
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/native/components/infra"
 	"github.com/Michaelpalacce/go-btva/internal/state"
+	"github.com/Michaelpalacce/go-btva/pkg/file"
 	osl "github.com/Michaelpalacce/go-btva/pkg/os"
+	"github.com/Michaelpalacce/go-btva/pkg/prompt"
 )
 
 type Env struct {
@@ -64,8 +66,9 @@ func (e *Env) SettingsXml() error {
 	if state.Get(e.state, envStep()) >= ENV_STEP_SETTINGS_XML {
 		return nil
 	}
-
 	slog.Info("Configuring `settings.xml`.")
+
+	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", e.os.HomeDir)
 	baseURL := fmt.Sprintf("http://%s/nexus/repository/", e.options.Infra.SSHVMIP)
 
 	templateVars := settingsInventory{
@@ -84,12 +87,23 @@ func (e *Env) SettingsXml() error {
 		},
 	}
 
+	if file.Exists(m2SettingsPath) {
+		var a bool
+		var err error
+
+		if a, err = prompt.AskYesNo(fmt.Sprintf("settings.xml file found in %s. Are you sure you want to replace it?", m2SettingsPath)); err != nil {
+			return fmt.Errorf("could not get an answer. Err was: %w", err)
+		}
+
+		if !a {
+			return nil
+		}
+	}
+
 	template, err := template.New("settings.xml").ParseFS(templates, "templates/settings.xml")
 	if err != nil {
 		return fmt.Errorf("could not parse settings.xml file. Err was %w", err)
 	}
-
-	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", e.os.HomeDir)
 
 	fo, err := os.Create(m2SettingsPath)
 	if err != nil {
