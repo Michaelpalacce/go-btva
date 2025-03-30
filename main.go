@@ -7,7 +7,7 @@ import (
 	"github.com/Michaelpalacce/go-btva/internal/native"
 	"github.com/Michaelpalacce/go-btva/internal/state"
 	"github.com/Michaelpalacce/go-btva/pkg/logger"
-	"github.com/Michaelpalacce/go-btva/pkg/os"
+	osl "github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
 func main() {
@@ -19,7 +19,7 @@ func main() {
 	var (
 		handler *native.Handler
 		err     error
-		osPtr   *os.OS
+		osPtr   *osl.OS
 		s       *state.State
 	)
 
@@ -30,7 +30,7 @@ func main() {
 		return
 	}
 
-	osPtr = os.GetOS()
+	osPtr = osl.GetOS()
 
 	if handler, err = native.NewHandler(osPtr, s, s.Options); err != nil {
 		log.Fatalf("Error creating handler: %v", err)
