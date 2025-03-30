@@ -71,6 +71,24 @@ func (e *Env) SettingsXml() error {
 	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", e.os.HomeDir)
 	baseURL := fmt.Sprintf("http://%s/nexus/repository/", e.options.Infra.SSHVMIP)
 
+	if file.Exists(m2SettingsPath) {
+		var a bool
+		var err error
+
+		if a, err = prompt.AskYesNo(fmt.Sprintf("settings.xml file found in %s. Are you sure you want to replace it?", m2SettingsPath)); err != nil {
+			return fmt.Errorf("could not get an answer. Err was: %w", err)
+		}
+
+		if !a {
+			e.state.Set(
+				state.WithMsg(ENV_STATE, "User has settings.xml already and terminated the replacement"),
+				state.WithStep(ENV_STATE, ENV_STEP_SETTINGS_XML),
+				state.WithErr(ENV_STATE, nil),
+			)
+			return nil
+		}
+	}
+
 	templateVars := settingsInventory{
 		Nexus: nexusInventory{
 			Password: infra.NexusAdminPassword(e.state),
@@ -85,19 +103,6 @@ func (e *Env) SettingsXml() error {
 				GroupRepo:    baseURL + "maven-public",
 			},
 		},
-	}
-
-	if file.Exists(m2SettingsPath) {
-		var a bool
-		var err error
-
-		if a, err = prompt.AskYesNo(fmt.Sprintf("settings.xml file found in %s. Are you sure you want to replace it?", m2SettingsPath)); err != nil {
-			return fmt.Errorf("could not get an answer. Err was: %w", err)
-		}
-
-		if !a {
-			return nil
-		}
 	}
 
 	template, err := template.New("settings.xml").ParseFS(templates, "templates/settings.xml")

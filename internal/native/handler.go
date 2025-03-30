@@ -68,8 +68,11 @@ func (h *Handler) SetupSoftware() error {
 func (h *Handler) SetupLocalEnv() error {
 	envComponent := env.NewNev(h.os, h.state, h.options)
 
-	if h.options.Local.SetupM2 {
-		if err := envComponent.SettingsXml(); err != nil {
+	steps := []stepFunc{
+		envComponent.SettingsXml,
+	}
+	for _, step := range steps {
+		if err := step(); err != nil {
 			h.state.Set(state.WithErr(ENV_STATE, err))
 			return err
 		}
