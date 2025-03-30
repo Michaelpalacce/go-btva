@@ -113,7 +113,7 @@ func (e *Env) SettingsXml() error {
 				GroupRepo:    baseURL + "maven-public",
 			},
 		},
-		Aria: e.getAriaInventory(),
+		Aria: getAriaInventory(),
 	}
 
 	template, err := template.New("settings.xml").ParseFS(templates, "templates/settings.xml")
@@ -142,7 +142,7 @@ func (e *Env) SettingsXml() error {
 }
 
 // getAriaInventory will prompt the user a series of question needed to build the aria inventory
-func (e *Env) getAriaInventory() ariaInventory {
+func getAriaInventory() ariaInventory {
 	inv := ariaInventory{FQDN: "vra-l-01a.corp.local", Port: "443", Username: "configurationadmin", Password: "", OrgName: "vidm-l-01a", ProjectName: "dev"}
 
 	if ans, err := prompt.AskText(fmt.Sprintf("What is Aria Automation's FQDN without `https://`. Default (%s)", inv.FQDN)); err == nil {
