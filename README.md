@@ -2,6 +2,11 @@
 
 Sets UP BTVA for local development.
 
+## Overview
+
+BTVA is a tool that enabling an easier development for automation on VCF. However, it comes with a few dependencies that need to be
+matched. The goal of this tool is to bridge the gap between developing on top of VCF directly and using BTVA.
+
 ## Responsibilities
 
 - Setup minimal infra on a vm
