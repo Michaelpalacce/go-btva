@@ -1,8 +1,8 @@
 package native
 
 import (
-	"github.com/Michaelpalacce/go-btva/internal/native/components/env"
-	"github.com/Michaelpalacce/go-btva/internal/native/components/infra"
+	"github.com/Michaelpalacce/go-btva/internal/components/env"
+	"github.com/Michaelpalacce/go-btva/internal/components/infra"
 )
 
 const (

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/Michaelpalacce/go-btva/internal/native/components/infra"
+	"github.com/Michaelpalacce/go-btva/internal/components/infra"
 	"github.com/Michaelpalacce/go-btva/internal/state"
 )
 
@@ -40,7 +40,6 @@ func (h *Handler) nexusInstructions() error {
 	return nil
 }
 
-// gitlabInstructions will print out gitlab details
 func (h *Handler) gitlabInstructions() error {
 	if state.Get(h.state, finalStep()) >= FINAL_INSTRUCTIONS_GITLAB_STEP {
 		return nil

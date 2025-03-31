@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
-	"github.com/Michaelpalacce/go-btva/internal/native/components/infra"
+	"github.com/Michaelpalacce/go-btva/internal/components/infra"
 	"github.com/Michaelpalacce/go-btva/internal/state"
 	"github.com/Michaelpalacce/go-btva/pkg/file"
 	osl "github.com/Michaelpalacce/go-btva/pkg/os"

@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
-	"github.com/Michaelpalacce/go-btva/internal/native/components/env"
-	"github.com/Michaelpalacce/go-btva/internal/native/components/infra"
+	"github.com/Michaelpalacce/go-btva/internal/components/env"
+	"github.com/Michaelpalacce/go-btva/internal/components/infra"
 	"github.com/Michaelpalacce/go-btva/internal/os/darwin"
 	"github.com/Michaelpalacce/go-btva/internal/os/linux"
 	"github.com/Michaelpalacce/go-btva/internal/state"
