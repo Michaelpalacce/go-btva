@@ -1,4 +1,4 @@
-package native
+package handler
 
 import (
 	"github.com/Michaelpalacce/go-btva/internal/components/env"

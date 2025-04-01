@@ -1,4 +1,4 @@
-package native
+package handler
 
 import (
 	"fmt"
@@ -24,22 +24,9 @@ type Handler struct {
 	installer installer
 }
 
-// NewHandler will return a new native Handler that will be used to manage and execute os operations
-func NewHandler(os *os.OS, state *state.State, options *args.Options) (*Handler, error) {
-	handler := &Handler{os: os, state: state, options: options}
-
-	switch os.Distro {
-	case "linux":
-		handler.installer = &linux.Installer{OS: os, Options: options}
-	case "darwin":
-		handler.installer = &darwin.Installer{OS: os, Options: options}
-	case "windows":
-		fallthrough
-	default:
-		return nil, fmt.Errorf("OS %s is not supported", os.Distro)
-	}
-
-	return handler, nil
+// NewHandler will return a new Handler that will be used to manage and execute os operations
+func NewHandler(os *os.OS, state *state.State, options *args.Options) *Handler {
+	return &Handler{os: os, state: state, options: options}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,7 +36,19 @@ func NewHandler(os *os.OS, state *state.State, options *args.Options) (*Handler,
 // SetupSoftware will install all the needed software based on the os and options
 // Each software has it's own state.
 func (h *Handler) SetupSoftware() error {
-	for _, software := range h.installer.GetAllSoftware() {
+	var installer installer
+	switch h.os.Distro {
+	case "linux":
+		installer = &linux.Installer{OS: h.os, Options: h.options}
+	case "darwin":
+		installer = &darwin.Installer{OS: h.os, Options: h.options}
+	case "windows":
+		fallthrough
+	default:
+		return fmt.Errorf("OS %s is not supported", h.os.Distro)
+	}
+
+	for _, software := range installer.GetAllSoftware() {
 		if err := h.installSoftware(software); err != nil {
 			h.state.Set(withSoftwareInstalled(software, err))
 			return err

@@ -1,10 +1,9 @@
 package main
 
 import (
-	"log"
 	"log/slog"
 
-	"github.com/Michaelpalacce/go-btva/internal/native"
+	"github.com/Michaelpalacce/go-btva/internal/handler"
 	"github.com/Michaelpalacce/go-btva/internal/state"
 	"github.com/Michaelpalacce/go-btva/pkg/logger"
 	osl "github.com/Michaelpalacce/go-btva/pkg/os"
@@ -17,10 +16,10 @@ func main() {
 	// Variables block. Init vars
 
 	var (
-		handler *native.Handler
-		err     error
-		osPtr   *osl.OS
-		s       *state.State
+		h     *handler.Handler
+		err   error
+		osPtr *osl.OS
+		s     *state.State
 	)
 
 	// Init Block. Used for fetching and creating needed structs
@@ -32,29 +31,33 @@ func main() {
 
 	osPtr = osl.GetOS()
 
-	if handler, err = native.NewHandler(osPtr, s, s.Options); err != nil {
-		log.Fatalf("Error creating handler: %v", err)
-	}
+	h = handler.NewHandler(osPtr, s, s.Options)
 
 	// Execution Block. Handles the actual execution of the program
 
-	if err := handler.SetupSoftware(); err != nil {
+	if err := h.SetupSoftware(); err != nil {
 		slog.Error("Software setup error", "err", err)
 		return
 	}
 
-	if err := handler.SetupInfra(); err != nil {
+	if err := h.SetupInfra(); err != nil {
 		slog.Error("Infrastructure setup error", "err", err)
 		return
 	}
 
-	if err := handler.SetupLocalEnv(); err != nil {
+	if err := h.SetupLocalEnv(); err != nil {
 		slog.Error("Local environment setup error", "err", err)
 		return
 	}
 
-	if err := handler.Final(); err != nil {
+	if err := h.Final(); err != nil {
 		slog.Error("Error while displaying final instructions", "err", err)
 		return
 	}
+
+	h.Setup(
+		func(h *handler.Handler) error {
+			return nil
+		},
+	)
 }
