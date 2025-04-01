@@ -22,38 +22,42 @@ type Handler struct {
 	options *args.Options
 
 	// WIP
-	softwareTasks []func(*Handler) error
-	infraTasks    []func(*Handler) error
-	envTasks      []func(*Handler) error
-	finalTasks    []func(*Handler) error
+	softwareTasks []func() error
+	infraTasks    []func() error
+	envTasks      []func() error
+	finalTasks    []func() error
 	// WIP
 }
 
 // WIP
-type AddTaskOption func(h *[]func(*Handler) error) error
+type AddTaskOption func(h *Handler) error
 
-func (h *Handler) AddTask(taskType string, options ...AddTaskOption) error {
-	var tasks *[]func(*Handler) error
-	switch taskType {
-	case "infra":
-		tasks = &h.infraTasks
-	case "env":
-		tasks = &h.envTasks
-	case "software":
-		tasks = &h.softwareTasks
-	case "final":
-		tasks = &h.finalTasks
-	default:
-		return fmt.Errorf("no task %s found available are infra, env, software, final", taskType)
-	}
-
+func (h *Handler) AddTask(options ...AddTaskOption) error {
 	for _, option := range options {
-		if err := option(tasks); err != nil {
+		if err := option(h); err != nil {
 			return err
 		}
 	}
 
 	return nil
+}
+
+func (h *Handler) RunTasks() {
+	for _, task := range h.softwareTasks {
+		task()
+	}
+
+	for _, task := range h.infraTasks {
+		task()
+	}
+
+	for _, task := range h.envTasks {
+		task()
+	}
+
+	for _, task := range h.finalTasks {
+		task()
+	}
 }
 
 // WIP
