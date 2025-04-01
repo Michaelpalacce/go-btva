@@ -54,10 +54,4 @@ func main() {
 		slog.Error("Error while displaying final instructions", "err", err)
 		return
 	}
-
-	h.Setup(
-		func(h *handler.Handler) error {
-			return nil
-		},
-	)
 }

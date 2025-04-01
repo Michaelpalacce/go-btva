@@ -5,6 +5,7 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/components/env"
+	"github.com/Michaelpalacce/go-btva/internal/components/final"
 	"github.com/Michaelpalacce/go-btva/internal/components/infra"
 	"github.com/Michaelpalacce/go-btva/internal/os/darwin"
 	"github.com/Michaelpalacce/go-btva/internal/os/linux"
@@ -16,12 +17,22 @@ type stepFunc func() error
 
 // Handler is a struct that orchestrates the setup process based on OS
 type Handler struct {
-	os      *os.OS
-	state   *state.State
-	options *args.Options
-
-	// installer is a pointer
+	os        *os.OS
+	state     *state.State
+	options   *args.Options
 	installer installer
+}
+
+type SetupOption func(h *Handler) error
+
+func (h *Handler) Setup(options ...SetupOption) error {
+	for _, option := range options {
+		if err := option(h); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // NewHandler will return a new Handler that will be used to manage and execute os operations
@@ -135,9 +146,10 @@ func (h *Handler) SetupInfra() error {
 // Final will print out some instructions to the user
 // If it was done already, it won't log anything
 func (h *Handler) Final() error {
+	finalComponent := final.NewFinal(h.os, h.state, h.options)
 	steps := []stepFunc{
-		h.nexusInstructions,
-		h.gitlabInstructions,
+		finalComponent.NexusInstructions,
+		finalComponent.GitlabInstructions,
 	}
 	for _, step := range steps {
 		if err := step(); err != nil {
