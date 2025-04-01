@@ -40,13 +40,13 @@ func (h *Handler) AddTasks(options ...AddTaskOption) error {
 
 // RunTasks executes all the tasks added to the handler in order specified within
 func (h *Handler) RunTasks() error {
-	for _, task := range h.InfraTasks {
+	for _, task := range h.SoftwareTasks {
 		if err := task(); err != nil {
 			return err
 		}
 	}
 
-	for _, task := range h.SoftwareTasks {
+	for _, task := range h.InfraTasks {
 		if err := task(); err != nil {
 			return err
 		}
