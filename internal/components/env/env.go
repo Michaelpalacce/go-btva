@@ -35,11 +35,7 @@ type infraInventory struct {
 	Artifactory artifactory
 }
 
-type nexusInventory struct {
-	Password string
-}
-
-type gitlabInventory struct {
+type artifactManagerInventory struct {
 	Password string
 }
 
@@ -53,8 +49,7 @@ type ariaInventory struct {
 }
 
 type settingsInventory struct {
-	Nexus  nexusInventory
-	Gitlab gitlabInventory
+	ArtifactManager artifactManagerInventory
 
 	Infra infraInventory
 	Aria  ariaInventory
@@ -63,8 +58,8 @@ type settingsInventory struct {
 //go:embed templates/*
 var templates embed.FS
 
-// SettingsXml will replace the `settings.xml` in your `~/.m2` dir
-func (e *Env) SettingsXml() error {
+// MinimalInfraSettingsXml will replace the `settings.xml` in your `~/.m2` dir
+func (e *Env) MinimalInfraSettingsXml() error {
 	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", e.os.HomeDir)
 	baseURL := fmt.Sprintf("http://%s/nexus/repository/", e.options.Infra.SSHVMIP)
 
@@ -75,11 +70,8 @@ func (e *Env) SettingsXml() error {
 	slog.Info("Configuring `settings.xml`.")
 
 	templateVars := settingsInventory{
-		Nexus: nexusInventory{
+		ArtifactManager: artifactManagerInventory{
 			Password: infra.NexusAdminPassword(e.state),
-		},
-		Gitlab: gitlabInventory{
-			Password: infra.GitlabAdminPassword(e.state),
 		},
 		Infra: infraInventory{
 			Artifactory: artifactory{

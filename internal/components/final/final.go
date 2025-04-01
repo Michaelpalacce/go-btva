@@ -20,8 +20,8 @@ func NewFinal(os *os.OS, state *state.State, options *args.Options) *Final {
 	return &Final{os: os, state: state, options: options}
 }
 
-// NexusInstructions will print out details for nexus
-func (f *Final) NexusInstructions() error {
+// MinimalInfraNexusInstructions will print out details for nexus
+func (f *Final) MinimalInfraNexusInstructions() error {
 	nexusPassword := infra.NexusAdminPassword(f.state)
 	if nexusPassword == "" {
 		return fmt.Errorf("nexus password is an empty string. Was it deleted? Rerunning the infra may help.")
@@ -38,7 +38,7 @@ func (f *Final) NexusInstructions() error {
 	return nil
 }
 
-func (f *Final) GitlabInstructions() error {
+func (f *Final) MinimalInfraGitlabInstructions() error {
 	gitlabPassword := infra.GitlabAdminPassword(f.state)
 	if gitlabPassword == "" {
 		return fmt.Errorf("gitlab password is an empty string. Was it deleted? Rerunning the infra may help.")

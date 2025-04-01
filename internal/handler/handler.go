@@ -131,8 +131,8 @@ func (h *Handler) Final() error {
 	finalComponent := final.NewFinal(h.os, h.state, h.options)
 
 	h.tasks([]taskFunc{
-		finalComponent.NexusInstructions,
-		finalComponent.GitlabInstructions,
+		finalComponent.MinimalInfraNexusInstructions,
+		finalComponent.MinimalInfraGitlabInstructions,
 	})
 
 	return nil
@@ -148,7 +148,7 @@ func (h *Handler) SetupLocalEnv() error {
 	envComponent := env.NewNev(h.os, h.state, h.options)
 
 	h.tasks([]taskFunc{
-		envComponent.SettingsXml,
+		envComponent.MinimalInfraSettingsXml,
 	})
 
 	return nil

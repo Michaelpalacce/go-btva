@@ -8,12 +8,12 @@
         <server>
             <id>central</id>
             <username>admin</username>
-            <password>{{ .Nexus.Password }}</password>
+            <password>{{ .ArtifactManager.Password }}</password>
         </server>
         <server>
             <id>snapshots</id>
             <username>admin</username>
-            <password>{{ .Nexus.Password }}</password>
+            <password>{{ .ArtifactManager.Password }}</password>
         </server>
     </servers>
 
