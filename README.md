@@ -4,8 +4,10 @@ Sets UP BTVA for local development.
 
 ## Overview
 
-BTVA is a tool that enabling an easier development for automation on VCF. However, it comes with a few dependencies that need to be
-matched. The goal of this tool is to bridge the gap between developing on top of VCF directly and using BTVA.
+[Build Tools For VMware Aria](https://github.com/vmware/build-tools-for-vmware-aria) is a tool that enabling easier development for automation on VCF.
+BTVA comes with pre-requisites and even third party systems in order for everything to work correctly.
+
+This tool aims to ease the initial setup.
 
 ## Responsibilities
 

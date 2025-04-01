@@ -30,6 +30,7 @@ const (
 
 func WithFullMinimalInfrastructure() func(*handler.Handler) error {
 	return func(h *handler.Handler) error {
+		//@TODO: MOVE
 		if h.Options.Infra.MinimalInfrastructure == false {
 			return nil
 		}
