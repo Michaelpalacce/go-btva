@@ -1,4 +1,4 @@
-package settings
+package templates
 
 import (
 	"embed"
@@ -11,7 +11,7 @@ import (
 	"github.com/Michaelpalacce/go-btva/pkg/prompt"
 )
 
-type Artifactory struct {
+type ArtifactoryInventory struct {
 	ReleaseRepo  string
 	SnapshotRepo string
 	GroupRepo    string
@@ -19,7 +19,7 @@ type Artifactory struct {
 }
 
 type infraInventory struct {
-	Artifactory Artifactory
+	Artifactory ArtifactoryInventory
 }
 
 type ariaInventory struct {
@@ -39,7 +39,7 @@ type settingsInventory struct {
 //go:embed templates/*
 var templates embed.FS
 
-func SettingsXml(homeDir string, artifactory Artifactory) error {
+func SettingsXml(homeDir string, artifactoryInventory ArtifactoryInventory) error {
 	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", homeDir)
 
 	if file.Exists(m2SettingsPath) {
@@ -49,7 +49,7 @@ func SettingsXml(homeDir string, artifactory Artifactory) error {
 	slog.Info("Configuring `settings.xml`.")
 
 	templateVars := settingsInventory{
-		Infra: infraInventory{Artifactory: artifactory},
+		Infra: infraInventory{Artifactory: artifactoryInventory},
 		Aria:  getAriaInventory(),
 	}
 

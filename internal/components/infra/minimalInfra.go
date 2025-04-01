@@ -6,22 +6,15 @@ import (
 	"strings"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
-	"github.com/Michaelpalacce/go-btva/internal/settings"
 	"github.com/Michaelpalacce/go-btva/internal/ssh"
 	"github.com/Michaelpalacce/go-btva/internal/state"
+	"github.com/Michaelpalacce/go-btva/internal/templates"
 	"github.com/Michaelpalacce/go-btva/pkg/gitlab"
 	"github.com/Michaelpalacce/go-btva/pkg/prompt"
 	"github.com/melbahja/goph"
 )
 
 const (
-	INFRA_STATE = "Infra"
-
-	// Public
-	INFRA_GITLAB_ADMIN_PASSWORD_KEY = "gitlabPassword"
-	INFRA_GITLAB_ADMIN_PAT_KEY      = "gitlabPat"
-	INFRA_NEXUS_PASSWORD_KEY        = "nexusPassword"
-
 	// Private
 	_INFRA_GITLAB_RUNNER_AUTH_TOKEN_KEY = "gitlabRunnerAuthToken"
 	_INFRA_GITLAB_RUNNER_REGISTERED_KEY = "gitlabRunnerRegistered"
@@ -29,8 +22,8 @@ const (
 )
 
 const (
-	BTVA_INSTALL_DIR_INFRA         = "/opt/build-tools-for-vmware-aria/infrastructure"
-	BTVA_MINIMAL_INFRA_INSTALL_URL = "https://raw.githubusercontent.com/vmware/build-tools-for-vmware-aria/refs/heads/refactor/minimal-infra-simplified-setup/infrastructure/install.sh"
+	_BTVA_INSTALL_DIR_INFRA         = "/opt/build-tools-for-vmware-aria/infrastructure"
+	_BTVA_MINIMAL_INFRA_INSTALL_URL = "https://raw.githubusercontent.com/vmware/build-tools-for-vmware-aria/refs/heads/refactor/minimal-infra-simplified-setup/infrastructure/install.sh"
 )
 
 // getClient will ssh into the machine and give you a goph.Client pointer you can use to run commands.
@@ -64,16 +57,17 @@ func (i *InfraComponent) RunMinimalInfra() error {
 	}
 	defer client.Close()
 
-	out, err := client.Run(fmt.Sprintf("curl -o- %s | bash -s -- %s %q", BTVA_MINIMAL_INFRA_INSTALL_URL, i.options.Infra.DockerUsername, i.options.Infra.DockerPAT))
+	out, err := client.Run(fmt.Sprintf("curl -o- %s | bash -s -- %s %q", _BTVA_MINIMAL_INFRA_INSTALL_URL, i.options.Infra.DockerUsername, i.options.Infra.DockerPAT))
 	if err != nil {
 		return fmt.Errorf("minimal infrastructure installer exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
 
-	if out, err := client.Run(fmt.Sprintf("sed -i \"s|external_url 'http://infra.corp.local/gitlab'|external_url '%q'|\" %s/docker-compose.yml", gitlabUrl(*i.options), BTVA_INSTALL_DIR_INFRA)); err != nil {
+	// Fixes the compose install
+	if out, err := client.Run(fmt.Sprintf("sed -i \"s|external_url 'http://infra.corp.local/gitlab'|external_url '%q'|\" %s/docker-compose.yml", gitlabUrl(*i.options), _BTVA_INSTALL_DIR_INFRA)); err != nil {
 		return fmt.Errorf("failed to modify compose file. err was %w, output was:\n%s", err, out)
 	}
 
-	if out, err := client.Run(fmt.Sprintf("docker compose -f %s/docker-compose.yml up -d --wait", BTVA_INSTALL_DIR_INFRA)); err != nil {
+	if out, err := client.Run(fmt.Sprintf("docker compose -f %s/docker-compose.yml up -d --wait", _BTVA_INSTALL_DIR_INFRA)); err != nil {
 		return fmt.Errorf("failed to start containers. err was %w, output was:\n%s", err, out)
 	}
 
@@ -289,7 +283,7 @@ func (f *InfraComponent) MinimalInfraGitlabInstructions() error {
 func (i *InfraComponent) MinimalInfraSettingsXml() error {
 	baseURL := fmt.Sprintf("http://%s/nexus/repository/", i.options.Infra.SSHVMIP)
 
-	return settings.SettingsXml(i.os.HomeDir, settings.Artifactory{
+	return templates.SettingsXml(i.os.HomeDir, templates.ArtifactoryInventory{
 		ReleaseRepo:  baseURL + "maven-releases",
 		SnapshotRepo: baseURL + "maven-snapshots",
 		GroupRepo:    baseURL + "maven-public",

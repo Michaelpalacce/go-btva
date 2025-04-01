@@ -1,6 +1,7 @@
 package state
 
 import (
+	"fmt"
 	"log/slog"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
@@ -63,13 +64,18 @@ func (s *State) Modify(options ...SetStateOption) error {
 }
 
 // Set is used to modify the internal storage of the State object.
+// Will also store the change on the os
 func (s *State) Set(options ...SetStateOption) error {
 	if err := s.Modify(options...); err != nil {
 		return err
 	}
 
 	for _, storage := range s.storage {
-		storage.Commit(*s)
+		go func() {
+			if err := storage.Commit(*s); err != nil {
+				slog.Error(fmt.Sprintf("There was an error saving the state file. Continuing anyway, however state may be lost at the end."))
+			}
+		}()
 	}
 
 	return nil

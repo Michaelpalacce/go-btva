@@ -17,6 +17,15 @@ func NewInfraComponent(os *os.OS, state *state.State) *InfraComponent {
 	return &InfraComponent{os: os, state: state, options: state.Options}
 }
 
+const (
+	INFRA_STATE = "Infra"
+
+	// Public
+	INFRA_GITLAB_ADMIN_PASSWORD_KEY = "gitlabPassword"
+	INFRA_GITLAB_ADMIN_PAT_KEY      = "gitlabPat"
+	INFRA_NEXUS_PASSWORD_KEY        = "nexusPassword"
+)
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////// Minimal INFRA
 
 func WithFullMinimalInfrastructure() func(*handler.Handler) error {

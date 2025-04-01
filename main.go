@@ -26,7 +26,7 @@ func main() {
 
 	// Init Block. Used for fetching and creating needed structs
 
-	if s, err = state.NewState(state.WithDefaultJsonStorage(true), state.WithCliArgs()); err != nil {
+	if s, err = state.NewState(state.WithDefaultJsonStorage(), state.WithCliArgs()); err != nil {
 		slog.Error("Error while loading state.", "err", err)
 		return
 	}
