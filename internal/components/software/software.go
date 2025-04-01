@@ -5,7 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
-	"github.com/Michaelpalacce/go-btva/internal/handler"
+	"github.com/Michaelpalacce/go-btva/internal/orchestrator"
 	"github.com/Michaelpalacce/go-btva/internal/os/darwin"
 	"github.com/Michaelpalacce/go-btva/internal/os/linux"
 	"github.com/Michaelpalacce/go-btva/internal/os/software"
@@ -28,8 +28,8 @@ func NewSoftware(os *os.OS, state *state.State) *SoftwareComponent {
 	return &SoftwareComponent{os: os, state: state, options: state.Options}
 }
 
-func WithAllSoftware() func(*handler.Handler) error {
-	return func(h *handler.Handler) error {
+func WithAllSoftware() func(*orchestrator.Orchestrator) error {
+	return func(h *orchestrator.Orchestrator) error {
 		softwareComponent := NewSoftware(h.OS, h.State)
 
 		var installer installer

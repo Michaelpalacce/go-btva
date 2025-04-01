@@ -1,4 +1,4 @@
-package handler
+package orchestrator
 
 import (
 	"github.com/Michaelpalacce/go-btva/internal/args"
@@ -8,8 +8,8 @@ import (
 
 type TaskFunc func() error
 
-// Handler is a struct that orchestrates the setup process based on OS
-type Handler struct {
+// Orchestrator is a struct that orchestrates the setup process based on OS
+type Orchestrator struct {
 	OS      *os.OS
 	State   *state.State
 	Options *args.Options
@@ -20,26 +20,28 @@ type Handler struct {
 	FinalTasks    []TaskFunc
 }
 
-// NewHandler will return a new Handler that will be used to manage and execute os operations
-func NewHandler(os *os.OS, state *state.State, options *args.Options) *Handler {
-	return &Handler{OS: os, State: state, Options: options}
+// NewOrchestrator will return a new Orchestrator that is used to contain and execute tasks
+func NewOrchestrator(os *os.OS, state *state.State, options *args.Options) *Orchestrator {
+	return &Orchestrator{OS: os, State: state, Options: options}
 }
 
-type AddTaskOption func(h *Handler) error
+// RunTaskOption accepts a handler and is supposed to modify the state and add tasks to it
+type RunTaskOption func(h *Orchestrator) error
 
-// AddTasks takes a func that works with the Handler and modifies the SoftwareTasks, InfraTasks, EnvTasks and FinalTasks
-func (h *Handler) AddTasks(options ...AddTaskOption) error {
+// RunTasks executes all the tasks added to the handler in order specified within
+// Will resmove all tasks
+func (h *Orchestrator) RunTasks(options ...RunTaskOption) error {
+	h.SoftwareTasks = make([]TaskFunc, 0)
+	h.InfraTasks = make([]TaskFunc, 0)
+	h.EnvTasks = make([]TaskFunc, 0)
+	h.FinalTasks = make([]TaskFunc, 0)
+
 	for _, option := range options {
 		if err := option(h); err != nil {
 			return err
 		}
 	}
 
-	return nil
-}
-
-// RunTasks executes all the tasks added to the handler in order specified within
-func (h *Handler) RunTasks() error {
 	for _, task := range h.SoftwareTasks {
 		if err := task(); err != nil {
 			return err
