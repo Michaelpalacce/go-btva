@@ -35,7 +35,7 @@ build: ## Build the project
 
 .PHONY: run 
 run: ## Go run the project
-	go run main.go --minimalInfrastructure=false
+	go run . --sshVmIp=192.168.1.54
 
 ##@ Cleanup. Linux only
 
