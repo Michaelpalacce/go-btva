@@ -3,6 +3,8 @@ package main
 import (
 	"log/slog"
 
+	infra_component "github.com/Michaelpalacce/go-btva/internal/components/infra"
+	software_component "github.com/Michaelpalacce/go-btva/internal/components/software"
 	"github.com/Michaelpalacce/go-btva/internal/handler"
 	"github.com/Michaelpalacce/go-btva/internal/state"
 	"github.com/Michaelpalacce/go-btva/pkg/logger"
@@ -33,25 +35,11 @@ func main() {
 
 	h = handler.NewHandler(osPtr, s, s.Options)
 
-	// Execution Block. Handles the actual execution of the program
+	// TODO: Add correct tasks based on what is decided by the user
+	h.AddTasks(
+		software_component.WithAllSoftware(),
+		infra_component.WithFullMinimalInfrastructure(),
+	)
 
-	if err := h.SetupSoftware(); err != nil {
-		slog.Error("Software setup error", "err", err)
-		return
-	}
-
-	if err := h.SetupInfra(); err != nil {
-		slog.Error("Infrastructure setup error", "err", err)
-		return
-	}
-
-	if err := h.SetupLocalEnv(); err != nil {
-		slog.Error("Local environment setup error", "err", err)
-		return
-	}
-
-	if err := h.Final(); err != nil {
-		slog.Error("Error while displaying final instructions", "err", err)
-		return
-	}
+	h.RunTasks()
 }

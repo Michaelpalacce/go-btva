@@ -1,4 +1,4 @@
-package env
+package settings
 
 import (
 	"embed"
@@ -7,23 +7,9 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/Michaelpalacce/go-btva/internal/args"
-	"github.com/Michaelpalacce/go-btva/internal/components/infra"
-	"github.com/Michaelpalacce/go-btva/internal/state"
 	"github.com/Michaelpalacce/go-btva/pkg/file"
-	osl "github.com/Michaelpalacce/go-btva/pkg/os"
 	"github.com/Michaelpalacce/go-btva/pkg/prompt"
 )
-
-type Env struct {
-	os      *osl.OS
-	state   *state.State
-	options *args.Options
-}
-
-func NewNev(os *osl.OS, state *state.State, options *args.Options) *Env {
-	return &Env{os: os, state: state, options: options}
-}
 
 type Artifactory struct {
 	ReleaseRepo  string
@@ -53,20 +39,8 @@ type settingsInventory struct {
 //go:embed templates/*
 var templates embed.FS
 
-// MinimalInfraSettingsXml will replace the `settings.xml` in your `~/.m2` dir
-func (e *Env) MinimalInfraSettingsXml() error {
-	baseURL := fmt.Sprintf("http://%s/nexus/repository/", e.options.Infra.SSHVMIP)
-
-	return e.SettingsXml(Artifactory{
-		ReleaseRepo:  baseURL + "maven-releases",
-		SnapshotRepo: baseURL + "maven-snapshots",
-		GroupRepo:    baseURL + "maven-public",
-		Password:     infra.NexusAdminPassword(e.state),
-	})
-}
-
-func (e *Env) SettingsXml(artifactory Artifactory) error {
-	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", e.os.HomeDir)
+func SettingsXml(homeDir string, artifactory Artifactory) error {
+	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", homeDir)
 
 	if file.Exists(m2SettingsPath) {
 		return nil

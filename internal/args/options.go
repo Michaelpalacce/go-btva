@@ -10,9 +10,7 @@ type Software struct {
 }
 
 // Local will hold different configurations for mvn that may be needed
-type Local struct {
-	SetupM2 bool `json:"setupM2"`
-}
+type Local struct{}
 
 // Infra will hold different infra decisions that need to be taken
 type Infra struct {

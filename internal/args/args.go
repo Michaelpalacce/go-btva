@@ -19,9 +19,6 @@ func Args() *Options {
 	flag.StringVar(&options.Software.MvnVersion, "mvnVersion", "3.9.9", "Which version of mvn to install? If not set, will skip installation.")
 	flag.StringVar(&options.Software.NodeVersion, "nodeVersion", "22", "Which version of node to install? If not set, will skip installation.")
 
-	// Local
-	flag.BoolVar(&options.Local.SetupM2, "setupM2", true, "Do you want to overwrite your current ~/.m2/settings.xml file with a proposed configuration from the tool?")
-
 	// Infra
 	flag.BoolVar(&options.Infra.MinimalInfrastructure, "minimalInfrastructure", true, "Do you want to spin up a mininmal infrastructure example?")
 

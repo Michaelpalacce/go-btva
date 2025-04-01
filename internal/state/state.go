@@ -132,6 +132,15 @@ func WithMsg(key string, msg string) SetStateOption {
 	}
 }
 
+// WithWarn wraps WithQuietMsg but it will also warns the message
+func WithWarn(key string, msg string) SetStateOption {
+	return func(s *State) error {
+		slog.Warn(msg)
+
+		return WithQuietMsg(key, msg)(s)
+	}
+}
+
 // WithQuietMsg sets the message of the state
 func WithQuietMsg(key string, msg string) SetStateOption {
 	return func(s *State) error {
