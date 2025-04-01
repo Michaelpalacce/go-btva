@@ -1,0 +1,71 @@
+package orchestrator
+
+import (
+	"github.com/Michaelpalacce/go-btva/internal/args"
+	"github.com/Michaelpalacce/go-btva/internal/state"
+	"github.com/Michaelpalacce/go-btva/pkg/os"
+)
+
+type TaskFunc func() error
+
+// Orchestrator is a struct that orchestrates the tasks collections and order of execution of them
+type Orchestrator struct {
+	OS      *os.OS
+	State   *state.State
+	Options *args.Options
+
+	SoftwareTasks []TaskFunc
+	InfraTasks    []TaskFunc
+	EnvTasks      []TaskFunc
+	FinalTasks    []TaskFunc
+}
+
+// NewOrchestrator will return a new Orchestrator that is used to contain and execute tasks
+func NewOrchestrator(os *os.OS, state *state.State, options *args.Options) *Orchestrator {
+	return &Orchestrator{OS: os, State: state, Options: options}
+}
+
+// runTaskOption accepts an orchestrator and is supposed to modify the state and add tasks to it
+type runTaskOption func(o *Orchestrator) error
+
+// Reset will reset all the task collections to empty
+func (o *Orchestrator) Reset() {
+	o.SoftwareTasks = make([]TaskFunc, 0)
+	o.InfraTasks = make([]TaskFunc, 0)
+	o.EnvTasks = make([]TaskFunc, 0)
+	o.FinalTasks = make([]TaskFunc, 0)
+}
+
+// Tasks can be used to modify the current execution stack of the orhecstrator
+func (o *Orchestrator) Tasks(options ...runTaskOption) error {
+	for _, option := range options {
+		if err := option(o); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Run executes all the tasks added to the orchestrator in order specified within
+// Will remove all tasks at the end if successful. Otherwise, tasks will be kept so they can be re-executed
+func (o *Orchestrator) Run(options ...runTaskOption) error {
+	if err := o.Tasks(options...); err != nil {
+		return err
+	}
+
+	allTasks := make([][]TaskFunc, 0)
+	allTasks = append(allTasks, o.SoftwareTasks, o.InfraTasks, o.EnvTasks, o.FinalTasks)
+
+	for _, taskCollection := range allTasks {
+		for _, task := range taskCollection {
+			if err := task(); err != nil {
+				return err
+			}
+		}
+	}
+
+	o.Reset()
+
+	return nil
+}

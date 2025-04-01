@@ -4,8 +4,6 @@ import (
 	"log/slog"
 	"os"
 
-	infra_component "github.com/Michaelpalacce/go-btva/internal/components/infra"
-	software_component "github.com/Michaelpalacce/go-btva/internal/components/software"
 	"github.com/Michaelpalacce/go-btva/internal/orchestrator"
 	"github.com/Michaelpalacce/go-btva/internal/state"
 	"github.com/Michaelpalacce/go-btva/pkg/logger"
@@ -19,7 +17,7 @@ func main() {
 	// Variables block. Init vars
 
 	var (
-		h     *orchestrator.Orchestrator
+		o     *orchestrator.Orchestrator
 		err   error
 		osPtr *osl.OS
 		s     *state.State
@@ -34,13 +32,18 @@ func main() {
 
 	osPtr = osl.GetOS()
 
-	h = orchestrator.NewOrchestrator(osPtr, s, s.Options)
+	o = orchestrator.NewOrchestrator(osPtr, s, s.Options)
 
-	// TODO: Add correct tasks based on what is decided by the user
-	err = h.RunTasks(
-		software_component.WithAllSoftware(),
-		infra_component.WithFullMinimalInfrastructure(),
+	err = o.Tasks(
+		orchestrator.WithAllSoftware(),
+		orchestrator.WithFullMinimalInfrastructure(),
 	)
+	if err != nil {
+		slog.Error("Error while adding tasks.", "err", err)
+		os.Exit(1)
+	}
+
+	err = o.Run()
 	if err != nil {
 		slog.Error("Error while running tasks.", "err", err)
 		os.Exit(1)

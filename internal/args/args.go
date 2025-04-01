@@ -2,9 +2,6 @@ package args
 
 import (
 	"flag"
-	"fmt"
-
-	"github.com/Michaelpalacce/go-btva/pkg/prompt"
 )
 
 // Args will parse the CLI arguments once and return the parsed options from then on
@@ -32,43 +29,7 @@ func Args() *Options {
 
 	flag.Parse()
 
-	if err := validate(options); err != nil {
-		panic(err)
-	}
-
 	options.parsed = true
 
 	return options
-}
-
-// validate will validate the options and return an error if something is wrong
-func validate(options *Options) error {
-	var err error
-	if options.Infra.MinimalInfrastructure {
-		if options.Infra.SSHVMIP == "" {
-			if options.Infra.SSHVMIP, err = prompt.AskText("MinimalInfrastructure selected, but you did not provide sshVmIp, please type in the IP: "); err != nil {
-				return fmt.Errorf("sshVmIp must be provided. Err: %w", err)
-			}
-		}
-
-		if options.Infra.SSHPrivateKey == "" && options.Infra.SSHPassword == "" {
-			if options.Infra.SSHPassword, err = prompt.AskPass("MinimalInfrastructure selected, but you did not provide sshPassword or sshPrivateKey, please type in password: "); err != nil {
-				return fmt.Errorf("sshPassword must be provided. Err: %w", err)
-			}
-		}
-
-		if options.Infra.SSHUsername == "" {
-			if options.Infra.SSHUsername, err = prompt.AskText("MinimalInfrastructure selected, but you did not provide sshUsername, please type in the username of root or a passwordless sudo user"); err != nil {
-				return fmt.Errorf("sshUsername must be provided. Err: %w", err)
-			}
-		}
-	}
-
-	if options.Infra.DockerUsername != "" && options.Infra.DockerPAT == "" {
-		if options.Infra.DockerPAT, err = prompt.AskPass("dockerUsername passed, but you did not provide dockerPat, please type in password: "); err != nil {
-			return fmt.Errorf("dockerPat must be provided with dockerUsername. Err: %w", err)
-		}
-	}
-
-	return nil
 }

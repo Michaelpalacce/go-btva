@@ -5,18 +5,10 @@ import (
 	"log/slog"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
-	"github.com/Michaelpalacce/go-btva/internal/orchestrator"
-	"github.com/Michaelpalacce/go-btva/internal/os/darwin"
-	"github.com/Michaelpalacce/go-btva/internal/os/linux"
 	"github.com/Michaelpalacce/go-btva/internal/os/software"
 	"github.com/Michaelpalacce/go-btva/internal/state"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
-
-// installer is a common interface implemented by the installers of all the major systems
-type installer interface {
-	GetAllSoftware() []software.Software
-}
 
 type SoftwareComponent struct {
 	os      *os.OS
@@ -26,32 +18,6 @@ type SoftwareComponent struct {
 
 func NewSoftware(os *os.OS, state *state.State) *SoftwareComponent {
 	return &SoftwareComponent{os: os, state: state, options: state.Options}
-}
-
-func WithAllSoftware() func(*orchestrator.Orchestrator) error {
-	return func(h *orchestrator.Orchestrator) error {
-		softwareComponent := NewSoftware(h.OS, h.State)
-
-		var installer installer
-		switch h.OS.Distro {
-		case "linux":
-			installer = &linux.Installer{OS: h.OS, Options: h.Options}
-		case "darwin":
-			installer = &darwin.Installer{OS: h.OS, Options: h.Options}
-		case "windows":
-			fallthrough
-		default:
-			return fmt.Errorf("OS %s is not supported", h.OS.Distro)
-		}
-
-		for _, software := range installer.GetAllSoftware() {
-			h.SoftwareTasks = append(h.SoftwareTasks, func() error {
-				return softwareComponent.InstallSoftware(software)
-			})
-		}
-
-		return nil
-	}
 }
 
 // installSoftware is an internal function that can be used to install any software. It will run through a set of commands

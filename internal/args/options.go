@@ -14,6 +14,7 @@ type Local struct{}
 
 // Infra will hold different infra decisions that need to be taken
 type Infra struct {
+	// MinimalInfrastructure
 	MinimalInfrastructure bool `json:"minimalInfrastructure"`
 
 	SSHVMIP                 string `json:"sshVmIP"`
@@ -24,6 +25,7 @@ type Infra struct {
 
 	DockerUsername string `json:"dockerUsername"`
 	DockerPAT      string `json:"dockerPat"`
+	// MinimalInfrastructure
 }
 
 // Options is a struct for options that the tool can accept.

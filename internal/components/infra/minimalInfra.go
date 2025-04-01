@@ -14,6 +14,8 @@ import (
 	"github.com/melbahja/goph"
 )
 
+// @NOTE: This file contains the definition of all the tasks for minimal infrastructure
+
 const (
 	// Private
 	_INFRA_GITLAB_RUNNER_AUTH_TOKEN_KEY = "gitlabRunnerAuthToken"
