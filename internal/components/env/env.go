@@ -25,10 +25,6 @@ func NewNev(os *osl.OS, state *state.State, options *args.Options) *Env {
 	return &Env{os: os, state: state, options: options}
 }
 
-const (
-	ENV_STATE = "Env"
-)
-
 type artifactory struct {
 	ReleaseRepo  string
 	SnapshotRepo string
@@ -73,10 +69,6 @@ func (e *Env) SettingsXml() error {
 	baseURL := fmt.Sprintf("http://%s/nexus/repository/", e.options.Infra.SSHVMIP)
 
 	if file.Exists(m2SettingsPath) {
-		e.state.Set(
-			state.WithMsg(ENV_STATE, "User has settings.xml already"),
-			state.WithErr(ENV_STATE, nil),
-		)
 		return nil
 	}
 
@@ -115,10 +107,7 @@ func (e *Env) SettingsXml() error {
 		return fmt.Errorf("could replace template vars. Err was %w", err)
 	}
 
-	e.state.Set(
-		state.WithMsg(ENV_STATE, "Finished configuring settings.xml"),
-		state.WithErr(ENV_STATE, nil),
-	)
+	slog.Info("Finished configuring settings.xml")
 
 	return nil
 }

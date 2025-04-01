@@ -13,7 +13,7 @@ import (
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
-type stepFunc func() error
+type taskFunc func() error
 
 // Handler is a struct that orchestrates the setup process based on OS
 type Handler struct {
@@ -96,63 +96,22 @@ func (h *Handler) SetupSoftware() error {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Setup Local Env Block
-
-func (h *Handler) SetupLocalEnv() error {
-	envComponent := env.NewNev(h.os, h.state, h.options)
-
-	steps := []stepFunc{
-		envComponent.SettingsXml,
-	}
-	for _, step := range steps {
-		if err := step(); err != nil {
-			h.state.Set(state.WithErr(ENV_STATE, err))
-			return err
-		}
-	}
-
-	h.state.Set(
-		state.WithMsg(ENV_STATE, "Finished environment setup."),
-		state.WithErr(ENV_STATE, nil),
-	)
-
-	return nil
-}
-
-// END Setup Local Env Block
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // Setup Infra Block
 func (h *Handler) SetupInfra() error {
 	if h.options.Infra.MinimalInfrastructure == false {
 		return nil
 	}
 
-	client, err := infra.GetClient(h.options, h.state)
-	if err != nil {
-		h.state.Set(state.WithErr(INFRA_STATE, err))
-		return err
-	}
+	infraComponent := infra.NewInfra(h.os, h.state, h.options)
 
-	defer client.Close()
-
-	infraComponent := infra.NewInfra(h.os, h.state, h.options, client)
-
-	steps := []stepFunc{
+	h.tasks([]taskFunc{
 		infraComponent.RunMinimalInfra,
 		infraComponent.FetchGitlabPassword,
 		infraComponent.CreateGitlabPat,
 		infraComponent.GetRunnerAuthToken,
 		infraComponent.RegisterGitlabRunner,
 		infraComponent.FetchNexusPassword,
-	}
-	for _, step := range steps {
-		if err := step(); err != nil {
-			h.state.Set(state.WithErr(INFRA_STATE, err))
-			return err
-		}
-	}
+	})
 
 	h.state.Set(
 		state.WithMsg(INFRA_STATE, "Finished infra setup"),
@@ -170,21 +129,42 @@ func (h *Handler) SetupInfra() error {
 // If it was done already, it won't log anything
 func (h *Handler) Final() error {
 	finalComponent := final.NewFinal(h.os, h.state, h.options)
-	steps := []stepFunc{
+
+	h.tasks([]taskFunc{
 		finalComponent.NexusInstructions,
 		finalComponent.GitlabInstructions,
-	}
-	for _, step := range steps {
-		if err := step(); err != nil {
-			h.state.Set(state.WithErr(FINAL_STATE, err))
+	})
+
+	return nil
+}
+
+// Final Block
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Setup Local Env Block
+
+func (h *Handler) SetupLocalEnv() error {
+	envComponent := env.NewNev(h.os, h.state, h.options)
+
+	h.tasks([]taskFunc{
+		envComponent.SettingsXml,
+	})
+
+	return nil
+}
+
+// END Setup Local Env Block
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// tasks will run the given tasks one by one
+func (h *Handler) tasks(tasks []taskFunc) error {
+	for _, task := range tasks {
+		if err := task(); err != nil {
 			return err
 		}
 	}
-
-	h.state.Set(
-		state.WithMsg(FINAL_STATE, "Finished entire setup"),
-		state.WithErr(FINAL_STATE, nil),
-	)
 
 	return nil
 }

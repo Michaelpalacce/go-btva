@@ -2,7 +2,6 @@ package infra
 
 import (
 	"fmt"
-	"log/slog"
 	"strings"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
@@ -15,22 +14,17 @@ import (
 )
 
 const (
-	INFRA_STEP_CONNECTION = iota + 1
-	INFRA_STEP_SETUP
-	INFRA_STEP_INFO_FETCHED_GITLAB
-	INFRA_STEP_GITLAB_PAT_CREATED
-	INFRA_STEP_GITLAB_RUNNER_AUTH_TOKEN
-	INFRA_STEP_GITLAB_RUNNER_REGISTERED
-	INFRA_STEP_INFO_FETCHED_NEXUS
-)
+	INFRA_STATE = "Infra"
 
-const (
-	INFRA_STATE = "MinimalInfra"
+	// Public
+	INFRA_GITLAB_ADMIN_PASSWORD_KEY = "gitlabPassword"
+	INFRA_GITLAB_ADMIN_PAT_KEY      = "gitlabPat"
+	INFRA_NEXUS_PASSWORD_KEY        = "nexusPassword"
 
-	INFRA_GITLAB_ADMIN_PASSWORD_KEY    = "gitlabPassword"
-	INFRA_GITLAB_ADMIN_PAT_KEY         = "gitlabPat"
-	INFRA_GITLAB_RUNNER_AUTH_TOKEN_KEY = "gitlabRunnerAuthToken"
-	INFRA_NEXUS_PASSWORD_KEY           = "nexusPassword"
+	// Private
+	_INFRA_GITLAB_RUNNER_AUTH_TOKEN_KEY = "gitlabRunnerAuthToken"
+	_INFRA_GITLAB_RUNNER_REGISTERED_KEY = "gitlabRunnerRegistered"
+	_INFRA_SETUP_DONE_KEY               = "infraSetup"
 )
 
 const (
@@ -42,17 +36,15 @@ type Infra struct {
 	os      *os.OS
 	state   *state.State
 	options *args.Options
-	client  *goph.Client
 }
 
-func NewInfra(os *os.OS, state *state.State, options *args.Options, client *goph.Client) *Infra {
-	return &Infra{os: os, state: state, options: options, client: client}
+func NewInfra(os *os.OS, state *state.State, options *args.Options) *Infra {
+	return &Infra{os: os, state: state, options: options}
 }
 
-// GetClient will ssh into the machine and give you a goph.Client pointer you can use to run commands.
+// getClient will ssh into the machine and give you a goph.Client pointer you can use to run commands.
 // @WARN: Make sure to defer client.Close()
-// @NOTE: There is probably a beter place for this
-func GetClient(options *args.Options, s *state.State) (*goph.Client, error) {
+func getClient(options *args.Options) (*goph.Client, error) {
 	infraOptions := options.Infra
 
 	client, err := ssh.GetClient(infraOptions.SSHVMIP, infraOptions.SSHUsername, infraOptions.SSHPassword, infraOptions.SSHPrivateKey, infraOptions.SSHPrivateKeyPassphrase)
@@ -60,38 +52,39 @@ func GetClient(options *args.Options, s *state.State) (*goph.Client, error) {
 		return nil, fmt.Errorf("could not create a new ssh client and/or ssh into machine. Err was: %w", err)
 	}
 
-	s.Set(
-		state.WithStep(INFRA_STATE, INFRA_STEP_CONNECTION),
-		state.WithMsg(INFRA_STATE, fmt.Sprintf("Connected to VM (%s) via ssh", options.Infra.SSHVMIP)),
-	)
-
 	return client, nil
 }
 
 // runMinimalInfra will fetch the BTVA minimal infra installer and run it
 // @TODO: Fix the branch
 func (i *Infra) RunMinimalInfra() error {
-	if infraStep(i.state) >= INFRA_STEP_SETUP {
+	if state.Get(i.state, state.GetContextProp(INFRA_STATE, _INFRA_SETUP_DONE_KEY)) == "true" {
 		return nil
 	}
 
 	i.state.Set(state.WithMsg(INFRA_STATE, "Running the minimal infrastructure installer. This may take a few minutes as it waits for services to be healthy."))
 
-	out, err := i.client.Run(fmt.Sprintf("curl -o- %s | bash -s -- %s %q", BTVA_MINIMAL_INFRA_INSTALL_URL, i.options.Infra.DockerUsername, i.options.Infra.DockerPAT))
+	client, err := getClient(i.options)
+	if err != nil {
+		return fmt.Errorf("could not create a new ssh client and/or ssh into machine. Err was: %w", err)
+	}
+	defer client.Close()
+
+	out, err := client.Run(fmt.Sprintf("curl -o- %s | bash -s -- %s %q", BTVA_MINIMAL_INFRA_INSTALL_URL, i.options.Infra.DockerUsername, i.options.Infra.DockerPAT))
 	if err != nil {
 		return fmt.Errorf("minimal infrastructure installer exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
 
-	if out, err := i.client.Run(fmt.Sprintf("sed -i \"s|external_url 'http://infra.corp.local/gitlab'|external_url '%q'|\" %s/docker-compose.yml", gitlabUrl(*i.options), BTVA_INSTALL_DIR_INFRA)); err != nil {
+	if out, err := client.Run(fmt.Sprintf("sed -i \"s|external_url 'http://infra.corp.local/gitlab'|external_url '%q'|\" %s/docker-compose.yml", gitlabUrl(*i.options), BTVA_INSTALL_DIR_INFRA)); err != nil {
 		return fmt.Errorf("failed to modify compose file. err was %w, output was:\n%s", err, out)
 	}
 
-	if out, err := i.client.Run(fmt.Sprintf("docker compose -f %s/docker-compose.yml up -d --wait", BTVA_INSTALL_DIR_INFRA)); err != nil {
+	if out, err := client.Run(fmt.Sprintf("docker compose -f %s/docker-compose.yml up -d --wait", BTVA_INSTALL_DIR_INFRA)); err != nil {
 		return fmt.Errorf("failed to start containers. err was %w, output was:\n%s", err, out)
 	}
 
 	i.state.Set(
-		state.WithStep(INFRA_STATE, INFRA_STEP_SETUP),
+		state.WithContextProp(INFRA_STATE, _INFRA_SETUP_DONE_KEY, "true"),
 		state.WithMsg(INFRA_STATE, "Minimal infrastructure installer successfully set up."),
 	)
 
@@ -107,13 +100,18 @@ func (i *Infra) FetchGitlabPassword() error {
 
 	i.state.Set(state.WithMsg(INFRA_STATE, "Fetching gitlab admin password"))
 
-	out, err := i.client.Run("docker exec gitlab-ce test -f /etc/gitlab/initial_root_password && docker exec gitlab-ce grep 'Password:' /etc/gitlab/initial_root_password | awk '{print $2}'")
+	client, err := getClient(i.options)
+	if err != nil {
+		return fmt.Errorf("could not create a new ssh client and/or ssh into machine. Err was: %w", err)
+	}
+	defer client.Close()
+
+	out, err := client.Run("docker exec gitlab-ce test -f /etc/gitlab/initial_root_password && docker exec gitlab-ce grep 'Password:' /etc/gitlab/initial_root_password | awk '{print $2}'")
 	if err != nil {
 		return fmt.Errorf("gitlab admin password fetching exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
 
 	i.state.Set(
-		state.WithStep(INFRA_STATE, INFRA_STEP_INFO_FETCHED_GITLAB),
 		state.WithContextProp(INFRA_STATE, INFRA_GITLAB_ADMIN_PASSWORD_KEY, strings.TrimSpace(string(out))),
 		state.WithMsg(INFRA_STATE, "Gitlab admin password fetched successfully."),
 	)
@@ -135,15 +133,18 @@ func (i *Infra) CreateGitlabPat() error {
 	}
 	gitlabPat := gitlabPassword[:20]
 
-	out, err := i.client.Run(fmt.Sprintf("docker exec gitlab-ce gitlab-rails runner 'token = User.find_by_username(\"root\").personal_access_tokens.create(scopes: [:read_user, :read_repository, :api, :create_runner, :manage_runner, :sudo, :admin_mode], name: \"Automation token\", expires_at: 356.days.from_now); token.set_token(\"%s\"); token.save! '", gitlabPat))
+	client, err := getClient(i.options)
 	if err != nil {
-		if !isDuplicateKeyGitlab(string(out)) {
-			return fmt.Errorf("gitlab admin public access token creation exited unsuccessfully. err was %w, output was:\n%s", err, out)
-		}
+		return fmt.Errorf("could not create a new ssh client and/or ssh into machine. Err was: %w", err)
+	}
+	defer client.Close()
+
+	out, err := client.Run(fmt.Sprintf("docker exec gitlab-ce gitlab-rails runner 'token = User.find_by_username(\"root\").personal_access_tokens.create(scopes: [:read_user, :read_repository, :api, :create_runner, :manage_runner, :sudo, :admin_mode], name: \"Automation token\", expires_at: 356.days.from_now); token.set_token(\"%s\"); token.save! '", gitlabPat))
+	if err != nil && !isDuplicateKeyGitlab(string(out)) {
+		return fmt.Errorf("gitlab admin public access token creation exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
 
 	i.state.Set(
-		state.WithStep(INFRA_STATE, INFRA_STEP_GITLAB_PAT_CREATED),
 		state.WithContextProp(INFRA_STATE, INFRA_GITLAB_ADMIN_PAT_KEY, gitlabPat),
 		state.WithMsg(INFRA_STATE, "Gitlab admin public access token created successfully."),
 	)
@@ -172,8 +173,7 @@ func (i *Infra) GetRunnerAuthToken() error {
 	}
 
 	i.state.Set(
-		state.WithStep(INFRA_STATE, INFRA_STEP_GITLAB_RUNNER_AUTH_TOKEN),
-		state.WithContextProp(INFRA_STATE, INFRA_GITLAB_RUNNER_AUTH_TOKEN_KEY, token),
+		state.WithContextProp(INFRA_STATE, _INFRA_GITLAB_RUNNER_AUTH_TOKEN_KEY, token),
 		state.WithMsg(INFRA_STATE, "Gitlab auth token successfully created."),
 	)
 
@@ -182,26 +182,30 @@ func (i *Infra) GetRunnerAuthToken() error {
 
 // getRunnerAuthToken will fetch an auth token that can be used to register a new gitlab runner
 func (i *Infra) RegisterGitlabRunner() error {
-	if infraStep(i.state) >= INFRA_STEP_GITLAB_RUNNER_REGISTERED {
+	if state.Get(i.state, state.GetContextProp(INFRA_STATE, _INFRA_GITLAB_RUNNER_REGISTERED_KEY)) == "true" {
 		return nil
 	}
 
 	i.state.Set(state.WithMsg(INFRA_STATE, "Registering gitlab runner with generated auth token"))
 
-	runnerAuthToken := state.Get(i.state, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_RUNNER_AUTH_TOKEN_KEY))
+	runnerAuthToken := state.Get(i.state, state.GetContextProp(INFRA_STATE, _INFRA_GITLAB_RUNNER_AUTH_TOKEN_KEY))
 	if runnerAuthToken == "" {
 		return fmt.Errorf("runner auth token is an empty string. Was it deleted? Rerunning the infra may help.")
 	}
 
-	out, err := i.client.Run(fmt.Sprintf("docker exec gitlab-runner gitlab-runner register --non-interactive --url \"%s\" --token \"%s\" --executor \"docker\" --docker-image alpine:latest --description \"docker-runner\"", gitlabUrl(*i.options), runnerAuthToken))
+	client, err := getClient(i.options)
+	if err != nil {
+		return fmt.Errorf("could not create a new ssh client and/or ssh into machine. Err was: %w", err)
+	}
+	defer client.Close()
+
+	out, err := client.Run(fmt.Sprintf("docker exec gitlab-runner gitlab-runner register --non-interactive --url \"%s\" --token \"%s\" --executor \"docker\" --docker-image alpine:latest --description \"docker-runner\"", gitlabUrl(*i.options), runnerAuthToken))
 	if err != nil {
 		return fmt.Errorf("registering a gitlab runner exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
 
-	slog.Info(string(out))
-
 	i.state.Set(
-		state.WithStep(INFRA_STATE, INFRA_STEP_GITLAB_RUNNER_REGISTERED),
+		state.WithContextProp(INFRA_STATE, _INFRA_GITLAB_RUNNER_REGISTERED_KEY, "true"),
 		state.WithMsg(INFRA_STATE, "Gitlab runner registered successfully."),
 	)
 
@@ -216,7 +220,13 @@ func (i *Infra) FetchNexusPassword() error {
 
 	i.state.Set(state.WithMsg(INFRA_STATE, "Fetching nexus admin password"))
 
-	out, err := i.client.Run("docker exec nexus cat /nexus-data/admin.password")
+	client, err := getClient(i.options)
+	if err != nil {
+		return fmt.Errorf("could not create a new ssh client and/or ssh into machine. Err was: %w", err)
+	}
+	defer client.Close()
+
+	out, err := client.Run("docker exec nexus cat /nexus-data/admin.password")
 	if err != nil {
 		if isNoSuchFileOrDirectoryErr(string(out)) {
 			pass, err := prompt.AskPass("You've already went through the nexus initial wizard.", "In order to continue execution, please provide nexus password manually:")
@@ -231,17 +241,11 @@ func (i *Infra) FetchNexusPassword() error {
 	}
 
 	i.state.Set(
-		state.WithStep(INFRA_STATE, INFRA_STEP_INFO_FETCHED_NEXUS),
 		state.WithContextProp(INFRA_STATE, INFRA_NEXUS_PASSWORD_KEY, strings.TrimSpace(string(out))),
 		state.WithMsg(INFRA_STATE, "Nexus admin password fetched successfully."),
 	)
 
 	return nil
-}
-
-// infraStep gets the current step for the infra setup that we are on
-func infraStep(s *state.State) int {
-	return state.Get(s, state.GetStep(INFRA_STATE))
 }
 
 func isNoSuchFileOrDirectoryErr(msg string) bool {

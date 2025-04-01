@@ -12,7 +12,6 @@ type (
 
 	GetStateOption            func(*State) *internalState
 	GetSuccessStateOption     func(*State) bool
-	GetStepStateOption        func(*State) int
 	GetMsgStateOption         func(*State) string
 	GetErrStateOption         func(*State) error
 	GetContextPropStateOption func(*State) string
@@ -22,9 +21,7 @@ type (
 type internalState struct {
 	// Msg is any human readable message that was or was not added
 	Msg string `json:"msg"`
-	// Step signifies at which step of the execution we are
-	Step int `json:"step"`
-	// Err is the State-Step error if any
+	// Err is the error if any
 	Err error `json:"-"`
 	// Context is a container for additional data that must be stored for the state
 	Context map[string]string `json:"data,omitempty"`
@@ -124,17 +121,6 @@ func GetContextProp(key, prop string) GetContextPropStateOption {
 	}
 }
 
-func GetStep(key string) GetStepStateOption {
-	return func(s *State) int {
-		value := s.GetValue(key)
-		if value == nil {
-			return 0
-		}
-
-		return value.Step
-	}
-}
-
 // State Options
 
 // WithMsg wraps WithQuietMsg but it will also log the message
@@ -155,25 +141,6 @@ func WithQuietMsg(key string, msg string) SetStateOption {
 
 		value := s.State[key]
 		value.Msg = msg
-		s.State[key] = value
-
-		return nil
-	}
-}
-
-// WithStep sets the step, however it will NOT decrement a step
-// @WARN: The incremental only is very very important so we don't repeat some other steps, just fix ones that are broken
-// @NOTE: Don't use
-func WithStep(key string, step int) SetStateOption {
-	return func(s *State) error {
-		if _, ok := s.State[key]; !ok {
-			s.State[key] = internalState{}
-		}
-
-		value := s.State[key]
-		if value.Step < step {
-			value.Step = step
-		}
 		s.State[key] = value
 
 		return nil

@@ -10,13 +10,6 @@ import (
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
-const (
-	FINAL_STATE = "Final"
-
-	FINAL_INSTRUCTIONS_NEXUS_STEP = iota + 1
-	FINAL_INSTRUCTIONS_GITLAB_STEP
-)
-
 type Final struct {
 	os      *os.OS
 	state   *state.State
@@ -42,10 +35,6 @@ func (f *Final) NexusInstructions() error {
 	slog.Info("Username: admin")
 	slog.Info(fmt.Sprintf("Password: %s", nexusPassword))
 
-	f.state.Set(
-		state.WithQuietMsg(FINAL_STATE, "Printed Nexus instructions"),
-	)
-
 	return nil
 }
 
@@ -55,6 +44,11 @@ func (f *Final) GitlabInstructions() error {
 		return fmt.Errorf("gitlab password is an empty string. Was it deleted? Rerunning the infra may help.")
 	}
 
+	gitlabPat := infra.GitlabPat(f.state)
+	if gitlabPat == "" {
+		return fmt.Errorf("gitlab public access token is an empty string. Was it deleted? Rerunning the infra may help.")
+	}
+
 	slog.Info("===============================================================")
 	slog.Info("============================ GITLAB ===========================")
 	slog.Info("===============================================================")
@@ -62,10 +56,7 @@ func (f *Final) GitlabInstructions() error {
 	slog.Info(fmt.Sprintf("Gitlab: http://%s:8081/gitlab", f.options.Infra.SSHVMIP))
 	slog.Info("Username: root")
 	slog.Info(fmt.Sprintf("Password: %s", gitlabPassword))
-
-	f.state.Set(
-		state.WithQuietMsg(FINAL_STATE, "Printed Gitlab instructions"),
-	)
+	slog.Info(fmt.Sprintf("Public Access Token: %s", gitlabPat))
 
 	return nil
 }

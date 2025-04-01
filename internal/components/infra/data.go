@@ -11,7 +11,7 @@ func GitlabPat(s *state.State) string {
 }
 
 func GitlabRunnerAuthToken(s *state.State) string {
-	return state.Get(s, state.GetContextProp(INFRA_STATE, INFRA_GITLAB_RUNNER_AUTH_TOKEN_KEY))
+	return state.Get(s, state.GetContextProp(INFRA_STATE, _INFRA_GITLAB_RUNNER_AUTH_TOKEN_KEY))
 }
 
 func NexusAdminPassword(s *state.State) string {
