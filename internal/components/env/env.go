@@ -25,18 +25,15 @@ func NewNev(os *osl.OS, state *state.State, options *args.Options) *Env {
 	return &Env{os: os, state: state, options: options}
 }
 
-type artifactory struct {
+type Artifactory struct {
 	ReleaseRepo  string
 	SnapshotRepo string
 	GroupRepo    string
+	Password     string
 }
 
 type infraInventory struct {
-	Artifactory artifactory
-}
-
-type artifactManagerInventory struct {
-	Password string
+	Artifactory Artifactory
 }
 
 type ariaInventory struct {
@@ -49,8 +46,6 @@ type ariaInventory struct {
 }
 
 type settingsInventory struct {
-	ArtifactManager artifactManagerInventory
-
 	Infra infraInventory
 	Aria  ariaInventory
 }
@@ -60,8 +55,18 @@ var templates embed.FS
 
 // MinimalInfraSettingsXml will replace the `settings.xml` in your `~/.m2` dir
 func (e *Env) MinimalInfraSettingsXml() error {
-	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", e.os.HomeDir)
 	baseURL := fmt.Sprintf("http://%s/nexus/repository/", e.options.Infra.SSHVMIP)
+
+	return e.SettingsXml(Artifactory{
+		ReleaseRepo:  baseURL + "maven-releases",
+		SnapshotRepo: baseURL + "maven-snapshots",
+		GroupRepo:    baseURL + "maven-public",
+		Password:     infra.NexusAdminPassword(e.state),
+	})
+}
+
+func (e *Env) SettingsXml(artifactory Artifactory) error {
+	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", e.os.HomeDir)
 
 	if file.Exists(m2SettingsPath) {
 		return nil
@@ -70,17 +75,8 @@ func (e *Env) MinimalInfraSettingsXml() error {
 	slog.Info("Configuring `settings.xml`.")
 
 	templateVars := settingsInventory{
-		ArtifactManager: artifactManagerInventory{
-			Password: infra.NexusAdminPassword(e.state),
-		},
-		Infra: infraInventory{
-			Artifactory: artifactory{
-				ReleaseRepo:  baseURL + "maven-releases",
-				SnapshotRepo: baseURL + "maven-snapshots",
-				GroupRepo:    baseURL + "maven-public",
-			},
-		},
-		Aria: getAriaInventory(),
+		Infra: infraInventory{Artifactory: artifactory},
+		Aria:  getAriaInventory(),
 	}
 
 	template, err := template.New("settings.xml").ParseFS(templates, "templates/settings.xml")
