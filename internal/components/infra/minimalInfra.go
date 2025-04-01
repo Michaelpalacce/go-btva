@@ -175,6 +175,7 @@ func (i *InfraComponent) GetRunnerAuthToken() error {
 }
 
 // getRunnerAuthToken will fetch an auth token that can be used to register a new gitlab runner
+// Re-running this is ok, it will say it's already valid
 func (i *InfraComponent) RegisterGitlabRunner() error {
 	if state.Get(i.state, state.GetContextProp(INFRA_STATE, _INFRA_GITLAB_RUNNER_REGISTERED_KEY)) == "true" {
 		return nil
