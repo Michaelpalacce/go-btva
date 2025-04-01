@@ -163,6 +163,7 @@ func WithQuietMsg(key string, msg string) SetStateOption {
 
 // WithStep sets the step, however it will NOT decrement a step
 // @WARN: The incremental only is very very important so we don't repeat some other steps, just fix ones that are broken
+// @NOTE: Don't use
 func WithStep(key string, step int) SetStateOption {
 	return func(s *State) error {
 		if _, ok := s.State[key]; !ok {

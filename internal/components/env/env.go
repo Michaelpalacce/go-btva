@@ -26,10 +26,6 @@ func NewNev(os *osl.OS, state *state.State, options *args.Options) *Env {
 }
 
 const (
-	ENV_STEP_SETTINGS_XML = iota + 1
-)
-
-const (
 	ENV_STATE = "Env"
 )
 
@@ -73,31 +69,18 @@ var templates embed.FS
 
 // SettingsXml will replace the `settings.xml` in your `~/.m2` dir
 func (e *Env) SettingsXml() error {
-	if state.Get(e.state, envStep()) >= ENV_STEP_SETTINGS_XML {
-		return nil
-	}
-	slog.Info("Configuring `settings.xml`.")
-
 	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", e.os.HomeDir)
 	baseURL := fmt.Sprintf("http://%s/nexus/repository/", e.options.Infra.SSHVMIP)
 
 	if file.Exists(m2SettingsPath) {
-		var a bool
-		var err error
-
-		if a, err = prompt.AskYesNo(fmt.Sprintf("settings.xml file found in %s. Are you sure you want to replace it?", m2SettingsPath)); err != nil {
-			return fmt.Errorf("could not get an answer. Err was: %w", err)
-		}
-
-		if !a {
-			e.state.Set(
-				state.WithMsg(ENV_STATE, "User has settings.xml already and terminated the replacement"),
-				state.WithStep(ENV_STATE, ENV_STEP_SETTINGS_XML),
-				state.WithErr(ENV_STATE, nil),
-			)
-			return nil
-		}
+		e.state.Set(
+			state.WithMsg(ENV_STATE, "User has settings.xml already"),
+			state.WithErr(ENV_STATE, nil),
+		)
+		return nil
 	}
+
+	slog.Info("Configuring `settings.xml`.")
 
 	templateVars := settingsInventory{
 		Nexus: nexusInventory{
@@ -134,7 +117,6 @@ func (e *Env) SettingsXml() error {
 
 	e.state.Set(
 		state.WithMsg(ENV_STATE, "Finished configuring settings.xml"),
-		state.WithStep(ENV_STATE, ENV_STEP_SETTINGS_XML),
 		state.WithErr(ENV_STATE, nil),
 	)
 
@@ -170,8 +152,4 @@ func getAriaInventory() ariaInventory {
 	}
 
 	return inv
-}
-
-func envStep() state.GetStepStateOption {
-	return state.GetStep(ENV_STATE)
 }

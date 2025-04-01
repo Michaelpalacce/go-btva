@@ -29,10 +29,6 @@ func NewFinal(os *os.OS, state *state.State, options *args.Options) *Final {
 
 // NexusInstructions will print out details for nexus
 func (f *Final) NexusInstructions() error {
-	if state.Get(f.state, finalStep()) >= FINAL_INSTRUCTIONS_NEXUS_STEP {
-		return nil
-	}
-
 	nexusPassword := infra.NexusAdminPassword(f.state)
 	if nexusPassword == "" {
 		return fmt.Errorf("nexus password is an empty string. Was it deleted? Rerunning the infra may help.")
@@ -47,7 +43,6 @@ func (f *Final) NexusInstructions() error {
 	slog.Info(fmt.Sprintf("Password: %s", nexusPassword))
 
 	f.state.Set(
-		state.WithStep(FINAL_STATE, FINAL_INSTRUCTIONS_NEXUS_STEP),
 		state.WithQuietMsg(FINAL_STATE, "Printed Nexus instructions"),
 	)
 
@@ -55,10 +50,6 @@ func (f *Final) NexusInstructions() error {
 }
 
 func (f *Final) GitlabInstructions() error {
-	if state.Get(f.state, finalStep()) >= FINAL_INSTRUCTIONS_GITLAB_STEP {
-		return nil
-	}
-
 	gitlabPassword := infra.GitlabAdminPassword(f.state)
 	if gitlabPassword == "" {
 		return fmt.Errorf("gitlab password is an empty string. Was it deleted? Rerunning the infra may help.")
@@ -73,13 +64,8 @@ func (f *Final) GitlabInstructions() error {
 	slog.Info(fmt.Sprintf("Password: %s", gitlabPassword))
 
 	f.state.Set(
-		state.WithStep(FINAL_STATE, FINAL_INSTRUCTIONS_GITLAB_STEP),
 		state.WithQuietMsg(FINAL_STATE, "Printed Gitlab instructions"),
 	)
 
 	return nil
-}
-
-func finalStep() state.GetStepStateOption {
-	return state.GetStep(FINAL_STATE)
 }

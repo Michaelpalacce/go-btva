@@ -17,23 +17,46 @@ type stepFunc func() error
 
 // Handler is a struct that orchestrates the setup process based on OS
 type Handler struct {
-	os        *os.OS
-	state     *state.State
-	options   *args.Options
-	installer installer
+	os      *os.OS
+	state   *state.State
+	options *args.Options
+
+	// WIP
+	softwareTasks []func(*Handler) error
+	infraTasks    []func(*Handler) error
+	envTasks      []func(*Handler) error
+	finalTasks    []func(*Handler) error
+	// WIP
 }
 
-type SetupOption func(h *Handler) error
+// WIP
+type AddTaskOption func(h *[]func(*Handler) error) error
 
-func (h *Handler) Setup(options ...SetupOption) error {
+func (h *Handler) AddTask(taskType string, options ...AddTaskOption) error {
+	var tasks *[]func(*Handler) error
+	switch taskType {
+	case "infra":
+		tasks = &h.infraTasks
+	case "env":
+		tasks = &h.envTasks
+	case "software":
+		tasks = &h.softwareTasks
+	case "final":
+		tasks = &h.finalTasks
+	default:
+		return fmt.Errorf("no task %s found available are infra, env, software, final", taskType)
+	}
+
 	for _, option := range options {
-		if err := option(h); err != nil {
+		if err := option(tasks); err != nil {
 			return err
 		}
 	}
 
 	return nil
 }
+
+// WIP
 
 // NewHandler will return a new Handler that will be used to manage and execute os operations
 func NewHandler(os *os.OS, state *state.State, options *args.Options) *Handler {

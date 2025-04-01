@@ -2,6 +2,7 @@ package infra
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
@@ -100,7 +101,7 @@ func (i *Infra) RunMinimalInfra() error {
 // fetchGitlabPassword will fetch the password for Gitlab and store it in the context store
 // Command looks a bit big, but it's all so we can fail in case the file doesn't exists or the container is not started
 func (i *Infra) FetchGitlabPassword() error {
-	if infraStep(i.state) >= INFRA_STEP_INFO_FETCHED_GITLAB && GitlabAdminPassword(i.state) != "" {
+	if GitlabAdminPassword(i.state) != "" {
 		return nil
 	}
 
@@ -122,7 +123,7 @@ func (i *Infra) FetchGitlabPassword() error {
 
 // createGitlabPat with the help of ruby on the gitlab container will generate a new Public Access Token
 func (i *Infra) CreateGitlabPat() error {
-	if infraStep(i.state) >= INFRA_STEP_GITLAB_PAT_CREATED && GitlabPat(i.state) != "" {
+	if GitlabPat(i.state) != "" {
 		return nil
 	}
 
@@ -152,7 +153,7 @@ func (i *Infra) CreateGitlabPat() error {
 
 // getRunnerAuthToken will fetch an auth token that can be used to register a new gitlab runner
 func (i *Infra) GetRunnerAuthToken() error {
-	if infraStep(i.state) >= INFRA_STEP_GITLAB_RUNNER_AUTH_TOKEN && GitlabRunnerAuthToken(i.state) != "" {
+	if GitlabRunnerAuthToken(i.state) != "" {
 		return nil
 	}
 
@@ -197,6 +198,8 @@ func (i *Infra) RegisterGitlabRunner() error {
 		return fmt.Errorf("registering a gitlab runner exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
 
+	slog.Info(string(out))
+
 	i.state.Set(
 		state.WithStep(INFRA_STATE, INFRA_STEP_GITLAB_RUNNER_REGISTERED),
 		state.WithMsg(INFRA_STATE, "Gitlab runner registered successfully."),
@@ -207,7 +210,7 @@ func (i *Infra) RegisterGitlabRunner() error {
 
 // fetchNexusPassword will fetch the password for Nexus and store it in the context store
 func (i *Infra) FetchNexusPassword() error {
-	if infraStep(i.state) >= INFRA_STEP_INFO_FETCHED_NEXUS && NexusAdminPassword(i.state) != "" {
+	if NexusAdminPassword(i.state) != "" {
 		return nil
 	}
 
