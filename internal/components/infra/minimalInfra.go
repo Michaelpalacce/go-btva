@@ -53,7 +53,7 @@ func (i *InfraComponent) RunMinimalInfra() error {
 
 	client, err := getClient(i.options)
 	if err != nil {
-		return fmt.Errorf("could not create a new ssh client and/or ssh into machine. Err was: %w", err)
+		return err
 	}
 	defer client.Close()
 
@@ -90,7 +90,7 @@ func (i *InfraComponent) FetchGitlabPassword() error {
 
 	client, err := getClient(i.options)
 	if err != nil {
-		return fmt.Errorf("could not create a new ssh client and/or ssh into machine. Err was: %w", err)
+		return err
 	}
 	defer client.Close()
 
@@ -123,7 +123,7 @@ func (i *InfraComponent) CreateGitlabPat() error {
 
 	client, err := getClient(i.options)
 	if err != nil {
-		return fmt.Errorf("could not create a new ssh client and/or ssh into machine. Err was: %w", err)
+		return err
 	}
 	defer client.Close()
 
@@ -184,7 +184,7 @@ func (i *InfraComponent) RegisterGitlabRunner() error {
 
 	client, err := getClient(i.options)
 	if err != nil {
-		return fmt.Errorf("could not create a new ssh client and/or ssh into machine. Err was: %w", err)
+		return err
 	}
 	defer client.Close()
 
@@ -211,7 +211,7 @@ func (i *InfraComponent) FetchNexusPassword() error {
 
 	client, err := getClient(i.options)
 	if err != nil {
-		return fmt.Errorf("could not create a new ssh client and/or ssh into machine. Err was: %w", err)
+		return err
 	}
 	defer client.Close()
 

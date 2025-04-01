@@ -2,6 +2,7 @@ package main
 
 import (
 	"log/slog"
+	"os"
 
 	infra_component "github.com/Michaelpalacce/go-btva/internal/components/infra"
 	software_component "github.com/Michaelpalacce/go-btva/internal/components/software"
@@ -28,7 +29,7 @@ func main() {
 
 	if s, err = state.NewState(state.WithDefaultJsonStorage(), state.WithCliArgs()); err != nil {
 		slog.Error("Error while loading state.", "err", err)
-		return
+		os.Exit(1)
 	}
 
 	osPtr = osl.GetOS()
@@ -36,10 +37,19 @@ func main() {
 	h = handler.NewHandler(osPtr, s, s.Options)
 
 	// TODO: Add correct tasks based on what is decided by the user
-	h.AddTasks(
+	err = h.AddTasks(
 		software_component.WithAllSoftware(),
 		infra_component.WithFullMinimalInfrastructure(),
 	)
+	if err != nil {
+		slog.Error("Error while adding tasks.", "err", err)
+		os.Exit(1)
+	}
 
-	h.RunTasks()
+	if err := h.RunTasks(); err != nil {
+		slog.Error("Error while running tasks.", "err", err)
+		os.Exit(1)
+	}
+
+	os.Exit(0)
 }
