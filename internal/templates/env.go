@@ -12,14 +12,14 @@ import (
 )
 
 type settingsInventory struct {
-	Artifactory args.Artifactory
-	Aria        args.AriaAutomation
+	ArtifactManager args.ArtifactManager
+	Aria            args.AriaAutomation
 }
 
 //go:embed templates/*
 var templates embed.FS
 
-func SettingsXml(homeDir string, artifactoryInventory args.Artifactory, ariaInventory args.AriaAutomation) error {
+func SettingsXml(homeDir string, artifactoryInventory args.ArtifactManager, ariaInventory args.AriaAutomation) error {
 	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", homeDir)
 
 	if file.Exists(m2SettingsPath) {
@@ -38,8 +38,8 @@ func SettingsXml(homeDir string, artifactoryInventory args.Artifactory, ariaInve
 	slog.Info("Configuring `settings.xml`.")
 
 	templateVars := settingsInventory{
-		Artifactory: artifactoryInventory,
-		Aria:        ariaInventory,
+		ArtifactManager: artifactoryInventory,
+		Aria:            ariaInventory,
 	}
 
 	template, err := template.New("settings.xml").ParseFS(templates, "templates/settings.xml")

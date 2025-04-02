@@ -7,12 +7,12 @@
         <server>
             <id>central</id>
             <username>admin</username>
-            <password>{{ .Artifactory.Password }}</password>
+            <password>{{ .ArtifactManager.Password }}</password>
         </server>
         <server>
             <id>snapshots</id>
             <username>admin</username>
-            <password>{{ .Artifactory.Password }}</password>
+            <password>{{ .ArtifactManager.Password }}</password>
         </server>
     </servers>
 
@@ -68,15 +68,15 @@
 
             <properties>
                 <releaseRepositoryUrl>
-                    {{.Artifactory.ReleaseRepo}}</releaseRepositoryUrl>
+                    {{.ArtifactManager.ReleaseRepo}}</releaseRepositoryUrl>
                 <snapshotRepositoryUrl>
-                    {{.Artifactory.SnapshotRepo}}</snapshotRepositoryUrl>
+                    {{.ArtifactManager.SnapshotRepo}}</snapshotRepositoryUrl>
             </properties>
 
             <repositories>
                 <repository>
                     <id>central</id>
-                    <url>{{.Artifactory.GroupRepo}}</url>
+                    <url>{{.ArtifactManager.GroupRepo}}</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
@@ -86,7 +86,7 @@
                 </repository>
                 <repository>
                     <id>snapshots</id>
-                    <url>{{.Artifactory.GroupRepo}}</url>
+                    <url>{{.ArtifactManager.GroupRepo}}</url>
                     <releases>
                         <enabled>false</enabled>
                     </releases>
@@ -99,7 +99,7 @@
             <pluginRepositories>
                 <pluginRepository>
                     <id>central</id>
-                    <url>{{.Artifactory.GroupRepo}}</url>
+                    <url>{{.ArtifactManager.GroupRepo}}</url>
                 </pluginRepository>
             </pluginRepositories>
         </profile>

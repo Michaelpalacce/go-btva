@@ -7,6 +7,7 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/state"
+	"github.com/Michaelpalacce/go-btva/internal/templates"
 	"github.com/Michaelpalacce/go-btva/pkg/gitlab"
 	"github.com/Michaelpalacce/go-btva/pkg/prompt"
 	"github.com/Michaelpalacce/go-btva/pkg/ssh"
@@ -280,21 +281,20 @@ func (f *InfraComponent) MinimalInfraGitlabInstructions() error {
 	return nil
 }
 
-// MinimalInfraSettingsXml prepares the options to accept the minimal infra nexus repo
-// Flushes the state storage as options were changed
-// @WARN: THIS MODIFIES STATE
+// MinimalInfraSettingsXml replaces ~/.m2/settings.xml with the minimal infra ones
 func (i *InfraComponent) MinimalInfraSettingsXml() error {
 	baseURL := fmt.Sprintf("http://%s/nexus/repository/", i.options.MinimalInfra.SSHVMIP)
-	i.options.Artifactory = args.Artifactory{
-		ReleaseRepo:  baseURL + "maven-releases",
-		SnapshotRepo: baseURL + "maven-snapshots",
-		GroupRepo:    baseURL + "maven-public",
-		Password:     NexusAdminPassword(i.state),
-	}
 
-	go i.state.Flush()
-
-	return nil
+	return templates.SettingsXml(
+		i.os.HomeDir,
+		args.ArtifactManager{
+			ReleaseRepo:  baseURL + "maven-releases",
+			SnapshotRepo: baseURL + "maven-snapshots",
+			GroupRepo:    baseURL + "maven-public",
+			Password:     NexusAdminPassword(i.state),
+		},
+		i.options.Aria.Automation,
+	)
 }
 
 func isNoSuchFileOrDirectoryErr(msg string) bool {

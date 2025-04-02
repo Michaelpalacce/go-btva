@@ -4,6 +4,30 @@ import (
 	"fmt"
 )
 
+///////////////////////////////////////////////////////////////////////////////////////////////////// Infra
+
+// WithPartialMinimalInfrastructureGitlab will run replace your settings.xml file with the minimal infra settings
+// You don't need to pass infraComponent, it will be created
+func WithSettingsXml() func(*Orchestrator) error {
+	return func(o *Orchestrator) error {
+		infraComponent := o.components.infraComponent
+
+		if err := o.Options.ValidateAriaAutomation(); err != nil {
+			return fmt.Errorf("error trying to validate passed options. Err was: %w", err)
+		}
+
+		if err := o.Options.ValidateArtifactManagerArguments(); err != nil {
+			return fmt.Errorf("error trying to validate passed options. Err was: %w", err)
+		}
+
+		o.EnvTasks = append(o.EnvTasks, []TaskFunc{
+			infraComponent.InfraSettingsXml,
+		}...)
+
+		return nil
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////// Minimal INFRA
 
 // WithFullMinimalInfrastructure will setup the entire minimal infrastructure stack and configure your env accordingly
@@ -97,13 +121,8 @@ func WithPartialMinimalInfrastructureSettingsXml() func(*Orchestrator) error {
 	return func(o *Orchestrator) error {
 		infraComponent := o.components.infraComponent
 
-		if err := o.Options.ValidateAriaAutomation(); err != nil {
-			return fmt.Errorf("error trying to validate passed options. Err was: %w", err)
-		}
-
 		o.EnvTasks = append(o.EnvTasks, []TaskFunc{
 			infraComponent.MinimalInfraSettingsXml,
-			infraComponent.InfraSettingsXml,
 		}...)
 
 		return nil

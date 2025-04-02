@@ -37,20 +37,20 @@ type Aria struct {
 	Automation AriaAutomation `json:"automation"`
 }
 
-// Holds Artifactory (jFrog Artifactory, Nexus, Azure Packages, etc) details that will be used to generate the settings.xml file
-type Artifactory struct {
-	ReleaseRepo  string
-	SnapshotRepo string
-	GroupRepo    string
-	Password     string
+// Holds ArtifactManager (jFrog Artifactory, Nexus, Azure Packages, etc) details that will be used to generate the settings.xml file
+type ArtifactManager struct {
+	ReleaseRepo  string `json:"releaseRepo"`
+	SnapshotRepo string `json:"snapshotRepo"`
+	GroupRepo    string `json:"groupRepo"`
+	Password     string `json:"password"`
 }
 
 // Options is the the spec from the user what is wanted.
 type Options struct {
-	Software     Software     `json:"software"`
-	MinimalInfra MinimalInfra `json:"mininalInfra"`
-	Aria         Aria         `json:"aria"`
-	Artifactory  Artifactory  `json:"artifactory"`
+	Software        Software        `json:"software"`
+	MinimalInfra    MinimalInfra    `json:"mininalInfra"`
+	Aria            Aria            `json:"aria"`
+	ArtifactManager ArtifactManager `json:"artifactManager"`
 
 	// parsed is an internal variable that tells us that the options have already been parsed and don't need a second go
 	parsed bool

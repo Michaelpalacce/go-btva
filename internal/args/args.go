@@ -18,7 +18,7 @@ func Args() *Options {
 
 	// Infra
 	flag.BoolVar(&options.MinimalInfra.MinimalInfrastructureGitlab, "minimalInfrastructureGitlab", true, "Do you want to spin up minimal infrastructure Gitlab?")
-	flag.BoolVar(&options.MinimalInfra.MinimalInfrastructureNexus, "minimalInfrastructureNexus", false, "Do you want to spin up only minimal infrastructure nexus?")
+	flag.BoolVar(&options.MinimalInfra.MinimalInfrastructureNexus, "minimalInfrastructureNexus", true, "Do you want to spin up only minimal infrastructure nexus? Modifies settings.xml with Nexus settings.")
 
 	flag.StringVar(&options.MinimalInfra.SSHVMIP, "sshVmIp", "", "IP of the VM where to setup the minimal infrastructure example.")
 	flag.StringVar(&options.MinimalInfra.SSHUsername, "sshUsername", "root", "Username of the user to ssh with. This MUST be a root user or a user that can sudo without a password.")
@@ -37,6 +37,13 @@ func Args() *Options {
 	flag.StringVar(&options.Aria.Automation.Password, "ariaAutomationPassword", "", "Password to use for authentication to Aria Automation.")
 	flag.StringVar(&options.Aria.Automation.OrgName, "ariaAutomationOrgName", "vidm-l-01a", "Aria Automation organization name. Can be found in the dropdown at the top.")
 	flag.StringVar(&options.Aria.Automation.ProjectName, "ariaAutomationProjectName", "Development", "Aria Automation default project name to push to. Used mainly for vra-ng archetype.")
+
+	// Artifactory
+
+	flag.StringVar(&options.ArtifactManager.Password, "artifactManagerPassword", "", "Password for existing ArtifactManager.")
+	flag.StringVar(&options.ArtifactManager.GroupRepo, "artifactManagerGroupRepo", "", "Group repository to use for fetching both snapshots and release artifacts.")
+	flag.StringVar(&options.ArtifactManager.ReleaseRepo, "artifactManagerReleaseRepo", "", "Release repository to use for fetching and uploading release artifacts.")
+	flag.StringVar(&options.ArtifactManager.SnapshotRepo, "artifactManagerSnapshotRepo", "", "Snapshot repository to use for fetching and uploading sanpshot artifacts.")
 
 	flag.Parse()
 

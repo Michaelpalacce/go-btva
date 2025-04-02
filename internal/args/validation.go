@@ -6,6 +6,9 @@ import (
 	"github.com/Michaelpalacce/go-btva/pkg/prompt"
 )
 
+// @NOTE
+// Validations should be ran when they are actually needed. Used to fill missing content.
+
 // ValidateMinimalInfra runs validation if all the inputs for running minimal infrastructure are set
 func (options *Options) ValidateMinimalInfra() error {
 	var err error
@@ -73,6 +76,36 @@ func (options *Options) ValidateAriaAutomation() error {
 
 	if options.Aria.Automation.ProjectName == "" {
 		if options.Aria.Automation.ProjectName, err = prompt.AskText(fmt.Sprintf("What is the default project name in Aria Automation you want to push automation code to? Current (%s)", options.Aria.Automation.ProjectName)); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// ValidateArtifactManagerArguments will prompt for missing artifact manager options
+func (options *Options) ValidateArtifactManagerArguments() error {
+	var err error
+	if options.ArtifactManager.ReleaseRepo == "" {
+		if options.ArtifactManager.ReleaseRepo, err = prompt.AskText(fmt.Sprintf("Artifact Manager setup partially passed. What is the release repository:", options.ArtifactManager.ReleaseRepo)); err != nil {
+			return err
+		}
+	}
+
+	if options.ArtifactManager.SnapshotRepo == "" {
+		if options.ArtifactManager.SnapshotRepo, err = prompt.AskText(fmt.Sprintf("Artifact Manager setup partially passed. What is the snapshot repository:", options.ArtifactManager.SnapshotRepo)); err != nil {
+			return err
+		}
+	}
+
+	if options.ArtifactManager.GroupRepo == "" {
+		if options.ArtifactManager.GroupRepo, err = prompt.AskText(fmt.Sprintf("Artifact Manager setup partially passed. What is the group repository:", options.ArtifactManager.GroupRepo)); err != nil {
+			return err
+		}
+	}
+
+	if options.ArtifactManager.Password == "" {
+		if options.ArtifactManager.Password, err = prompt.AskPass(fmt.Sprintf("Artifact Manager setup partially passed. What is the password used to authenticate to the artifact manager?", options.ArtifactManager.Password)); err != nil {
 			return err
 		}
 	}
