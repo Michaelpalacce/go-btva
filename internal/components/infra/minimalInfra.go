@@ -7,7 +7,6 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/state"
-	"github.com/Michaelpalacce/go-btva/internal/templates"
 	"github.com/Michaelpalacce/go-btva/pkg/gitlab"
 	"github.com/Michaelpalacce/go-btva/pkg/prompt"
 	"github.com/Michaelpalacce/go-btva/pkg/ssh"
@@ -31,7 +30,7 @@ const (
 // getClient will ssh into the machine and give you a goph.Client pointer you can use to run commands.
 // @WARN: Make sure to defer client.Close()
 func getClient(options *args.Options) (*goph.Client, error) {
-	infraOptions := options.Infra
+	infraOptions := options.MinimalInfra
 
 	client, err := ssh.GetClient(infraOptions.SSHVMIP, infraOptions.SSHUsername, infraOptions.SSHPassword, infraOptions.SSHPrivateKey, infraOptions.SSHPrivateKeyPassphrase)
 	if err != nil {
@@ -59,7 +58,7 @@ func (i *InfraComponent) RunMinimalInfra() error {
 	}
 	defer client.Close()
 
-	out, err := client.Run(fmt.Sprintf("curl -o- %s | bash -s -- %s %q", _BTVA_MINIMAL_INFRA_INSTALL_URL, i.options.Infra.DockerUsername, i.options.Infra.DockerPAT))
+	out, err := client.Run(fmt.Sprintf("curl -o- %s | bash -s -- %s %q", _BTVA_MINIMAL_INFRA_INSTALL_URL, i.options.MinimalInfra.DockerUsername, i.options.MinimalInfra.DockerPAT))
 	if err != nil {
 		return fmt.Errorf("minimal infrastructure installer exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
@@ -250,7 +249,7 @@ func (f *InfraComponent) MinimalInfraNexusInstructions() error {
 	slog.Info("============================ NEXUS ============================")
 	slog.Info("===============================================================")
 	slog.Warn("Nexus has an initial setup wizard that needs to be followed through the UI.")
-	slog.Info(fmt.Sprintf("Please visit: http://%s:8081/nexus", f.options.Infra.SSHVMIP))
+	slog.Info(fmt.Sprintf("Please visit: http://%s:8081/nexus", f.options.MinimalInfra.SSHVMIP))
 	slog.Info("Username: admin")
 	slog.Info(fmt.Sprintf("Password: %s", nexusPassword))
 
@@ -273,7 +272,7 @@ func (f *InfraComponent) MinimalInfraGitlabInstructions() error {
 	slog.Info("============================ GITLAB ===========================")
 	slog.Info("===============================================================")
 	slog.Info("Gitlab setup with a CI/CD runner")
-	slog.Info(fmt.Sprintf("Gitlab: http://%s:8081/gitlab", f.options.Infra.SSHVMIP))
+	slog.Info(fmt.Sprintf("Gitlab: http://%s:8081/gitlab", f.options.MinimalInfra.SSHVMIP))
 	slog.Info("Username: root")
 	slog.Info(fmt.Sprintf("Password: %s", gitlabPassword))
 	slog.Info(fmt.Sprintf("Public Access Token: %s", gitlabPat))
@@ -281,20 +280,21 @@ func (f *InfraComponent) MinimalInfraGitlabInstructions() error {
 	return nil
 }
 
-// MinimalInfraSettingsXml will replace the `settings.xml` in your `~/.m2` dir
+// MinimalInfraSettingsXml prepares the options to accept the minimal infra nexus repo
+// Flushes the state storage as options were changed
+// @WARN: THIS MODIFIES STATE
 func (i *InfraComponent) MinimalInfraSettingsXml() error {
-	baseURL := fmt.Sprintf("http://%s/nexus/repository/", i.options.Infra.SSHVMIP)
+	baseURL := fmt.Sprintf("http://%s/nexus/repository/", i.options.MinimalInfra.SSHVMIP)
+	i.options.Artifactory = args.Artifactory{
+		ReleaseRepo:  baseURL + "maven-releases",
+		SnapshotRepo: baseURL + "maven-snapshots",
+		GroupRepo:    baseURL + "maven-public",
+		Password:     NexusAdminPassword(i.state),
+	}
 
-	return templates.SettingsXml(
-		i.os.HomeDir,
-		args.Artifactory{
-			ReleaseRepo:  baseURL + "maven-releases",
-			SnapshotRepo: baseURL + "maven-snapshots",
-			GroupRepo:    baseURL + "maven-public",
-			Password:     NexusAdminPassword(i.state),
-		},
-		i.options.Aria.Automation,
-	)
+	go i.state.Flush()
+
+	return nil
 }
 
 func isNoSuchFileOrDirectoryErr(msg string) bool {
@@ -308,5 +308,5 @@ func isDuplicateKeyGitlab(msg string) bool {
 }
 
 func gitlabUrl(opts args.Options) string {
-	return fmt.Sprintf("http://%s:8082/gitlab", opts.Infra.SSHVMIP)
+	return fmt.Sprintf("http://%s:8082/gitlab", opts.MinimalInfra.SSHVMIP)
 }

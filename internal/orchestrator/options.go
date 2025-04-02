@@ -6,10 +6,28 @@ func WithOptions() func(*Orchestrator) error {
 	return func(o *Orchestrator) error {
 		o.Reset()
 
-		if o.Options.Infra.MinimalInfrastructure == true {
+		// Software validation is inside. Will skip if needed
+		o.Tasks(
+			WithAllSoftware(),
+		)
+
+		if o.Options.MinimalInfra.MinimalInfrastructureGitlab || o.Options.MinimalInfra.MinimalInfrastructureNexus {
 			o.Tasks(
-				WithFullMinimalInfrastructure(),
+				WithPartialMinimalInfrastructureSetup(),
 			)
+
+			if o.Options.MinimalInfra.MinimalInfrastructureNexus {
+				o.Tasks(
+					WithPartialMinimalInfrastructureNexus(),
+					WithPartialMinimalInfrastructureSettingsXml(),
+				)
+			}
+
+			if o.Options.MinimalInfra.MinimalInfrastructureGitlab {
+				o.Tasks(
+					WithPartialMinimalInfrastructureGitlab(),
+				)
+			}
 		}
 
 		return nil

@@ -9,10 +9,10 @@ type Software struct {
 	NodeVersion string `json:"nodeVersion"`
 }
 
-// Infra will hold different infra decisions that need to be taken
-type Infra struct {
-	// MinimalInfrastructure
-	MinimalInfrastructure bool `json:"minimalInfrastructure"`
+// MinimalInfra will hold different minimal infra decisions that need to be taken
+type MinimalInfra struct {
+	MinimalInfrastructureGitlab bool `json:"minimalInfrastructureGitlab"`
+	MinimalInfrastructureNexus  bool `json:"minimalInfrastructureNexus"`
 
 	SSHVMIP                 string `json:"sshVmIP"`
 	SSHUsername             string `json:"sshUsername"`
@@ -22,7 +22,6 @@ type Infra struct {
 
 	DockerUsername string `json:"dockerUsername"`
 	DockerPAT      string `json:"dockerPat"`
-	// MinimalInfrastructure
 }
 
 type AriaAutomation struct {
@@ -48,10 +47,10 @@ type Artifactory struct {
 
 // Options is the the spec from the user what is wanted.
 type Options struct {
-	Software    Software    `json:"software"`
-	Infra       Infra       `json:"infra"`
-	Aria        Aria        `json:"aria"`
-	Artifactory Artifactory `json:"artifactory"`
+	Software     Software     `json:"software"`
+	MinimalInfra MinimalInfra `json:"mininalInfra"`
+	Aria         Aria         `json:"aria"`
+	Artifactory  Artifactory  `json:"artifactory"`
 
 	// parsed is an internal variable that tells us that the options have already been parsed and don't need a second go
 	parsed bool
@@ -60,7 +59,6 @@ type Options struct {
 // This is a single instance of the options. We don't want to parse them more than once
 var options = &Options{
 	Software: Software{},
-	// Local:    Local{},
 
 	parsed: false,
 }

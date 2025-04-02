@@ -103,6 +103,7 @@ func WithPartialMinimalInfrastructureSettingsXml() func(*Orchestrator) error {
 
 		o.EnvTasks = append(o.EnvTasks, []TaskFunc{
 			infraComponent.MinimalInfraSettingsXml,
+			infraComponent.InfraSettingsXml,
 		}...)
 
 		return nil
