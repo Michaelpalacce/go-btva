@@ -11,6 +11,7 @@ import (
 // Print an empty line cause otherwise next log will be on same line
 func AskPass(prompts ...string) (string, error) {
 	printPrompts(prompts...)
+	fmt.Print(" ")
 
 	bytepw, err := term.ReadPassword(int(syscall.Stdin))
 	fmt.Println("")
