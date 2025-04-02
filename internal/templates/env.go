@@ -9,7 +9,6 @@ import (
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/pkg/file"
-	"github.com/Michaelpalacce/go-btva/pkg/prompt"
 )
 
 type settingsInventory struct {
@@ -24,15 +23,16 @@ func SettingsXml(homeDir string, artifactoryInventory args.Artifactory, ariaInve
 	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", homeDir)
 
 	if file.Exists(m2SettingsPath) {
-		answ, err := prompt.AskYesNo(fmt.Sprintf("%s already exists, do you want to replace it?", m2SettingsPath))
-		if err != nil {
-			return fmt.Errorf("could not get an answer if we should replace settings.xml")
-		}
-
-		if !answ {
-			slog.Info("Selected to skip setting", "settingsXml", m2SettingsPath)
-			return nil
-		}
+		return nil
+		// answ, err := prompt.AskYesNo(fmt.Sprintf("%s already exists, do you want to replace it?", m2SettingsPath))
+		// if err != nil {
+		// 	return fmt.Errorf("could not get an answer if we should replace settings.xml")
+		// }
+		//
+		// if !answ {
+		// 	slog.Info("Selected to skip setting", "settingsXml", m2SettingsPath)
+		// 	return nil
+		// }
 	}
 
 	slog.Info("Configuring `settings.xml`.")

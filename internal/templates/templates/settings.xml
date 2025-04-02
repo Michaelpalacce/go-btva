@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <settings
     xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd"
     xmlns="http://maven.apache.org/SETTINGS/1.1.0"
@@ -111,7 +110,7 @@
                 <vro.host>{{ .Aria.FQDN }}</vro.host>
                 <vro.auth>vra</vro.auth>
                 <vro.authHost>{{ .Aria.FQDN }}</vro.authHost>
-                <vro.port>{{ .Aria.FQDN }}</vro.port>
+                <vro.port>{{ .Aria.Port }}</vro.port>
                 <vro.username>{{ .Aria.Username }}</vro.username>
                 <vro.password>{{ .Aria.Password }}</vro.password>
 
@@ -119,7 +118,7 @@
                 <vrang.auth.host>{{ .Aria.FQDN }}</vrang.auth.host>
                 <vrang.username>{{ .Aria.Username }}</vrang.username>
                 <vrang.password>{{ .Aria.Password }}</vrang.password>
-                <vrang.port>{{ .Aria.FQDN }}</vrang.port>
+                <vrang.port>{{ .Aria.Port }}</vrang.port>
                 <vrang.project.name>{{ .Aria.ProjectName }}</vrang.project.name>
                 <vrang.org.name>{{ .Aria.OrgName }}</vrang.org.name>
 

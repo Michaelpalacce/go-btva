@@ -65,12 +65,6 @@ func (options *Options) ValidateAriaAutomation() error {
 		}
 	}
 
-	if options.Aria.Automation.Password == "" {
-		if options.Aria.Automation.Password, err = prompt.AskText(fmt.Sprintf("What is the org name used in Aria Automation? Current (%s)", options.Aria.Automation.OrgName)); err != nil {
-			return err
-		}
-	}
-
 	if options.Aria.Automation.OrgName == "" {
 		if options.Aria.Automation.OrgName, err = prompt.AskText(fmt.Sprintf("What is the org name used in Aria Automation? Current (%s)", options.Aria.Automation.OrgName)); err != nil {
 			return err
