@@ -121,6 +121,10 @@ func WithPartialMinimalInfrastructureSettingsXml() func(*Orchestrator) error {
 	return func(o *Orchestrator) error {
 		infraComponent := o.components.infraComponent
 
+		if err := o.Options.ValidateAriaAutomation(); err != nil {
+			return fmt.Errorf("error trying to validate passed options. Err was: %w", err)
+		}
+
 		o.EnvTasks = append(o.EnvTasks, []TaskFunc{
 			infraComponent.MinimalInfraSettingsXml,
 		}...)
