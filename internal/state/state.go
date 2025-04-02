@@ -70,20 +70,17 @@ func (s *State) Set(options ...SetStateOption) error {
 		return err
 	}
 
-	go s.Flush()
+	s.Flush()
 
 	return nil
 }
 
 // Flush will flush the state to storage(s)
-// Thread safe
 func (s *State) Flush() {
 	for _, storage := range s.storage {
-		go func() {
-			if err := storage.Commit(*s); err != nil {
-				slog.Error(fmt.Sprintf("there was an error saving the state file. Continuing anyway, however state may be lost at the end."))
-			}
-		}()
+		if err := storage.Commit(*s); err != nil {
+			slog.Error(fmt.Sprintf("there was an error saving the state file. Continuing anyway, however state may be lost at the end."))
+		}
 	}
 }
 

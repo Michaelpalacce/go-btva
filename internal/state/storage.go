@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"sync"
 )
 
 const JSON_STORAGE_FILE = "go-btva.state.json"
@@ -14,7 +13,6 @@ const JSON_STORAGE_FILE = "go-btva.state.json"
 type Storage interface {
 	// Commit will store the state.
 	// Don't use pointers, when saving no changes should happen
-	// Guarantees thread safety
 	Commit(state State) error
 	// Load will load the state
 	Load(state *State) error
@@ -23,16 +21,11 @@ type Storage interface {
 // JsonStorage is a struct that will store the state in JSON
 type JsonStorage struct {
 	Filepath string
-
-	m sync.Mutex
 }
 
 // Commit will save the current State object to file
 // @NOTE: On windows the file permissions are ignored
 func (s *JsonStorage) Commit(state State) error {
-	s.m.Lock()
-	defer s.m.Unlock()
-
 	bytes, err := json.MarshalIndent(state, "", "\t")
 	if err != nil {
 		return err

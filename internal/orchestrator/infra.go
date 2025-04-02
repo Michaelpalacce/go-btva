@@ -96,7 +96,7 @@ func WithPartialMinimalInfrastructureNexus() func(*Orchestrator) error {
 
 // WithPartialMinimalInfrastructureGitlab will run the minimal infra installer
 // You don't need to pass infraComponent, it will be created
-// Since this does valdation, it will flush the state to storage. It's done in a go routine, you don't need to wait for it
+// Since this does valdation, it will flush the state to storage.
 func WithPartialMinimalInfrastructureSetup() func(*Orchestrator) error {
 	return func(o *Orchestrator) error {
 		infraComponent := o.components.infraComponent
@@ -105,7 +105,7 @@ func WithPartialMinimalInfrastructureSetup() func(*Orchestrator) error {
 			return fmt.Errorf("error trying to validate passed options. Err was: %w", err)
 		}
 
-		go o.State.Flush()
+		o.State.Flush()
 
 		o.InfraTasks = append(o.InfraTasks, []TaskFunc{
 			infraComponent.RunMinimalInfra,
