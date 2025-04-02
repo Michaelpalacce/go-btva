@@ -285,12 +285,16 @@ func (f *InfraComponent) MinimalInfraGitlabInstructions() error {
 func (i *InfraComponent) MinimalInfraSettingsXml() error {
 	baseURL := fmt.Sprintf("http://%s/nexus/repository/", i.options.Infra.SSHVMIP)
 
-	return templates.SettingsXml(i.os.HomeDir, templates.ArtifactoryInventory{
-		ReleaseRepo:  baseURL + "maven-releases",
-		SnapshotRepo: baseURL + "maven-snapshots",
-		GroupRepo:    baseURL + "maven-public",
-		Password:     NexusAdminPassword(i.state),
-	})
+	return templates.SettingsXml(
+		i.os.HomeDir,
+		args.Artifactory{
+			ReleaseRepo:  baseURL + "maven-releases",
+			SnapshotRepo: baseURL + "maven-snapshots",
+			GroupRepo:    baseURL + "maven-public",
+			Password:     NexusAdminPassword(i.state),
+		},
+		i.options.Aria.Automation,
+	)
 }
 
 func isNoSuchFileOrDirectoryErr(msg string) bool {

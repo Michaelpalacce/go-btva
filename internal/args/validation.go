@@ -37,3 +37,51 @@ func (options *Options) ValidateMinimalInfra() error {
 
 	return nil
 }
+
+// ValidateAriaAutomation will prompt the user a series of question needed to build the aria inventory if the settings are missing
+func (options *Options) ValidateAriaAutomation() error {
+	var err error
+	if options.Aria.Automation.FQDN == "" {
+		if options.Aria.Automation.FQDN, err = prompt.AskText(fmt.Sprintf("What is Aria Automation's FQDN without `https://`. Current (%s)", options.Aria.Automation.FQDN)); err != nil {
+			return err
+		}
+	}
+
+	if options.Aria.Automation.Port == "" {
+		if options.Aria.Automation.Port, err = prompt.AskText(fmt.Sprintf("What is Aria Automation's port? Current (%s)", options.Aria.Automation.Port)); err != nil {
+			return err
+		}
+	}
+
+	if options.Aria.Automation.Username == "" {
+		if options.Aria.Automation.Username, err = prompt.AskText(fmt.Sprintf("What is the username of the account for Aria Automation? Current (%s)", options.Aria.Automation.Username)); err != nil {
+			return err
+		}
+	}
+
+	if options.Aria.Automation.Password == "" {
+		if options.Aria.Automation.Password, err = prompt.AskPass("What is the password of the account for Aria Automation?"); err != nil {
+			return err
+		}
+	}
+
+	if options.Aria.Automation.Password == "" {
+		if options.Aria.Automation.Password, err = prompt.AskText(fmt.Sprintf("What is the org name used in Aria Automation? Current (%s)", options.Aria.Automation.OrgName)); err != nil {
+			return err
+		}
+	}
+
+	if options.Aria.Automation.OrgName == "" {
+		if options.Aria.Automation.OrgName, err = prompt.AskText(fmt.Sprintf("What is the org name used in Aria Automation? Current (%s)", options.Aria.Automation.OrgName)); err != nil {
+			return err
+		}
+	}
+
+	if options.Aria.Automation.ProjectName == "" {
+		if options.Aria.Automation.ProjectName, err = prompt.AskText(fmt.Sprintf("What is the default project name in Aria Automation you want to push automation code to? Current (%s)", options.Aria.Automation.ProjectName)); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

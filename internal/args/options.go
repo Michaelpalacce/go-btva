@@ -9,9 +9,6 @@ type Software struct {
 	NodeVersion string `json:"nodeVersion"`
 }
 
-// Local will hold different configurations for mvn that may be needed
-type Local struct{}
-
 // Infra will hold different infra decisions that need to be taken
 type Infra struct {
 	// MinimalInfrastructure
@@ -28,11 +25,33 @@ type Infra struct {
 	// MinimalInfrastructure
 }
 
+type AriaAutomation struct {
+	FQDN        string `json:"fqdn"`
+	Port        string `json:"port"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	OrgName     string `json:"orgName"`
+	ProjectName string `json:"projectName"`
+}
+
+type Aria struct {
+	Automation AriaAutomation `json:"automation"`
+}
+
+// Holds Artifactory (jFrog Artifactory, Nexus, Azure Packages, etc) details that will be used to generate the settings.xml file
+type Artifactory struct {
+	ReleaseRepo  string
+	SnapshotRepo string
+	GroupRepo    string
+	Password     string
+}
+
 // Options is a struct for options that the tool can accept.
 type Options struct {
-	Software Software `json:"software"`
-	Local    Local    `json:"local"`
-	Infra    Infra    `json:"infra"`
+	Software    Software    `json:"software"`
+	Infra       Infra       `json:"infra"`
+	Aria        Aria        `json:"aria"`
+	Artifactory Artifactory `json:"artifactory"`
 
 	// parsed is an internal variable that tells us that the options have already been parsed and don't need a second go
 	parsed bool
@@ -41,7 +60,7 @@ type Options struct {
 // This is a single instance of the options. We don't want to parse them more than once
 var options = &Options{
 	Software: Software{},
-	Local:    Local{},
+	// Local:    Local{},
 
 	parsed: false,
 }

@@ -27,6 +27,16 @@ func Args() *Options {
 	flag.StringVar(&options.Infra.DockerUsername, "dockerUsername", "", "Docker username to use when setting up the minimal infra.")
 	flag.StringVar(&options.Infra.DockerPAT, "dockerPat", "", "Docker Public Access Token to use when setting up the minimal infra. If dockerUsername is provided and this isn't, you will be prompted.")
 
+	// Aria
+
+	// Automation
+	flag.StringVar(&options.Aria.Automation.Port, "ariaAutomationFqdn", "vra-l-01a.corp.local", "Fully Qualified Domain Name for Aria Automation without the protocol (https://) and port (:443).")
+	flag.StringVar(&options.Aria.Automation.FQDN, "ariaAutomationPort", "443", "Aria Automation port")
+	flag.StringVar(&options.Aria.Automation.Username, "ariaAutomationUsername", "configurationadmin", "Username to use for authentication to Aria Automation.")
+	flag.StringVar(&options.Aria.Automation.Password, "ariaAutomationPassword", "", "Password to use for authentication to Aria Automation.")
+	flag.StringVar(&options.Aria.Automation.OrgName, "ariaAutomationOrgName", "vidm-l-01a", "Aria Automation organization name. Can be found in the dropdown at the top.")
+	flag.StringVar(&options.Aria.Automation.ProjectName, "ariaAutomationProjectName", "Development", "Aria Automation default project name to push to. Used mainly for vra-ng archetype.")
+
 	flag.Parse()
 
 	options.parsed = true

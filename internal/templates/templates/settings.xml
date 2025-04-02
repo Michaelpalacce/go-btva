@@ -69,15 +69,15 @@
 
             <properties>
                 <releaseRepositoryUrl>
-                    {{.Infra.Artifactory.ReleaseRepo}}</releaseRepositoryUrl>
+                    {{.Artifactory.ReleaseRepo}}</releaseRepositoryUrl>
                 <snapshotRepositoryUrl>
-                    {{.Infra.Artifactory.SnapshotRepo}}</snapshotRepositoryUrl>
+                    {{.Artifactory.SnapshotRepo}}</snapshotRepositoryUrl>
             </properties>
 
             <repositories>
                 <repository>
                     <id>central</id>
-                    <url>{{.Infra.Artifactory.GroupRepo}}</url>
+                    <url>{{.Artifactory.GroupRepo}}</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
@@ -87,7 +87,7 @@
                 </repository>
                 <repository>
                     <id>snapshots</id>
-                    <url>{{.Infra.Artifactory.GroupRepo}}</url>
+                    <url>{{.Artifactory.GroupRepo}}</url>
                     <releases>
                         <enabled>false</enabled>
                     </releases>
@@ -100,7 +100,7 @@
             <pluginRepositories>
                 <pluginRepository>
                     <id>central</id>
-                    <url>{{.Infra.Artifactory.GroupRepo}}</url>
+                    <url>{{.Artifactory.GroupRepo}}</url>
                 </pluginRepository>
             </pluginRepositories>
         </profile>
