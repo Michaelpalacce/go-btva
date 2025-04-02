@@ -9,7 +9,11 @@ BTVA comes with pre-requisites and even third party systems in order for everyth
 
 This tool aims to ease the initial setup.
 
-## Responsibilities
+## What This Is Not
+
+This tool **is not** a desired state machine. Instead it allows for a resumable process. As the whole process should be idempotent, there is no problem re-running it as many times as needed, with or without a [state file](#state).
+
+## What This Is
 
 - Setup minimal infra on a vm
     - [x] Run the minimal infrastructure installer
@@ -20,7 +24,8 @@ This tool aims to ease the initial setup.
 - Setup dev environment
     - Supported os
         - Linux
-        - Darwin (soon)
+        - Darwin
+        - Windows (soon)
     - Configure
         - [x] Configure `settings.xml` for nexus and aria
 - Software
@@ -50,15 +55,11 @@ This tool aims to ease the initial setup.
 - [ ] Executable
 - [ ] Working on windows
 
-# State
+## State
 
 State is managed by a state file that is created where the tool is ran. After the initial run of the tool, CLI arguments are ignored and
-instead the ones stored in the state file are used. If you want to do any changes, do the changes in the state file. As the whole process is
+instead the ones stored in the state file are used. If you want to do any changes, do so in the state file. As the whole process is
 idempotent, you can also remove the state file and re-run with the desired arguments.
-
-This tool **is not** a desired state machine. Instead it allows for a resumable process. You can however modify the state if you wish
-certain steps to be repeated. For example, to repeat something, like installing node, you can remove that from the state and it will be
-re-applied. This being said, you can also just uninstall node and re-run the tool and the tool will install it.
 
 > State contains sensitive information for now. Be carefull when opening it.
 
@@ -68,7 +69,7 @@ re-applied. This being said, you can also just uninstall node and re-run the too
     <img src="assets/state-finished.png"/>
 </details>
 
-# Development
+## Development
 
 We use `make` to run the program for dev
 
