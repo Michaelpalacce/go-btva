@@ -46,7 +46,7 @@ type Artifactory struct {
 	Password     string
 }
 
-// Options is a struct for options that the tool can accept.
+// Options is the the spec from the user what is wanted.
 type Options struct {
 	Software    Software    `json:"software"`
 	Infra       Infra       `json:"infra"`

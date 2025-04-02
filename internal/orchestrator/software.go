@@ -3,7 +3,6 @@ package orchestrator
 import (
 	"fmt"
 
-	software_component "github.com/Michaelpalacce/go-btva/internal/components/software"
 	"github.com/Michaelpalacce/go-btva/internal/os/darwin"
 	"github.com/Michaelpalacce/go-btva/internal/os/linux"
 	"github.com/Michaelpalacce/go-btva/internal/os/software"
@@ -15,24 +14,22 @@ type installer interface {
 }
 
 func WithAllSoftware() func(*Orchestrator) error {
-	return func(h *Orchestrator) error {
-		softwareComponent := software_component.NewSoftware(h.OS, h.State)
-
+	return func(o *Orchestrator) error {
 		var installer installer
-		switch h.OS.Distro {
+		switch o.OS.Distro {
 		case "linux":
-			installer = &linux.Installer{OS: h.OS, Options: h.Options}
+			installer = &linux.Installer{OS: o.OS, Options: o.Options}
 		case "darwin":
-			installer = &darwin.Installer{OS: h.OS, Options: h.Options}
+			installer = &darwin.Installer{OS: o.OS, Options: o.Options}
 		case "windows":
 			fallthrough
 		default:
-			return fmt.Errorf("OS %s is not supported", h.OS.Distro)
+			return fmt.Errorf("OS %s is not supported", o.OS.Distro)
 		}
 
 		for _, software := range installer.GetAllSoftware() {
-			h.SoftwareTasks = append(h.SoftwareTasks, func() error {
-				return softwareComponent.InstallSoftware(software)
+			o.SoftwareTasks = append(o.SoftwareTasks, func() error {
+				return o.components.softwareComponent.InstallSoftware(software)
 			})
 		}
 

@@ -2,6 +2,8 @@ package orchestrator
 
 import (
 	"github.com/Michaelpalacce/go-btva/internal/args"
+	infra_component "github.com/Michaelpalacce/go-btva/internal/components/infra"
+	software_component "github.com/Michaelpalacce/go-btva/internal/components/software"
 	"github.com/Michaelpalacce/go-btva/internal/state"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
@@ -18,11 +20,18 @@ type Orchestrator struct {
 	InfraTasks    []TaskFunc
 	EnvTasks      []TaskFunc
 	FinalTasks    []TaskFunc
+
+	components struct {
+		infraComponent    infra_component.InfraComponent
+		softwareComponent software_component.SoftwareComponent
+	}
 }
 
 // NewOrchestrator will return a new Orchestrator that is used to contain and execute tasks
 func NewOrchestrator(os *os.OS, state *state.State, options *args.Options) *Orchestrator {
-	return &Orchestrator{OS: os, State: state, Options: options}
+	orchestrator := &Orchestrator{OS: os, State: state, Options: options}
+
+	return orchestrator
 }
 
 // runTaskOption accepts an orchestrator and is supposed to modify the state and add tasks to it

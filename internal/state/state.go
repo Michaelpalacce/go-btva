@@ -30,7 +30,7 @@ type internalState struct {
 
 // State contains the current state of the application
 type State struct {
-	State map[string]internalState `json:"state"`
+	State map[string]internalState `json:"status"`
 
 	// Options are stored here so we can preserve them between multiple runs
 	Options *args.Options `json:"options,omitempty"`
@@ -70,6 +70,12 @@ func (s *State) Set(options ...SetStateOption) error {
 		return err
 	}
 
+	go s.Flush()
+
+	return nil
+}
+
+func (s *State) Flush() {
 	for _, storage := range s.storage {
 		go func() {
 			if err := storage.Commit(*s); err != nil {
@@ -77,8 +83,6 @@ func (s *State) Set(options ...SetStateOption) error {
 			}
 		}()
 	}
-
-	return nil
 }
 
 // Get is used to get the internal state of a key
