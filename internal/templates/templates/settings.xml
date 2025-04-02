@@ -8,12 +8,12 @@
         <server>
             <id>central</id>
             <username>admin</username>
-            <password>{{ .ArtifactManager.Password }}</password>
+            <password>{{ .Artifactory.Password }}</password>
         </server>
         <server>
             <id>snapshots</id>
             <username>admin</username>
-            <password>{{ .ArtifactManager.Password }}</password>
+            <password>{{ .Artifactory.Password }}</password>
         </server>
     </servers>
 
