@@ -16,7 +16,7 @@ type SoftwareComponent struct {
 	options *args.Options
 }
 
-func NewSoftware(os *os.OS, state *state.State) *SoftwareComponent {
+func NewSoftwareComponent(os *os.OS, state *state.State) *SoftwareComponent {
 	return &SoftwareComponent{os: os, state: state, options: state.Options}
 }
 

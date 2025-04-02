@@ -31,6 +31,9 @@ type Orchestrator struct {
 func NewOrchestrator(os *os.OS, state *state.State, options *args.Options) *Orchestrator {
 	orchestrator := &Orchestrator{OS: os, State: state, Options: options}
 
+	orchestrator.components.infraComponent = *infra_component.NewInfraComponent(os, state)
+	orchestrator.components.softwareComponent = *software_component.NewSoftwareComponent(os, state)
+
 	return orchestrator
 }
 
