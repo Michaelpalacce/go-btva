@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	"github.com/Michaelpalacce/go-btva/internal/args"
-	"github.com/Michaelpalacce/go-btva/internal/ssh"
 	"github.com/Michaelpalacce/go-btva/internal/state"
 	"github.com/Michaelpalacce/go-btva/internal/templates"
 	"github.com/Michaelpalacce/go-btva/pkg/gitlab"
 	"github.com/Michaelpalacce/go-btva/pkg/prompt"
+	"github.com/Michaelpalacce/go-btva/pkg/ssh"
 	"github.com/melbahja/goph"
 )
 
