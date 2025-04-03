@@ -31,12 +31,10 @@ func WithOptions() func(*Orchestrator) error {
 			}
 		}
 
-		if o.Options.MinimalInfra.MinimalInfrastructureNexus {
-			if o.Options.ArtifactManager.Password != "" || o.Options.ArtifactManager.ReleaseRepo != "" || o.Options.ArtifactManager.GroupRepo != "" || o.Options.ArtifactManager.SnapshotRepo != "" {
-				o.Tasks(
-					WithSettingsXml(),
-				)
-			}
+		if o.Options.ArtifactManager.Password != "" || o.Options.ArtifactManager.ReleaseRepo != "" || o.Options.ArtifactManager.GroupRepo != "" || o.Options.ArtifactManager.SnapshotRepo != "" {
+			o.Tasks(
+				WithSettingsXml(),
+			)
 		}
 
 		return nil
