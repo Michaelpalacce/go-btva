@@ -23,16 +23,8 @@ func SettingsXml(homeDir string, artifactoryInventory args.ArtifactManager, aria
 	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", homeDir)
 
 	if file.Exists(m2SettingsPath) {
+		slog.Warn(fmt.Sprintf("%s already exists. Skipping replacement...", m2SettingsPath))
 		return nil
-		// answ, err := prompt.AskYesNo(fmt.Sprintf("%s already exists, do you want to replace it?", m2SettingsPath))
-		// if err != nil {
-		// 	return fmt.Errorf("could not get an answer if we should replace settings.xml")
-		// }
-		//
-		// if !answ {
-		// 	slog.Info("Selected to skip setting", "settingsXml", m2SettingsPath)
-		// 	return nil
-		// }
 	}
 
 	slog.Info("Configuring `settings.xml`.")
