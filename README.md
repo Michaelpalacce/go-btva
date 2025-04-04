@@ -11,7 +11,7 @@ This tool aims to ease the initial setup.
 
 ## What This Is Not
 
-This tool **is not** a desired state machine. Instead it allows for a resumable process. As the whole process should be idempotent, there is no problem re-running it as many times as needed, with or without a [state file](#state).
+- TBD, it's everything
 
 ## What This Is
 
