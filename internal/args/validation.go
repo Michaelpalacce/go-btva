@@ -87,25 +87,25 @@ func (options *Options) ValidateAriaAutomation() error {
 func (options *Options) ValidateArtifactManagerArguments() error {
 	var err error
 	if options.ArtifactManager.ReleaseRepo == "" {
-		if options.ArtifactManager.ReleaseRepo, err = prompt.AskText(fmt.Sprintf("Artifact Manager setup partially passed. What is the release repository:", options.ArtifactManager.ReleaseRepo)); err != nil {
+		if options.ArtifactManager.ReleaseRepo, err = prompt.AskText("Artifact Manager setup partially passed. What is the release repository:"); err != nil {
 			return err
 		}
 	}
 
 	if options.ArtifactManager.SnapshotRepo == "" {
-		if options.ArtifactManager.SnapshotRepo, err = prompt.AskText(fmt.Sprintf("Artifact Manager setup partially passed. What is the snapshot repository:", options.ArtifactManager.SnapshotRepo)); err != nil {
+		if options.ArtifactManager.SnapshotRepo, err = prompt.AskText("Artifact Manager setup partially passed. What is the snapshot repository:"); err != nil {
 			return err
 		}
 	}
 
 	if options.ArtifactManager.GroupRepo == "" {
-		if options.ArtifactManager.GroupRepo, err = prompt.AskText(fmt.Sprintf("Artifact Manager setup partially passed. What is the group repository:", options.ArtifactManager.GroupRepo)); err != nil {
+		if options.ArtifactManager.GroupRepo, err = prompt.AskText("Artifact Manager setup partially passed. What is the group repository:"); err != nil {
 			return err
 		}
 	}
 
 	if options.ArtifactManager.Password == "" {
-		if options.ArtifactManager.Password, err = prompt.AskPass(fmt.Sprintf("Artifact Manager setup partially passed. What is the password used to authenticate to the artifact manager?", options.ArtifactManager.Password)); err != nil {
+		if options.ArtifactManager.Password, err = prompt.AskPass("Artifact Manager setup partially passed. What is the password used to authenticate to the artifact manager?"); err != nil {
 			return err
 		}
 	}
