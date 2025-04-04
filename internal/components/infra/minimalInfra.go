@@ -273,7 +273,7 @@ func (f *InfraComponent) MinimalInfraGitlabInstructions() error {
 	slog.Info("============================ GITLAB ===========================")
 	slog.Info("===============================================================")
 	slog.Info("Gitlab setup with a CI/CD runner")
-	slog.Info(fmt.Sprintf("Gitlab: http://%s:8081/gitlab", f.options.MinimalInfra.SSHVMIP))
+	slog.Info(fmt.Sprintf("Gitlab: http://%s:8082/gitlab", f.options.MinimalInfra.SSHVMIP))
 	slog.Info("Username: root")
 	slog.Info(fmt.Sprintf("Password: %s", gitlabPassword))
 	slog.Info(fmt.Sprintf("Public Access Token: %s", gitlabPat))
