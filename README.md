@@ -23,9 +23,9 @@ This tool **is not** a desired state machine. Instead it allows for a resumable 
     - [x] Register Gitlab Runner
 - Setup dev environment
     - Supported os
-        - Linux
-        - Darwin
-        - Windows (soon)
+        - [x] Linux (Debian)
+        - [x] Darwin
+        - [ ] Windows
     - Configure
         - [x] Configure `settings.xml` for nexus and aria
 - Software
