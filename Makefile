@@ -59,6 +59,8 @@ cleanup-state: ## Removes the state file
 .PHONY: cleanup
 cleanup: cleanup-java cleanup-state cleanup-mvn cleanup-node ## Will cleanup the environment so we can rerun the tool
 
+.PHONY: clean 
+clean: cleanup ## Alias of clean
 
 # go-install-tool will 'go install' any package with custom target and name of binary, if it doesn't exist
 # $1 - target path with name of binary
