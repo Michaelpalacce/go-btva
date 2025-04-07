@@ -10,7 +10,8 @@ type Software interface {
 }
 
 const (
-	JavaSoftwareKey = "Java"
-	MvnSoftwareKey  = "Maven"
-	NodeSoftwareKey = "NodeJs"
+	JavaSoftwareKey   = "Java"
+	MvnSoftwareKey    = "Maven"
+	NodeSoftwareKey   = "NodeJs"
+	VsCodeSoftwareKey = "VsCode"
 )

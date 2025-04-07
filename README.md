@@ -23,8 +23,8 @@ This tool aims to ease the initial setup.
     - [x] Register Gitlab Runner
 - Setup dev environment
     - Supported os
-        - [x] Linux (Debian)
-        - [x] Darwin
+        - [x] Linux (Ubuntu)
+        - [x] MacOS
         - [ ] Windows
     - Configure
         - [x] Configure `settings.xml` for nexus and aria
@@ -34,6 +34,8 @@ This tool aims to ease the initial setup.
         - [x] Install mvn
         - [x] Install NodeJS with `fnm`
         - [ ] Install VSCode with recommended extensions
+            - [x] Linux
+            - [ ] MacOS
 - At the end, give details to the user what their next steps should be
     - [x] Give Gitlab Credentials
     - [x] Give Nexus Credentials

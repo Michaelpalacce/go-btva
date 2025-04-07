@@ -52,12 +52,16 @@ cleanup-java: ## Removes Java installation
 cleanup-node: ## Removes fnm and node
 	sudo rm -rf ~/.local/share/fnm
 
+.PHONY: cleanup-code
+cleanup-node: ## Removes fnm and node
+	sudo snap remove code
+
 .PHONY: cleanup-state
 cleanup-state: ## Removes the state file
 	rm -rf go-btva.state.json
 
 .PHONY: cleanup
-cleanup: cleanup-java cleanup-state cleanup-mvn cleanup-node ## Will cleanup the environment so we can rerun the tool
+cleanup: cleanup-java cleanup-state cleanup-mvn cleanup-node cleanup-code ## Will cleanup the environment so we can rerun the tool
 
 .PHONY: clean 
 clean: cleanup ## Alias of clean
