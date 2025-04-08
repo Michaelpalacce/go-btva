@@ -19,9 +19,9 @@ type settingsInventory struct {
 //go:embed templates/*
 var templates embed.FS
 
-func SettingsXml(homeDir string, artifactoryInventory args.ArtifactManager, ariaInventory args.AriaAutomation) error {
-	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", homeDir)
-
+// SettingsXml will create a settings.xml file at teh given location
+// This will skip the creation if it exists and warn the user
+func SettingsXml(m2SettingsPath string, artifactoryInventory args.ArtifactManager, ariaInventory args.AriaAutomation) error {
 	if file.Exists(m2SettingsPath) {
 		slog.Warn(fmt.Sprintf("%s already exists. Skipping replacement...", m2SettingsPath))
 		return nil

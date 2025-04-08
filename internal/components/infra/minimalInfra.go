@@ -284,9 +284,10 @@ func (f *InfraComponent) MinimalInfraGitlabInstructions() error {
 // MinimalInfraSettingsXml replaces ~/.m2/settings.xml with the minimal infra ones
 func (i *InfraComponent) MinimalInfraSettingsXml() error {
 	baseURL := fmt.Sprintf("http://%s/nexus/repository/", i.options.MinimalInfra.SSHVMIP)
+	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", i.os.HomeDir)
 
 	return templates.SettingsXml(
-		i.os.HomeDir,
+		m2SettingsPath,
 		args.ArtifactManager{
 			ReleaseRepo:  baseURL + "maven-releases",
 			SnapshotRepo: baseURL + "maven-snapshots",
