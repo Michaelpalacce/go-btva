@@ -34,9 +34,7 @@ func main() {
 
 	o = orchestrator.NewOrchestrator(osPtr, s)
 
-	err = o.Tasks(
-		orchestrator.WithOptions(),
-	)
+	err = o.Tasks(orchestrator.WithOptions())
 	if err != nil {
 		slog.Error("Error while adding tasks.", "err", err)
 		os.Exit(1)

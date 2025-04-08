@@ -25,6 +25,19 @@ type MinimalInfra struct {
 	DockerPAT      string `json:"dockerPat"`
 }
 
+// HasMinimalInfra returns true if either gitlab or nexus minimal infra is required
+func (m *MinimalInfra) HasMinimalInfra() bool {
+	return m.MinimalInfrastructureGitlab || m.MinimalInfrastructureNexus
+}
+
+func (m *MinimalInfra) HasNexus() bool {
+	return m.MinimalInfrastructureNexus
+}
+
+func (m *MinimalInfra) HasGitlab() bool {
+	return m.MinimalInfrastructureGitlab
+}
+
 type AriaAutomation struct {
 	FQDN        string `json:"fqdn"`
 	Port        string `json:"port"`
@@ -44,6 +57,12 @@ type ArtifactManager struct {
 	SnapshotRepo string `json:"snapshotRepo"`
 	GroupRepo    string `json:"groupRepo"`
 	Password     string `json:"password"`
+}
+
+// IsPartial can be used to check if at least one of the keys is set... This can indicate a partial setup and may be good to prompt the user
+// for the rest.
+func (a *ArtifactManager) IsPartial() bool {
+	return a.Password != "" || a.ReleaseRepo != "" || a.GroupRepo != "" || a.SnapshotRepo != ""
 }
 
 // Options is the the spec from the user what is wanted.

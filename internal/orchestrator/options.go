@@ -7,34 +7,28 @@ func WithOptions() func(*Orchestrator) error {
 	return func(o *Orchestrator) error {
 		o.Reset()
 
+		opts := o.State.Options
+
 		// Software validation is inside. Will skip if needed
-		o.Tasks(
-			WithAllSoftware(),
-		)
+		o.Tasks(WithAllSoftware())
 
-		if o.State.Options.MinimalInfra.MinimalInfrastructureGitlab || o.State.Options.MinimalInfra.MinimalInfrastructureNexus {
-			o.Tasks(
-				WithPartialMinimalInfrastructureSetup(),
-			)
+		if opts.MinimalInfra.HasMinimalInfra() {
+			o.Tasks(WithPartialMinimalInfrastructureSetup())
 
-			if o.State.Options.MinimalInfra.MinimalInfrastructureNexus {
+			if opts.MinimalInfra.HasNexus() {
 				o.Tasks(
 					WithPartialMinimalInfrastructureNexus(),
 					WithPartialMinimalInfrastructureSettingsXml(),
 				)
 			}
 
-			if o.State.Options.MinimalInfra.MinimalInfrastructureGitlab {
-				o.Tasks(
-					WithPartialMinimalInfrastructureGitlab(),
-				)
+			if opts.MinimalInfra.HasGitlab() {
+				o.Tasks(WithPartialMinimalInfrastructureGitlab())
 			}
 		}
 
-		if o.State.Options.ArtifactManager.Password != "" || o.State.Options.ArtifactManager.ReleaseRepo != "" || o.State.Options.ArtifactManager.GroupRepo != "" || o.State.Options.ArtifactManager.SnapshotRepo != "" {
-			o.Tasks(
-				WithSettingsXml(),
-			)
+		if opts.ArtifactManager.IsPartial() {
+			o.Tasks(WithSettingsXml())
 		}
 
 		return nil
