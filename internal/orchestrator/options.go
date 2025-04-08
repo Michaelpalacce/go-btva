@@ -12,26 +12,26 @@ func WithOptions() func(*Orchestrator) error {
 			WithAllSoftware(),
 		)
 
-		if o.Options.MinimalInfra.MinimalInfrastructureGitlab || o.Options.MinimalInfra.MinimalInfrastructureNexus {
+		if o.State.Options.MinimalInfra.MinimalInfrastructureGitlab || o.State.Options.MinimalInfra.MinimalInfrastructureNexus {
 			o.Tasks(
 				WithPartialMinimalInfrastructureSetup(),
 			)
 
-			if o.Options.MinimalInfra.MinimalInfrastructureNexus {
+			if o.State.Options.MinimalInfra.MinimalInfrastructureNexus {
 				o.Tasks(
 					WithPartialMinimalInfrastructureNexus(),
 					WithPartialMinimalInfrastructureSettingsXml(),
 				)
 			}
 
-			if o.Options.MinimalInfra.MinimalInfrastructureGitlab {
+			if o.State.Options.MinimalInfra.MinimalInfrastructureGitlab {
 				o.Tasks(
 					WithPartialMinimalInfrastructureGitlab(),
 				)
 			}
 		}
 
-		if o.Options.ArtifactManager.Password != "" || o.Options.ArtifactManager.ReleaseRepo != "" || o.Options.ArtifactManager.GroupRepo != "" || o.Options.ArtifactManager.SnapshotRepo != "" {
+		if o.State.Options.ArtifactManager.Password != "" || o.State.Options.ArtifactManager.ReleaseRepo != "" || o.State.Options.ArtifactManager.GroupRepo != "" || o.State.Options.ArtifactManager.SnapshotRepo != "" {
 			o.Tasks(
 				WithSettingsXml(),
 			)

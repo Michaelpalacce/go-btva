@@ -1,7 +1,6 @@
 package orchestrator
 
 import (
-	"github.com/Michaelpalacce/go-btva/internal/args"
 	infra_component "github.com/Michaelpalacce/go-btva/internal/components/infra"
 	software_component "github.com/Michaelpalacce/go-btva/internal/components/software"
 	"github.com/Michaelpalacce/go-btva/internal/state"
@@ -12,9 +11,8 @@ type TaskFunc func() error
 
 // Orchestrator is a struct that orchestrates the tasks collections and order of execution of them
 type Orchestrator struct {
-	OS      *os.OS
-	State   *state.State
-	Options *args.Options
+	OS    *os.OS
+	State *state.State
 
 	SoftwareTasks []TaskFunc
 	InfraTasks    []TaskFunc
@@ -28,8 +26,8 @@ type Orchestrator struct {
 }
 
 // NewOrchestrator will return a new Orchestrator that is used to contain and execute tasks
-func NewOrchestrator(os *os.OS, state *state.State, options *args.Options) *Orchestrator {
-	orchestrator := &Orchestrator{OS: os, State: state, Options: options}
+func NewOrchestrator(os *os.OS, state *state.State) *Orchestrator {
+	orchestrator := &Orchestrator{OS: os, State: state}
 
 	orchestrator.components.infraComponent = *infra_component.NewInfraComponent(os, state)
 	orchestrator.components.softwareComponent = *software_component.NewSoftwareComponent(os, state)

@@ -32,7 +32,7 @@ func main() {
 
 	osPtr = osl.GetOS()
 
-	o = orchestrator.NewOrchestrator(osPtr, s, s.Options)
+	o = orchestrator.NewOrchestrator(osPtr, s)
 
 	err = o.Tasks(
 		orchestrator.WithOptions(),

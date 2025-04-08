@@ -12,11 +12,11 @@ func WithSettingsXml() func(*Orchestrator) error {
 	return func(o *Orchestrator) error {
 		infraComponent := o.components.infraComponent
 
-		if err := o.Options.ValidateAriaAutomation(); err != nil {
+		if err := o.State.Options.ValidateAriaAutomation(); err != nil {
 			return fmt.Errorf("error trying to validate passed options. Err was: %w", err)
 		}
 
-		if err := o.Options.ValidateArtifactManagerArguments(); err != nil {
+		if err := o.State.Options.ValidateArtifactManagerArguments(); err != nil {
 			return fmt.Errorf("error trying to validate passed options. Err was: %w", err)
 		}
 
@@ -101,7 +101,7 @@ func WithPartialMinimalInfrastructureSetup() func(*Orchestrator) error {
 	return func(o *Orchestrator) error {
 		infraComponent := o.components.infraComponent
 
-		if err := o.Options.ValidateMinimalInfra(); err != nil {
+		if err := o.State.Options.ValidateMinimalInfra(); err != nil {
 			return fmt.Errorf("error trying to validate passed options. Err was: %w", err)
 		}
 
@@ -121,7 +121,7 @@ func WithPartialMinimalInfrastructureSettingsXml() func(*Orchestrator) error {
 	return func(o *Orchestrator) error {
 		infraComponent := o.components.infraComponent
 
-		if err := o.Options.ValidateAriaAutomation(); err != nil {
+		if err := o.State.Options.ValidateAriaAutomation(); err != nil {
 			return fmt.Errorf("error trying to validate passed options. Err was: %w", err)
 		}
 

@@ -18,9 +18,9 @@ func WithAllSoftware() func(*Orchestrator) error {
 		var installer installer
 		switch o.OS.Distro {
 		case "linux":
-			installer = &linux.Installer{OS: o.OS, Options: o.Options}
+			installer = &linux.Installer{OS: o.OS, Options: o.State.Options}
 		case "darwin":
-			installer = &darwin.Installer{OS: o.OS, Options: o.Options}
+			installer = &darwin.Installer{OS: o.OS, Options: o.State.Options}
 		case "windows":
 			fallthrough
 		default:
