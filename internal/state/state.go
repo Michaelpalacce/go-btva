@@ -104,6 +104,10 @@ func (s *State) Init() {
 	if s.State == nil {
 		s.State = make(map[string]internalState)
 	}
+
+	if s.storage == nil {
+		s.storage = make([]Storage, 0)
+	}
 }
 
 // Get Options

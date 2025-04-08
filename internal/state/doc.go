@@ -7,9 +7,20 @@ The `state` package is used to contain the execution state of the program. It wi
 
 ```go
 
-	if s, err = state.NewState(state.WithDefaultJsonStorage(true), state.WithCliArgs()); err != nil {
+	if s, err = state.NewState(state.WithDefaultJsonStorage(true)); err != nil {
 		slog.Error("Error while loading state.", "err", err)
 		return
+	}
+
+```
+
+## Creating a state object with no storage, but loading options from CLI arguments
+
+```go
+
+	if s, err = state.NewState(state.WithCliArgs()); err != nil {
+		slog.Error("Error while loading state.", "err", err)
+		os.Exit(1)
 	}
 
 ```
