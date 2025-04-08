@@ -14,8 +14,16 @@ func RunSudoCommand(command string, arguments ...string) error {
 
 // runCommand will run a command in the shell
 func RunCommand(command string, arguments ...string) error {
+	return RunCommandWithStdin(os.Stdin, command, arguments...)
+}
+
+// RunCommandWithStdin will run a command in the shell and allow you to pass stdin
+// @NOTE: If `stdin` is nil, then it will not be used. Hence, you can use this to run commands interactively or not
+func RunCommandWithStdin(stdin *os.File, command string, arguments ...string) error {
 	cmd := exec.Command(command, arguments...)
-	cmd.Stdin = os.Stdin
+	if stdin != nil {
+		cmd.Stdin = os.Stdin
+	}
 
 	var out []byte
 	var err error
