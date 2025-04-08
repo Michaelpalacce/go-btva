@@ -36,6 +36,10 @@ func GetClient(vmIP, username, password, privateKey, privateKeyPassphrase string
 
 // VerifyHost will check if the host is trusted or the signature has changed. If neither, prompts the user to accept the connection
 func VerifyHost(host string, remote net.Addr, key ssh.PublicKey) error {
+	if host == "" {
+		return fmt.Errorf("host is an empty string.")
+	}
+
 	hostFound, err := goph.CheckKnownHost(host, remote, key, "")
 
 	// Host in known hosts but key mismatch!
@@ -46,10 +50,6 @@ func VerifyHost(host string, remote net.Addr, key ssh.PublicKey) error {
 
 	if hostFound && err == nil {
 		return nil
-	}
-
-	if host == "" {
-		return fmt.Errorf("host is an empty string.")
 	}
 
 	if askIsHostTrusted(host, key) == false {
