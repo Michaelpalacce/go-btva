@@ -1,4 +1,4 @@
-package linux
+package darwin
 
 import (
 	"os/exec"
@@ -19,9 +19,9 @@ type VsCodeSoftware struct {
 
 var vsCodeSoftware *VsCodeSoftware = &VsCodeSoftware{}
 
-// Install will install vsCode with snap
+// Install will install vsCode with brew
 func (s *VsCodeSoftware) Install() error {
-	if err := unix.RunSudoCommand("snap", "install", "--classic", "code"); err != nil {
+	if err := unix.RunCommand("brew", "install", "--cask", "visual-studio-code"); err != nil {
 		return err
 	}
 	extensions := []string{

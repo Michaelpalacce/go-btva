@@ -13,5 +13,5 @@ type Installer struct {
 
 // GetAllSoftware will return all the software in order that need to be installed
 func (i *Installer) GetAllSoftware() []software.Software {
-	return []software.Software{i.Java(), i.Mvn(), i.Node()}
+	return []software.Software{i.Java(), i.Mvn(), i.Node(), i.VsCode()}
 }

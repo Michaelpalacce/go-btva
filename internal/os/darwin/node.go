@@ -10,7 +10,7 @@ import (
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
-// NodeSoftware is responsible for installing, removing and checking if node is installed
+// NodeSoftware is responsible for installing and checking if node is installed
 type NodeSoftware struct {
 	os      *os.OS
 	options *args.Options
@@ -20,7 +20,7 @@ type NodeSoftware struct {
 
 var nodeSoftware *NodeSoftware = &NodeSoftware{}
 
-// Install will install node with apt
+// Install will install node with brew and fnm
 func (s *NodeSoftware) Install() error {
 	shell := s.os.Shell
 	profile := s.os.ShellProfile

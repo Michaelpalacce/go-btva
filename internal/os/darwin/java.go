@@ -10,7 +10,7 @@ import (
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
-// JavaSoftware is responsible for installing, removing and checking if java is installed
+// JavaSoftware is responsible for installing and checking if java is installed
 type JavaSoftware struct {
 	os      *os.OS
 	options *args.Options

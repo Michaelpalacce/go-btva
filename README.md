@@ -33,9 +33,7 @@ This tool aims to ease the initial setup.
         - [x] Install Java
         - [x] Install mvn
         - [x] Install NodeJS with `fnm`
-        - [ ] Install VSCode with recommended extensions
-            - [x] Linux
-            - [ ] MacOS
+        - [x] Install VSCode with recommended extensions
 - At the end, give details to the user what their next steps should be
     - [x] Give Gitlab Credentials
     - [x] Give Nexus Credentials

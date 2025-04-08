@@ -11,7 +11,7 @@ import (
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
-// MvnSoftware is responsible for installing, removing and checking if mvn is installed
+// MvnSoftware is responsible for installing and checking if mvn is installed
 type MvnSoftware struct {
 	os      *os.OS
 	options *args.Options

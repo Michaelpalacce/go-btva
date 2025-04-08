@@ -10,7 +10,7 @@ import (
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
-// NodeSoftware is responsible for installing, removing and checking if node is installed
+// NodeSoftware is responsible for installing and checking if node is installed
 type NodeSoftware struct {
 	os      *os.OS
 	options *args.Options

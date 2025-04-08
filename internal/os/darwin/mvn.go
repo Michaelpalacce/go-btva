@@ -11,7 +11,7 @@ import (
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
-// MvnSoftware is responsible for installing, removing and checking if mvn is installed
+// MvnSoftware is responsible for installing and checking if mvn is installed
 type MvnSoftware struct {
 	os      *os.OS
 	options *args.Options
@@ -21,7 +21,7 @@ type MvnSoftware struct {
 
 var mvnSoftware *MvnSoftware = &MvnSoftware{}
 
-// Install will install mvn with apt
+// Install will install mvn by downloading the binary
 func (s *MvnSoftware) Install() error {
 	if err := s.removeTempFiles(); err != nil {
 		return err
