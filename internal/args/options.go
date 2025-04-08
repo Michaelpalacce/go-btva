@@ -4,9 +4,10 @@ package args
 // software the tool supports.
 type Software struct {
 	// Versions
-	JavaVersion string `json:"javaVersion"`
-	MvnVersion  string `json:"mvnVersion"`
-	NodeVersion string `json:"nodeVersion"`
+	JavaVersion   string `json:"javaVersion"`
+	MvnVersion    string `json:"mvnVersion"`
+	NodeVersion   string `json:"nodeVersion"`
+	VsCodeVersion string `json:"vsCodeVersion"`
 }
 
 // MinimalInfra will hold different minimal infra decisions that need to be taken

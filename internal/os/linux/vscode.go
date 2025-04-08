@@ -21,7 +21,20 @@ var vsCodeSoftware *VsCodeSoftware = &VsCodeSoftware{}
 
 // Install will install vsCode with apt
 func (s *VsCodeSoftware) Install() error {
-	return unix.RunSudoCommand("snap", "install", "--classic", "code")
+	if err := unix.RunSudoCommand("snap", "install", "--classic", "code"); err != nil {
+		return err
+	}
+	extensions := []string{
+		"vmware-pscoe.vrealize-developer-tools",
+	}
+
+	for _, extension := range extensions {
+		if err := unix.RunCommand("code", "--install-extension", extension); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // Exists verifies if vsCode is already installed.
@@ -35,7 +48,7 @@ func (s *VsCodeSoftware) Exists() bool {
 }
 
 func (s *VsCodeSoftware) GetName() string    { return software.VsCodeSoftwareKey }
-func (s *VsCodeSoftware) GetVersion() string { return "latest" }
+func (s *VsCodeSoftware) GetVersion() string { return s.options.Software.VsCodeVersion }
 
 // VsCode will return the VsCodeSoftware object that can be used to install and check if vsCode exists
 // Only a single instance of the VsCodeSoftware will be returned

@@ -15,6 +15,7 @@ func Args() *Options {
 	flag.StringVar(&options.Software.JavaVersion, "javaVersion", "17", "Which version of java to install? If not set, will skip installation.")
 	flag.StringVar(&options.Software.MvnVersion, "mvnVersion", "3.9.9", "Which version of mvn to install? If not set, will skip installation.")
 	flag.StringVar(&options.Software.NodeVersion, "nodeVersion", "22", "Which version of node to install? If not set, will skip installation.")
+	flag.StringVar(&options.Software.VsCodeVersion, "vsCodeVersion", "latest", "Which version of node to install? Supports `latest` or empty. If not set, will skip installation.")
 
 	// Infra
 	flag.BoolVar(&options.MinimalInfra.MinimalInfrastructureGitlab, "minimalInfrastructureGitlab", true, "Do you want to spin up minimal infrastructure Gitlab?")
