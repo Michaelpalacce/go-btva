@@ -75,6 +75,7 @@ func Usage() {
 		}
 	}
 
+	fmt.Println(usage)
 	fmt.Println("Options:")
 	for _, o := range opts {
 		short := ""
