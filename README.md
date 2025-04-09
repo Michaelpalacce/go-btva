@@ -34,6 +34,7 @@ Go to the [releases](https://github.com/Michaelpalacce/go-btva/releases) and dow
         - [ ] Windows
     - Configure
         - [x] Configure `settings.xml` for nexus and aria
+        - [ ] Provide Custom non minimal infra settings to integrate with other Artifact Managers
 - Software
     - Ability to install software agnostic to the environment
         - [x] Install Java
@@ -53,6 +54,8 @@ Go to the [releases](https://github.com/Michaelpalacce/go-btva/releases) and dow
 - [ ] Executable
 - [ ] Working on windows
 - [ ] Create a demo project
+- [ ] Configure Other Artifact Managers?
+- [ ] Air Gapped installation with provided installation scripts?
 
 ## State
 
