@@ -55,7 +55,6 @@ func WithFullMinimalInfrastructure() func(*Orchestrator) error {
 
 // WithPartialMinimalInfrastructureGitlab will setup Gitlab using the minimal infra installer. Make sure to have added
 // WithPartialMinimalInfrastructureSetup first
-// You don't need to pass infraComponent, it will be created
 func WithPartialMinimalInfrastructureGitlab() func(*Orchestrator) error {
 	return func(o *Orchestrator) error {
 		infraComponent := o.components.infraComponent
@@ -77,7 +76,6 @@ func WithPartialMinimalInfrastructureGitlab() func(*Orchestrator) error {
 
 // WithPartialMinimalInfrastructureGitlab will setup Nexus using the minimal infra installer. Make sure to have added
 // WithPartialMinimalInfrastructureSetup first
-// You don't need to pass infraComponent, it will be created
 func WithPartialMinimalInfrastructureNexus() func(*Orchestrator) error {
 	return func(o *Orchestrator) error {
 		infraComponent := o.components.infraComponent
@@ -95,7 +93,6 @@ func WithPartialMinimalInfrastructureNexus() func(*Orchestrator) error {
 }
 
 // WithPartialMinimalInfrastructureGitlab will run the minimal infra installer
-// You don't need to pass infraComponent, it will be created
 // Since this does valdation, it will flush the state to storage.
 func WithPartialMinimalInfrastructureSetup() func(*Orchestrator) error {
 	return func(o *Orchestrator) error {
@@ -116,7 +113,6 @@ func WithPartialMinimalInfrastructureSetup() func(*Orchestrator) error {
 }
 
 // WithPartialMinimalInfrastructureGitlab will run replace your settings.xml file with the minimal infra settings
-// You don't need to pass infraComponent, it will be created
 func WithPartialMinimalInfrastructureSettingsXml() func(*Orchestrator) error {
 	return func(o *Orchestrator) error {
 		infraComponent := o.components.infraComponent
