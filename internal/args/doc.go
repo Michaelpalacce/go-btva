@@ -14,7 +14,7 @@ You can parse them like:
 ```go
 args.Args()
 ```
-This will return you with a `args.Options` that will contain all the arguments that were either defaulted or specified by the user.
+This will return you with a `run.Options` that will contain all the arguments that were either defaulted or specified by the user.
 
 This package will also display usage if called with `--help`
 */

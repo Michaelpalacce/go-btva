@@ -1,48 +1,56 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 
-	"github.com/Michaelpalacce/go-btva/internal/orchestrator"
-	"github.com/Michaelpalacce/go-btva/internal/state"
+	"github.com/Michaelpalacce/go-btva/cmd/reset"
+	"github.com/Michaelpalacce/go-btva/cmd/run"
 	"github.com/Michaelpalacce/go-btva/pkg/logger"
-	osl "github.com/Michaelpalacce/go-btva/pkg/os"
 )
+
+type Runner interface {
+	Run() error
+	Name() string
+}
+
+func root(args []string) error {
+	cmds := []Runner{
+		&run.RunCommand{},
+		&reset.ResetCommand{},
+	}
+
+	availableSubcommandsArr := make([]string, 0)
+
+	for _, runner := range cmds {
+		availableSubcommandsArr = append(availableSubcommandsArr, runner.Name())
+	}
+
+	availableSubcommands := strings.Join(availableSubcommandsArr, " ")
+
+	if len(args) < 1 {
+		return fmt.Errorf("you must pass a sub-command. Available Commands: %s", availableSubcommands)
+	}
+
+	subcommand := os.Args[1]
+
+	for _, cmd := range cmds {
+		if cmd.Name() == subcommand {
+			return cmd.Run()
+		}
+	}
+
+	return fmt.Errorf("unknown sub-command. Available Commands: %s", availableSubcommands)
+}
 
 func main() {
 	// Logger Block. Will configure the `slog` logger
 	logger.ConfigureLogging()
 
-	// Variables block. Init vars
-
-	var (
-		o     *orchestrator.Orchestrator
-		err   error
-		osPtr *osl.OS
-		s     *state.State
-	)
-
-	// Init Block. Used for fetching and creating needed structs
-
-	if s, err = state.NewState(state.WithDefaultJsonStorage(), state.WithCliArgs()); err != nil {
-		slog.Error("Error while loading state.", "err", err)
-		os.Exit(1)
-	}
-
-	osPtr = osl.GetOS()
-
-	o = orchestrator.NewOrchestrator(osPtr, s)
-
-	err = o.Tasks(orchestrator.WithOptions())
-	if err != nil {
-		slog.Error("Error while adding tasks.", "err", err)
-		os.Exit(1)
-	}
-
-	err = o.Run()
-	if err != nil {
-		slog.Error("Error while running tasks.", "err", err)
+	if err := root(os.Args[1:]); err != nil {
+		slog.Error("Error executing tool", "err", err)
 		os.Exit(1)
 	}
 
