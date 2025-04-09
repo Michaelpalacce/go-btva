@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/Michaelpalacce/go-btva/cmd/run/run_options"
+	"github.com/Michaelpalacce/go-btva/internal/options"
 	"github.com/Michaelpalacce/go-btva/internal/run/os/software"
 	"github.com/Michaelpalacce/go-btva/internal/run/state"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
@@ -13,7 +13,7 @@ import (
 type SoftwareComponent struct {
 	os      *os.OS
 	state   *state.State
-	options *run_options.RunOptions
+	options *options.RunOptions
 }
 
 func NewSoftwareComponent(os *os.OS, state *state.State) *SoftwareComponent {

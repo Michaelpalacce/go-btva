@@ -1,14 +1,14 @@
 package darwin
 
 import (
-	"github.com/Michaelpalacce/go-btva/cmd/run/run_options"
+	"github.com/Michaelpalacce/go-btva/internal/options"
 	"github.com/Michaelpalacce/go-btva/internal/run/os/software"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
 
 type Installer struct {
 	OS      *os.OS
-	Options *run_options.RunOptions
+	Options *options.RunOptions
 }
 
 // GetAllSoftware will return all the software in order that need to be installed

@@ -4,12 +4,12 @@ import (
 	"flag"
 	"os"
 
-	"github.com/Michaelpalacce/go-btva/cmd/run/run_options"
+	"github.com/Michaelpalacce/go-btva/internal/options"
 	"github.com/Michaelpalacce/go-btva/pkg/args"
 )
 
-// This is a single instance of the options. We don't want to parse them more than once
-var options = &run_options.RunOptions{
+// This is a single instance of the runOptions. We don't want to parse them more than once
+var runOptions = &options.RunOptions{
 	Parsed: false,
 }
 
@@ -50,9 +50,9 @@ go-btva run --artifactManagerGroupRepo=REPO --artifactManagerReleaseRepo=REPO --
 
 // Args will parse the CLI arguments once and return the parsed options from then on
 // This will panic if there are any validation issues
-func (c *RunCommand) Args() *run_options.RunOptions {
-	if options.Parsed {
-		return options
+func (c *RunCommand) Args() *options.RunOptions {
+	if runOptions.Parsed {
+		return runOptions
 	}
 
 	args, err := args.NewArgs(
@@ -66,42 +66,42 @@ func (c *RunCommand) Args() *run_options.RunOptions {
 	}
 
 	// Software
-	args.AddVar(&options.Software.JavaVersion, "javaVersion", "jv", "17", "Which version of java to install? If not set, will skip installation.")
-	args.AddVar(&options.Software.NodeVersion, "nodeVersion", "nv", "22", "Which version of node to install? If not set, will skip installation.")
-	args.AddVar(&options.Software.MvnVersion, "mvnVersion", "mv", "3.9.9", "Which version of mvn to install? If not set, will skip installation.")
-	args.AddVar(&options.Software.VsCodeVersion, "vsCodeVersion", "vv", "latest", "Which version of node to install? Supports `latest` or empty. If not set, will skip installation.")
+	args.AddVar(&runOptions.Software.JavaVersion, "javaVersion", "jv", "17", "Which version of java to install? If not set, will skip installation.")
+	args.AddVar(&runOptions.Software.NodeVersion, "nodeVersion", "nv", "22", "Which version of node to install? If not set, will skip installation.")
+	args.AddVar(&runOptions.Software.MvnVersion, "mvnVersion", "mv", "3.9.9", "Which version of mvn to install? If not set, will skip installation.")
+	args.AddVar(&runOptions.Software.VsCodeVersion, "vsCodeVersion", "vv", "latest", "Which version of node to install? Supports `latest` or empty. If not set, will skip installation.")
 
 	// Minimal Infra
 
-	args.AddVar(&options.MinimalInfra.MinimalInfrastructureGitlab, "minimalInfrastructureGitlab", "mig", false, "Do you want to spin up minimal infrastructure Gitlab?")
-	args.AddVar(&options.MinimalInfra.MinimalInfrastructureNexus, "minimalInfrastructureNexus", "min", false, "Do you want to spin up only minimal infrastructure nexus? Modifies settings.xml with Nexus settings.")
+	args.AddVar(&runOptions.MinimalInfra.MinimalInfrastructureGitlab, "minimalInfrastructureGitlab", "mig", false, "Do you want to spin up minimal infrastructure Gitlab?")
+	args.AddVar(&runOptions.MinimalInfra.MinimalInfrastructureNexus, "minimalInfrastructureNexus", "min", false, "Do you want to spin up only minimal infrastructure nexus? Modifies settings.xml with Nexus settings.")
 
-	args.AddVar(&options.MinimalInfra.SSHVMIP, "sshVmIp", "", "", "IP of the VM where to setup the minimal infrastructure example.")
+	args.AddVar(&runOptions.MinimalInfra.SSHVMIP, "sshVmIp", "", "", "IP of the VM where to setup the minimal infrastructure example.")
 
-	args.AddVar(&options.MinimalInfra.SSHUsername, "sshUsername", "", "root", "Username of the user to ssh with. This MUST be a root user or a user that can sudo without a password.")
-	args.AddVar(&options.MinimalInfra.SSHPassword, "sshPassword", "", "", "Password of the user to ssh with. Either this or sshPrivateKey must be provided.")
-	args.AddVar(&options.MinimalInfra.SSHPrivateKey, "sshPrivateKey", "", "", "Private key to use for authentication. Either this or sshPassword must be provided.")
-	args.AddVar(&options.MinimalInfra.SSHPrivateKeyPassphrase, "sshPrivateKeyPassphrase", "", "", "Passphrase for the private key if any. Optional")
-	args.AddVar(&options.MinimalInfra.DockerUsername, "dockerUsername", "", "", "Docker username to use when setting up the minimal infra.")
-	args.AddVar(&options.MinimalInfra.DockerPAT, "dockerPat", "", "", "Docker Public Access Token to use when setting up the minimal infra. If dockerUsername is provided and this isn't, you will be prompted.")
+	args.AddVar(&runOptions.MinimalInfra.SSHUsername, "sshUsername", "", "root", "Username of the user to ssh with. This MUST be a root user or a user that can sudo without a password.")
+	args.AddVar(&runOptions.MinimalInfra.SSHPassword, "sshPassword", "", "", "Password of the user to ssh with. Either this or sshPrivateKey must be provided.")
+	args.AddVar(&runOptions.MinimalInfra.SSHPrivateKey, "sshPrivateKey", "", "", "Private key to use for authentication. Either this or sshPassword must be provided.")
+	args.AddVar(&runOptions.MinimalInfra.SSHPrivateKeyPassphrase, "sshPrivateKeyPassphrase", "", "", "Passphrase for the private key if any. Optional")
+	args.AddVar(&runOptions.MinimalInfra.DockerUsername, "dockerUsername", "", "", "Docker username to use when setting up the minimal infra.")
+	args.AddVar(&runOptions.MinimalInfra.DockerPAT, "dockerPat", "", "", "Docker Public Access Token to use when setting up the minimal infra. If dockerUsername is provided and this isn't, you will be prompted.")
 
 	// Aria Automation
-	args.AddVar(&options.Aria.Automation.Port, "ariaAutomationFqdn", "aaFQDN", "vra-l-01a.corp.local", "Fully Qualified Domain Name for Aria Automation without the protocol (https://) and port (:443).")
-	args.AddVar(&options.Aria.Automation.FQDN, "ariaAutomationPort", "aaPort", "443", "Aria Automation port")
-	args.AddVar(&options.Aria.Automation.Username, "ariaAutomationUsername", "aaUsername", "configurationadmin", "Username to use for authentication to Aria Automation.")
-	args.AddVar(&options.Aria.Automation.Password, "ariaAutomationPassword", "aaPassword", "", "Password to use for authentication to Aria Automation.")
-	args.AddVar(&options.Aria.Automation.OrgName, "ariaAutomationOrgName", "aaOrgName", "vidm-l-01a", "Aria Automation organization name. Can be found in the dropdown at the top.")
-	args.AddVar(&options.Aria.Automation.ProjectName, "ariaAutomationProjectName", "aaProjectName", "Development", "Aria Automation default project name to push to. Used mainly for vra-ng archetype.")
+	args.AddVar(&runOptions.Aria.Automation.Port, "ariaAutomationFqdn", "aaFQDN", "vra-l-01a.corp.local", "Fully Qualified Domain Name for Aria Automation without the protocol (https://) and port (:443).")
+	args.AddVar(&runOptions.Aria.Automation.FQDN, "ariaAutomationPort", "aaPort", "443", "Aria Automation port")
+	args.AddVar(&runOptions.Aria.Automation.Username, "ariaAutomationUsername", "aaUsername", "configurationadmin", "Username to use for authentication to Aria Automation.")
+	args.AddVar(&runOptions.Aria.Automation.Password, "ariaAutomationPassword", "aaPassword", "", "Password to use for authentication to Aria Automation.")
+	args.AddVar(&runOptions.Aria.Automation.OrgName, "ariaAutomationOrgName", "aaOrgName", "vidm-l-01a", "Aria Automation organization name. Can be found in the dropdown at the top.")
+	args.AddVar(&runOptions.Aria.Automation.ProjectName, "ariaAutomationProjectName", "aaProjectName", "Development", "Aria Automation default project name to push to. Used mainly for vra-ng archetype.")
 
 	// Artifactory
-	args.AddVar(&options.ArtifactManager.Password, "artifactManagerPassword", "amPassword", "", "Password for existing ArtifactManager.")
-	args.AddVar(&options.ArtifactManager.GroupRepo, "artifactManagerGroupRepo", "amGroupRepo", "", "Group repository to use for fetching both snapshots and release artifacts.")
-	args.AddVar(&options.ArtifactManager.ReleaseRepo, "artifactManagerReleaseRepo", "amReleaseRepo", "", "Release repository to use for fetching and uploading release artifacts.")
-	args.AddVar(&options.ArtifactManager.SnapshotRepo, "artifactManagerSnapshotRepo", "amSnapshotRepo", "", "Snapshot repository to use for fetching and uploading sanpshot artifacts.")
+	args.AddVar(&runOptions.ArtifactManager.Password, "artifactManagerPassword", "amPassword", "", "Password for existing ArtifactManager.")
+	args.AddVar(&runOptions.ArtifactManager.GroupRepo, "artifactManagerGroupRepo", "amGroupRepo", "", "Group repository to use for fetching both snapshots and release artifacts.")
+	args.AddVar(&runOptions.ArtifactManager.ReleaseRepo, "artifactManagerReleaseRepo", "amReleaseRepo", "", "Release repository to use for fetching and uploading release artifacts.")
+	args.AddVar(&runOptions.ArtifactManager.SnapshotRepo, "artifactManagerSnapshotRepo", "amSnapshotRepo", "", "Snapshot repository to use for fetching and uploading sanpshot artifacts.")
 
 	args.Parse()
 
-	options.Parsed = true
+	runOptions.Parsed = true
 
-	return options
+	return runOptions
 }

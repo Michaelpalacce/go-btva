@@ -3,7 +3,7 @@ package state
 import (
 	"log/slog"
 
-	"github.com/Michaelpalacce/go-btva/cmd/run/run_options"
+	"github.com/Michaelpalacce/go-btva/internal/options"
 )
 
 // SetStateOption follows the famous functional options pattern. It returns an error if there was an issue performing an operation on the state
@@ -32,7 +32,7 @@ type State struct {
 	State map[string]internalState `json:"status"`
 
 	// Options are stored here so we can preserve them between multiple runs
-	Options *run_options.RunOptions `json:"options,omitempty"`
+	Options *options.RunOptions `json:"options,omitempty"`
 
 	// storage is an array, as you may want to store the state in multiple places
 	storage []Storage

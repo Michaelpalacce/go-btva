@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/Michaelpalacce/go-btva/cmd/run/run_options"
+	"github.com/Michaelpalacce/go-btva/internal/options"
 	"github.com/Michaelpalacce/go-btva/internal/run/os/software"
 	"github.com/Michaelpalacce/go-btva/pkg/command/unix"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
@@ -13,7 +13,7 @@ import (
 // NodeSoftware is responsible for installing and checking if node is installed
 type NodeSoftware struct {
 	os      *os.OS
-	options *run_options.RunOptions
+	options *options.RunOptions
 
 	initialized bool
 }

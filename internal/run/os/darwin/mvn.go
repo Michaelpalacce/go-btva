@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/Michaelpalacce/go-btva/cmd/run/run_options"
+	"github.com/Michaelpalacce/go-btva/internal/options"
 	"github.com/Michaelpalacce/go-btva/internal/run/os/software"
 	"github.com/Michaelpalacce/go-btva/pkg/command/unix"
 	"github.com/Michaelpalacce/go-btva/pkg/file"
@@ -14,7 +14,7 @@ import (
 // MvnSoftware is responsible for installing and checking if mvn is installed
 type MvnSoftware struct {
 	os      *os.OS
-	options *run_options.RunOptions
+	options *options.RunOptions
 
 	initialized bool
 }

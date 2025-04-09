@@ -21,12 +21,21 @@ func (c *ResetCommand) Run() error {
 		a, err := prompt.AskYesNo("Are you sure? You may lose data!")
 
 		if err != nil || !a {
-			slog.Warn("Skipping state deletion.")
+			slog.Warn("Skipping reset.")
 			return nil
-		} else {
-			slog.Info("Deleting state.")
 		}
 	}
 
-	return file.DeleteIfExists(options.StateFile)
+	if options.State {
+		if err := options.ValidateState(); err != nil {
+			return err
+		}
+
+		slog.Info("Deleting state file")
+		if err := file.DeleteIfExists(options.StateFile); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

@@ -4,18 +4,18 @@ import (
 	"flag"
 	"os"
 
-	"github.com/Michaelpalacce/go-btva/cmd/reset/reset_options"
+	"github.com/Michaelpalacce/go-btva/internal/options"
 	"github.com/Michaelpalacce/go-btva/internal/run/state"
 	"github.com/Michaelpalacce/go-btva/pkg/args"
 )
 
-var options = &reset_options.ResetOptions{}
+var resetOptions = &options.ResetOptions{}
 
-var usage = `Resets the state. WARN: You could lose data!`
+var usage = `Resets different parts of the state. WIP, currently just deletes the state file`
 
-func (c *ResetCommand) Args() *reset_options.ResetOptions {
-	if options.Parsed {
-		return options
+func (c *ResetCommand) Args() *options.ResetOptions {
+	if resetOptions.Parsed {
+		return resetOptions
 	}
 
 	args, err := args.NewArgs(
@@ -27,12 +27,13 @@ func (c *ResetCommand) Args() *reset_options.ResetOptions {
 		panic(err)
 	}
 
-	args.AddVar(&options.AssumeYes, "", "y", false, "Assume yes, don't promp.")
-	args.AddVar(&options.StateFile, "", "f", state.JSON_STORAGE_FILE, "State file to delete")
+	args.AddVar(&resetOptions.AssumeYes, "", "y", false, "Assume yes, don't promp.")
+	args.AddVar(&resetOptions.State, "state", "s", true, "Reset the entire state.")
+	args.AddVar(&resetOptions.StateFile, "stateFile", "sf", state.JSON_STORAGE_FILE, "State file modify or delete.")
 
 	args.Parse()
 
-	options.Parsed = true
+	resetOptions.Parsed = true
 
-	return options
+	return resetOptions
 }

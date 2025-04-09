@@ -3,7 +3,7 @@ package linux
 import (
 	"os/exec"
 
-	"github.com/Michaelpalacce/go-btva/cmd/run/run_options"
+	"github.com/Michaelpalacce/go-btva/internal/options"
 	"github.com/Michaelpalacce/go-btva/internal/run/os/software"
 	"github.com/Michaelpalacce/go-btva/pkg/command/unix"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
@@ -12,7 +12,7 @@ import (
 // VsCodeSoftware is responsible for installing and checking if VSCode is installed
 type VsCodeSoftware struct {
 	os      *os.OS
-	options *run_options.RunOptions
+	options *options.RunOptions
 
 	initialized bool
 }

@@ -1,7 +1,7 @@
 package infra
 
 import (
-	"github.com/Michaelpalacce/go-btva/cmd/run/run_options"
+	"github.com/Michaelpalacce/go-btva/internal/options"
 	"github.com/Michaelpalacce/go-btva/internal/run/state"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
 )
@@ -9,7 +9,7 @@ import (
 type InfraComponent struct {
 	os      *os.OS
 	state   *state.State
-	options *run_options.RunOptions
+	options *options.RunOptions
 }
 
 func NewInfraComponent(os *os.OS, state *state.State) *InfraComponent {

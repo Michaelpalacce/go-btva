@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/Michaelpalacce/go-btva/cmd/run/run_options"
+	"github.com/Michaelpalacce/go-btva/internal/options"
 	"github.com/Michaelpalacce/go-btva/internal/run/state"
 	"github.com/Michaelpalacce/go-btva/internal/run/templates"
 	"github.com/Michaelpalacce/go-btva/pkg/gitlab"
@@ -30,7 +30,7 @@ const (
 
 // getClient will ssh into the machine and give you a goph.Client pointer you can use to run commands.
 // @WARN: Make sure to defer client.Close()
-func getClient(options *run_options.RunOptions) (*goph.Client, error) {
+func getClient(options *options.RunOptions) (*goph.Client, error) {
 	infraOptions := options.MinimalInfra
 
 	client, err := ssh.GetClient(infraOptions.SSHVMIP, infraOptions.SSHUsername, infraOptions.SSHPassword, infraOptions.SSHPrivateKey, infraOptions.SSHPrivateKeyPassphrase)
@@ -288,7 +288,7 @@ func (i *InfraComponent) MinimalInfraSettingsXml() error {
 
 	return templates.SettingsXml(
 		m2SettingsPath,
-		run_options.ArtifactManager{
+		options.ArtifactManager{
 			ReleaseRepo:  baseURL + "maven-releases",
 			SnapshotRepo: baseURL + "maven-snapshots",
 			GroupRepo:    baseURL + "maven-public",
@@ -308,6 +308,6 @@ func isDuplicateKeyGitlab(msg string) bool {
 	return strings.Contains(msg, "duplicate key value violates unique constraint")
 }
 
-func gitlabUrl(opts run_options.RunOptions) string {
+func gitlabUrl(opts options.RunOptions) string {
 	return fmt.Sprintf("http://%s:8082/gitlab", opts.MinimalInfra.SSHVMIP)
 }
