@@ -19,7 +19,7 @@ var usage = `go-btva is a tool that allows you to:
 - [x] Setup minimal infrastructure on a linux machine
 - [x] Connect local env with existing Artifact Manager
 
-Usage of:
+Usage:
 `
 
 var opts = make([]opt, 0)
