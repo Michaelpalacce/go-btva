@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/Michaelpalacce/go-btva/cmd/run/run_options"
-	"github.com/Michaelpalacce/go-btva/internal/args"
+	"github.com/Michaelpalacce/go-btva/pkg/args"
 )
 
 // This is a single instance of the options. We don't want to parse them more than once

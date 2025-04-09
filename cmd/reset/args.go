@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/Michaelpalacce/go-btva/cmd/reset/reset_options"
-	"github.com/Michaelpalacce/go-btva/internal/args"
 	"github.com/Michaelpalacce/go-btva/internal/run/state"
+	"github.com/Michaelpalacce/go-btva/pkg/args"
 )
 
 var options = &reset_options.ResetOptions{}
