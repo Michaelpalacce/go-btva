@@ -11,7 +11,6 @@ import (
 func WithCliArgs() SetStateOption {
 	return func(s *State) error {
 		if s.Options == nil {
-			slog.Info("State storage missing or options are not present. Reading arguments.")
 			s.Options = args.Args()
 		} else {
 			slog.Info("State storage detected and options loaded. Ignoring arguments passed.")
