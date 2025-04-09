@@ -49,8 +49,6 @@ Go to the [releases](https://github.com/Michaelpalacce/go-btva/releases) and dow
 
 ### Good To Haves
 
-- [ ] Window pop up
-- [ ] Executable
 - [ ] Working on windows
 - [ ] Create a demo project
 - [ ] Configure Other Artifact Managers?
