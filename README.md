@@ -40,20 +40,13 @@ This tool aims to ease the initial setup.
 
 ## Action Items
 
-### Must Haves
-
-- [ ] Build process that publishes runnables
-
 ### Good To Haves
-
-- [ ] Create a demo project
-
-### Nice To Haves
 
 - [ ] Encrypt state file variables that are secret
 - [ ] Window pop up
 - [ ] Executable
 - [ ] Working on windows
+- [ ] Create a demo project
 
 ## State
 
