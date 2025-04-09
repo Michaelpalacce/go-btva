@@ -49,7 +49,6 @@ Go to the [releases](https://github.com/Michaelpalacce/go-btva/releases) and dow
 
 ### Good To Haves
 
-- [ ] Encrypt state file variables that are secret
 - [ ] Window pop up
 - [ ] Executable
 - [ ] Working on windows
