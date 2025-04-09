@@ -24,8 +24,12 @@ func NewSoftwareComponent(os *os.OS, state *state.State) *SoftwareComponent {
 // @NOTE: If the version of the software is empty, then we skip installation
 func (s *SoftwareComponent) InstallSoftware(soft software.Software) error {
 	if soft.Exists() || soft.GetVersion() == "" {
+		version := soft.GetVersion()
+		if version != "" {
+			version = ":" + version
+		}
 		s.state.Set(
-			state.WithWarn(soft.GetName(), fmt.Sprintf("Software (%s:%s) already installed, skipping...", soft.GetName(), soft.GetVersion())),
+			state.WithWarn(soft.GetName(), fmt.Sprintf("Software (%s%s) already installed, skipping...", soft.GetName(), version)),
 		)
 		return nil
 	}
