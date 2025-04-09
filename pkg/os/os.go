@@ -42,12 +42,12 @@ func GetOS() *OS {
 
 // initializeOS will initialize the OS with data from the current OS
 func initializeOS() error {
-	if err := determineShell(); err != nil {
-		return fmt.Errorf("error while trying to determine shell. Err was %w", err)
-	}
-
 	if err := determineCommonDirectories(); err != nil {
 		return fmt.Errorf("error trying to determine common directories. Err was %w", err)
+	}
+
+	if err := determineShell(); err != nil {
+		return fmt.Errorf("error while trying to determine shell. Err was %w", err)
 	}
 
 	os.initialized = true
@@ -81,6 +81,8 @@ func determineShell() error {
 
 		os.Shell = shell
 		os.ShellProfile = profile
+	case "windows":
+		break
 	}
 
 	return nil
