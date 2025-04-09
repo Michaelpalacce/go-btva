@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-)
 
-const JSON_STORAGE_FILE = "go-btva.state.json"
+	"github.com/Michaelpalacce/go-btva/internal/options"
+)
 
 // Storage is an interface that defines how to store and load the state
 type Storage interface {
@@ -70,5 +70,5 @@ func WithJsonStorage(filepath string, load bool) SetStateOption {
 
 // WithDefaultJsonStorage will make the State store data in JSON. It will use the default state file
 func WithDefaultJsonStorage() SetStateOption {
-	return WithJsonStorage(JSON_STORAGE_FILE, true)
+	return WithJsonStorage(options.JSON_STORAGE_FILE, true)
 }
