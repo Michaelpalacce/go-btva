@@ -9,6 +9,12 @@ BTVA comes with pre-requisites and even third party systems in order for everyth
 
 This tool aims to ease the initial setup.
 
+## Installing
+
+Go to the [releases](https://github.com/Michaelpalacce/go-btva/releases) and download the correct binary depending on your OS.
+- The binaries are generated entirely in a [Github
+  Action](https://github.com/Michaelpalacce/go-btva/blob/main/.github/workflows/build.yaml). The sha is shown in the [job run](https://github.com/Michaelpalacce/go-btva/actions/runs/14332857255/job/40172667918#step:4:262) and is also uploaded in the releases page.
+
 ## What This Is Not
 
 - TBD, it's everything
