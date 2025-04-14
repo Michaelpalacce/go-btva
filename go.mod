@@ -5,7 +5,7 @@ go 1.23.4
 require (
 	github.com/lmittmann/tint v1.0.7
 	github.com/melbahja/goph v1.4.0
-	golang.org/x/crypto v0.31.0
+	golang.org/x/crypto v0.35.0
 	golang.org/x/term v0.30.0
 )
 
