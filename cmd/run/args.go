@@ -72,7 +72,8 @@ func (c *RunCommand) Args() *options.RunOptions {
 	args.AddVar(&runOptions.Software.JavaVersion, "javaVersion", "jv", "17", "Which version of java to install? If not set, will skip installation.")
 	args.AddVar(&runOptions.Software.NodeVersion, "nodeVersion", "nv", "22", "Which version of node to install? If not set, will skip installation.")
 	args.AddVar(&runOptions.Software.MvnVersion, "mvnVersion", "mv", "3.9.9", "Which version of mvn to install? If not set, will skip installation.")
-	args.AddVar(&runOptions.Software.VsCodeVersion, "vsCodeVersion", "vv", "latest", "Which version of node to install? Supports `latest` or empty. If not set, will skip installation.")
+	args.AddVar(&runOptions.Software.VsCodeVersion, "vsCodeVersion", "vv", "latest", "Which version of VSCode to install? Supports `latest` or empty. If not set, will skip installation.")
+	args.AddVar(&runOptions.Software.ChocolateyVersion, "chocolateyVersion", "cv", "latest", "(WINDOWS ONLY) Which version of chocolatey to install? Supports `latest` or empty. If not set, will skip installation.")
 
 	// Minimal Infra
 

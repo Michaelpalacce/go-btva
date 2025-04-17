@@ -10,6 +10,10 @@ type Software interface {
 }
 
 const (
+	// Windows
+	ChocolateySoftwareKey = "Chocolatey"
+
+	// Linux/Darwin/Windows
 	JavaSoftwareKey   = "Java"
 	MvnSoftwareKey    = "Maven"
 	NodeSoftwareKey   = "NodeJs"

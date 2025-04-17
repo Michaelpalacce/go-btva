@@ -10,10 +10,11 @@ import (
 // software the tool supports.
 type Software struct {
 	// Versions
-	JavaVersion   string `json:"javaVersion"`
-	MvnVersion    string `json:"mvnVersion"`
-	NodeVersion   string `json:"nodeVersion"`
-	VsCodeVersion string `json:"vsCodeVersion"`
+	JavaVersion       string `json:"javaVersion"`
+	MvnVersion        string `json:"mvnVersion"`
+	NodeVersion       string `json:"nodeVersion"`
+	VsCodeVersion     string `json:"vsCodeVersion"`
+	ChocolateyVersion string `json:"chocolateyVersion"`
 }
 
 // MinimalInfra will hold different minimal infra decisions that need to be taken

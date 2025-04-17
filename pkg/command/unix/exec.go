@@ -22,7 +22,7 @@ func RunCommand(command string, arguments ...string) error {
 func RunCommandWithStdin(stdin *os.File, command string, arguments ...string) error {
 	cmd := exec.Command(command, arguments...)
 	if stdin != nil {
-		cmd.Stdin = os.Stdin
+		cmd.Stdin = stdin
 	}
 
 	var out []byte
