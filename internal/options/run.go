@@ -77,6 +77,7 @@ type RunOptions struct {
 	MinimalInfra    MinimalInfra    `json:"mininalInfra"`
 	Aria            Aria            `json:"aria"`
 	ArtifactManager ArtifactManager `json:"artifactManager"`
+	Prompt          bool            `json:"prompt"`
 
 	// Parsed is an internal variable that tells us that the options have already been Parsed and don't need a second go
 	Parsed bool

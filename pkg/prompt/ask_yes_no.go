@@ -8,7 +8,7 @@ import (
 // AskYesNo will ask the user for a yes or no answer and return true of false
 func AskYesNo(prompts ...string) (bool, error) {
 	printPrompts(prompts...)
-	fmt.Print(" [Y/n]: ")
+	fmt.Print(" [Y(es)/n(o)]: ")
 
 	var text string
 	_, err := fmt.Scanln(&text)
@@ -19,7 +19,7 @@ func AskYesNo(prompts ...string) (bool, error) {
 // AskYesNo will ask the user for a yes or no answer and return true of false
 func AskYesNoAbort(prompts ...string) (bool, error) {
 	printPrompts(prompts...)
-	fmt.Print(" [Y/n/a]: ")
+	fmt.Print(" [Y(es)/n(o)/a(bort)]: ")
 
 	var text string
 	_, err := fmt.Scanln(&text)

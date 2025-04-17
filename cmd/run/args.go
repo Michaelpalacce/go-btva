@@ -65,6 +65,9 @@ func (c *RunCommand) Args() *options.RunOptions {
 		panic(err)
 	}
 
+	// Interactive
+	args.AddVar(&runOptions.Prompt, "prompt", "p", true, "The tool will prompt you for most actions that will be taken (mainly things that affect your hardware). Actions can be Yes-ed, No-ed or Aborted.")
+
 	// Software
 	args.AddVar(&runOptions.Software.JavaVersion, "javaVersion", "jv", "17", "Which version of java to install? If not set, will skip installation.")
 	args.AddVar(&runOptions.Software.NodeVersion, "nodeVersion", "nv", "22", "Which version of node to install? If not set, will skip installation.")

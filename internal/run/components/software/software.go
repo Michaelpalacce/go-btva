@@ -8,6 +8,7 @@ import (
 	"github.com/Michaelpalacce/go-btva/internal/run/os/software"
 	"github.com/Michaelpalacce/go-btva/internal/run/state"
 	"github.com/Michaelpalacce/go-btva/pkg/os"
+	"github.com/Michaelpalacce/go-btva/pkg/prompt"
 )
 
 type SoftwareComponent struct {
@@ -32,6 +33,14 @@ func (s *SoftwareComponent) InstallSoftware(soft software.Software) error {
 			state.WithWarn(soft.GetName(), fmt.Sprintf("Software (%s%s) already installed, skipping...", soft.GetName(), version)),
 		)
 		return nil
+	}
+
+	if s.options.Prompt {
+		if a, err := prompt.AskYesNoAbort(fmt.Sprintf("%s:%s will be installed.", soft.GetName(), soft.GetVersion())); err != nil {
+			return err
+		} else if !a {
+			return nil
+		}
 	}
 
 	slog.Info("Software is not installed, installing", "name", soft.GetName(), "version", soft.GetVersion())

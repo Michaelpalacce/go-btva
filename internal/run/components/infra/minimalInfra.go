@@ -51,6 +51,14 @@ func (i *InfraComponent) RunMinimalInfra() error {
 		return nil
 	}
 
+	if i.options.Prompt {
+		if a, err := prompt.AskYesNoAbort(fmt.Sprintf("%s will be executed on %s", _BTVA_MINIMAL_INFRA_INSTALL_URL, i.options.MinimalInfra.SSHVMIP)); err != nil {
+			return err
+		} else if !a {
+			return nil
+		}
+	}
+
 	i.state.Set(state.WithMsg(INFRA_STATE, "Running the minimal infrastructure installer. This may take a few minutes as it waits for services to be healthy."))
 
 	client, err := getClient(i.options)
@@ -285,6 +293,14 @@ func (f *InfraComponent) MinimalInfraGitlabInstructions() error {
 func (i *InfraComponent) MinimalInfraSettingsXml() error {
 	baseURL := fmt.Sprintf("http://%s/nexus/repository/", i.options.MinimalInfra.SSHVMIP)
 	m2SettingsPath := fmt.Sprintf("%s/.m2/settings.xml", i.os.HomeDir)
+
+	if i.options.Prompt {
+		if a, err := prompt.AskYesNoAbort(fmt.Sprintf("%s will be setup", m2SettingsPath)); err != nil {
+			return err
+		} else if !a {
+			return nil
+		}
+	}
 
 	return templates.SettingsXml(
 		m2SettingsPath,

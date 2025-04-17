@@ -21,7 +21,7 @@ Go to the [releases](https://github.com/Michaelpalacce/go-btva/releases) and dow
 
 ## What This Is
 
-- [ ] Provides clear instructions on what will be done
+- [x] Provides clear instructions on what will be done and prompts the user for actions that may affect his system(s)
 - Setup minimal infra on a vm
     - [x] Run the minimal infrastructure installer
     - [x] Fetch Nexus Password
