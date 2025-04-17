@@ -15,3 +15,17 @@ func IsYesAnswer(answer string) bool {
 	return answer == "y" ||
 		answer == "yes"
 }
+
+// isAbortAnswer will return true if it is essentially an abort
+// Abort,A,a,abort,abort    ,    abort are some options
+// Defaults to false
+func isAbortAnswer(answer string) bool {
+	if answer == "" {
+		return false
+	}
+
+	answer = strings.TrimSpace(answer)
+	answer = strings.ToLower(answer)
+	return answer == "a" ||
+		answer == "abort"
+}
