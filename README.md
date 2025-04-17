@@ -4,10 +4,10 @@ Sets UP BTVA for local development.
 
 ## Overview
 
-[Build Tools For VMware Aria](https://github.com/vmware/build-tools-for-vmware-aria) is a tool that enabling easier development for automation on VCF.
+[Build Tools For VMware Aria](https://github.com/vmware/build-tools-for-vmware-aria) is a tool that enables easier development for automation on VCF.
 BTVA comes with pre-requisites and even third party systems in order for everything to work correctly.
 
-This tool aims to ease the initial setup.
+This tool aims to ease that initial setup.
 
 ## Installing
 
@@ -21,6 +21,7 @@ Go to the [releases](https://github.com/Michaelpalacce/go-btva/releases) and dow
 
 ## What This Is
 
+- [ ] Provides clear instructions on what will be done
 - Setup minimal infra on a vm
     - [x] Run the minimal infrastructure installer
     - [x] Fetch Nexus Password
