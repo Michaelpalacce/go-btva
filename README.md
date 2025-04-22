@@ -48,11 +48,18 @@ Go to the [releases](https://github.com/Michaelpalacce/go-btva/releases) and dow
 
 ## Action Items
 
+### Must Haves
+
+- [ ] Ask user if state should be used if ran interactively
+- [ ] Non-interactive run should not ask for anything and instead fail if a question is needed.
+
 ### Good To Haves
 
 - [ ] Modify the zprofile for java
 - [ ] Working on windows
 - [ ] Configure Other Artifact Managers?
+
+### Nice to haves
 
 ## State
 
