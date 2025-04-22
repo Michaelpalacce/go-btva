@@ -23,11 +23,6 @@ const (
 	_INFRA_SETUP_DONE_KEY               = "infraSetup"
 )
 
-const (
-	_BTVA_INSTALL_DIR_INFRA         = "/opt/build-tools-for-vmware-aria/infrastructure"
-	_BTVA_MINIMAL_INFRA_INSTALL_URL = "https://raw.githubusercontent.com/vmware/build-tools-for-vmware-aria/refs/heads/main/infrastructure/install.sh"
-)
-
 // getClient will ssh into the machine and give you a goph.Client pointer you can use to run commands.
 // @WARN: Make sure to defer client.Close()
 func getClient(options *options.RunOptions) (*goph.Client, error) {
@@ -42,7 +37,6 @@ func getClient(options *options.RunOptions) (*goph.Client, error) {
 }
 
 // RunMinimalInfra will fetch the BTVA minimal infra installer and run it
-// @TODO: Fix the branch
 func (i *InfraComponent) RunMinimalInfra() error {
 	if state.Get(i.state, state.GetContextProp(INFRA_STATE, _INFRA_SETUP_DONE_KEY)) == "true" {
 		i.state.Set(
@@ -65,19 +59,22 @@ func (i *InfraComponent) RunMinimalInfra() error {
 	if err != nil {
 		return err
 	}
-	defer client.Close()
+	defer func() {
+		if err = client.Close(); err != nil {
+			slog.Error("error closing the ssh connection", "err", err)
+		}
+	}()
 
-	out, err := client.Run(fmt.Sprintf("curl -o- %s | bash -s -- %s %q", _BTVA_MINIMAL_INFRA_INSTALL_URL, i.options.MinimalInfra.DockerUsername, i.options.MinimalInfra.DockerPAT))
+	out, err := client.Run(fmt.Sprintf(_MINIMAL_INFRA_INSTALL_SCRIPT, _BTVA_MINIMAL_INFRA_INSTALL_URL, i.options.MinimalInfra.DockerUsername, i.options.MinimalInfra.DockerPAT))
 	if err != nil {
 		return fmt.Errorf("minimal infrastructure installer exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
 
-	// Fixes the compose install
-	if out, err := client.Run(fmt.Sprintf("sed -i \"s|external_url 'http://infra.corp.local/gitlab'|external_url '%q'|\" %s/docker-compose.yml", gitlabUrl(*i.options), _BTVA_INSTALL_DIR_INFRA)); err != nil {
+	if out, err := client.Run(fmt.Sprintf(_FIX_GITLAB_EXTERNAL_URL, gitlabUrl(*i.options), _BTVA_INSTALL_DIR_INFRA)); err != nil {
 		return fmt.Errorf("failed to modify compose file. err was %w, output was:\n%s", err, out)
 	}
 
-	if out, err := client.Run(fmt.Sprintf("docker compose -f %s/docker-compose.yml up -d --wait", _BTVA_INSTALL_DIR_INFRA)); err != nil {
+	if out, err := client.Run(fmt.Sprintf(_WAIT_FOR_MINIMAL_INFRA_UP, _BTVA_INSTALL_DIR_INFRA)); err != nil {
 		return fmt.Errorf("failed to start containers. err was %w, output was:\n%s", err, out)
 	}
 
@@ -102,9 +99,13 @@ func (i *InfraComponent) FetchGitlabPassword() error {
 	if err != nil {
 		return err
 	}
-	defer client.Close()
+	defer func() {
+		if err = client.Close(); err != nil {
+			slog.Error("error closing the ssh connection", "err", err)
+		}
+	}()
 
-	out, err := client.Run("docker exec gitlab-ce test -f /etc/gitlab/initial_root_password && docker exec gitlab-ce grep 'Password:' /etc/gitlab/initial_root_password | awk '{print $2}'")
+	out, err := client.Run(_GET_GITLAB_PASSWORD)
 	if err != nil {
 		return fmt.Errorf("gitlab admin password fetching exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
@@ -135,9 +136,13 @@ func (i *InfraComponent) CreateGitlabPat() error {
 	if err != nil {
 		return err
 	}
-	defer client.Close()
+	defer func() {
+		if err = client.Close(); err != nil {
+			slog.Error("error closing the ssh connection", "err", err)
+		}
+	}()
 
-	out, err := client.Run(fmt.Sprintf("docker exec gitlab-ce gitlab-rails runner 'token = User.find_by_username(\"root\").personal_access_tokens.create(scopes: [:read_user, :read_repository, :api, :create_runner, :manage_runner, :sudo, :admin_mode], name: \"Automation token\", expires_at: 356.days.from_now); token.set_token(\"%s\"); token.save! '", gitlabPat))
+	out, err := client.Run(fmt.Sprintf(_GET_GITLAB_PAT, gitlabPat))
 	if err != nil && !isDuplicateKeyGitlab(string(out)) {
 		return fmt.Errorf("gitlab admin public access token creation exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
@@ -196,9 +201,13 @@ func (i *InfraComponent) RegisterGitlabRunner() error {
 	if err != nil {
 		return err
 	}
-	defer client.Close()
+	defer func() {
+		if err = client.Close(); err != nil {
+			slog.Error("error closing the ssh connection", "err", err)
+		}
+	}()
 
-	out, err := client.Run(fmt.Sprintf("docker exec gitlab-runner gitlab-runner register --non-interactive --url \"%s\" --token \"%s\" --executor \"docker\" --docker-image alpine:latest --description \"docker-runner\"", gitlabUrl(*i.options), runnerAuthToken))
+	out, err := client.Run(fmt.Sprintf(_REGISTER_GITLAB_RUNNER, gitlabUrl(*i.options), runnerAuthToken))
 	if err != nil {
 		return fmt.Errorf("registering a gitlab runner exited unsuccessfully. err was %w, output was:\n%s", err, out)
 	}
@@ -223,9 +232,13 @@ func (i *InfraComponent) FetchNexusPassword() error {
 	if err != nil {
 		return err
 	}
-	defer client.Close()
+	defer func() {
+		if err = client.Close(); err != nil {
+			slog.Error("error closing the ssh connection", "err", err)
+		}
+	}()
 
-	out, err := client.Run("docker exec nexus cat /nexus-data/admin.password")
+	out, err := client.Run(_GET_NEXUS_PASSWORD)
 	if err != nil {
 		if isNoSuchFileOrDirectoryErr(string(out)) {
 			pass, err := prompt.AskPass("You've already went through the nexus initial wizard.", "In order to continue execution, please provide nexus password manually:")
