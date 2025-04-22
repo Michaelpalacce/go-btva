@@ -1,15 +1,15 @@
 # go-btva
 
-Sets UP BTVA for local development.
+Sets UP BTVA for local development. 💻
 
-## Overview
+## Overview 
 
 [Build Tools For VMware Aria](https://github.com/vmware/build-tools-for-vmware-aria) is a tool that enables easier development for automation on VCF.
 BTVA comes with pre-requisites and even third party systems in order for everything to work correctly.
 
 This tool aims to ease that initial setup.
 
-## Installing
+## Installing 🚀
 
 Go to the [releases](https://github.com/Michaelpalacce/go-btva/releases) and download the correct binary depending on your OS.
 - The binaries are generated entirely in a [Github
@@ -21,30 +21,30 @@ Go to the [releases](https://github.com/Michaelpalacce/go-btva/releases) and dow
 
 ## What This Is
 
-- [x] Provides clear instructions on what will be done and prompts the user for actions that may affect his system(s)
+- [x] 📝 Provides clear instructions on what will be done and prompts the user for actions that may affect his system(s)
 - Setup minimal infra on a vm
-    - [x] Run the minimal infrastructure installer
-    - [x] Fetch Nexus Password
-    - [x] Fetch Gitlab Password
-    - [x] Create New Gitlab Public Access Token
-    - [x] Register Gitlab Runner
+    - [x] 🏗️ Run the minimal infrastructure installer
+    - [x] 🔑 Fetch Nexus Password
+    - [x] 🔑 Fetch Gitlab Password
+    - [x] 🔑 Create New Gitlab Public Access Token
+    - [x] 🏁 Register Gitlab Runner
 - Setup dev environment
     - Supported os
         - [x] Linux (Ubuntu)
         - [x] MacOS
-        - [ ] Windows
+        - [ ] ⚒️ Windows
     - Configure
-        - [x] Configure `settings.xml` for nexus and aria
-        - [x] Provide Custom non minimal infra settings to integrate with other Artifact Managers
+        - [x] 🏗️ Configure `settings.xml` for nexus and aria
+        - [x] 🗒️ Provide Custom non minimal infra settings to integrate with other Artifact Managers
 - Software
     - Ability to install software agnostic to the environment
-        - [x] Install Java
-        - [x] Install mvn
-        - [x] Install NodeJS with `fnm`
-        - [x] Install VSCode with recommended extensions
+        - [x] ⚡ Install Java
+        - [x] ⚡ Install mvn
+        - [x] ⚡ Install NodeJS with `fnm`
+        - [x] ⚡ Install VSCode with recommended extensions
 - At the end, give details to the user what their next steps should be
-    - [x] Give Gitlab Credentials
-    - [x] Give Nexus Credentials
+    - [x] 📝 Give Gitlab Credentials
+    - [x] 📝 Give Nexus Credentials
 
 ## Action Items
 
@@ -61,6 +61,8 @@ Go to the [releases](https://github.com/Michaelpalacce/go-btva/releases) and dow
 
 ### Nice to haves
 
+- [ ] Unit test the solution
+
 ## State
 
 State is managed by a state file that is created where the tool is ran. After the initial run of the tool, CLI arguments are ignored and
@@ -75,17 +77,17 @@ idempotent, you can also remove the state file and re-run with the desired argum
     <img src="assets/state-finished.png"/>
 </details>
 
-## Development
+## Development 📦
 
 We use `make` to run the program for dev
 
-## Running
+## Running ⚡
 
 ```sh
 make run
 ```
 
-## Cleanup
+## Cleanup 🧹
 
 Cleanup scripts are provided for linux to ease testing. There is a generic `cleanup` goal that can be used to cleanup everything, or more
 specific `cleanup-mvn` for example to cleanup specific components only.
@@ -94,7 +96,7 @@ specific `cleanup-mvn` for example to cleanup specific components only.
 make cleanup
 ```
 
-## Tests
+## Tests ✅
 
 ```sh
 make test
@@ -104,7 +106,7 @@ make test
 
 The `Makefile` contains a bunch of different helper methods. You can run `make help` to get a description of what is available.
 
-## FAQ
+## FAQ ❓
 
 ### Why is there no Air Gapped Installation? 🌌
 
