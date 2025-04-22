@@ -52,9 +52,7 @@ Go to the [releases](https://github.com/Michaelpalacce/go-btva/releases) and dow
 
 - [ ] Modify the zprofile for java
 - [ ] Working on windows
-- [ ] Create a demo project
 - [ ] Configure Other Artifact Managers?
-- [ ] Air Gapped installation with provided installation scripts?
 
 ## State
 
@@ -99,3 +97,13 @@ make test
 
 The `Makefile` contains a bunch of different helper methods. You can run `make help` to get a description of what is available.
 
+## FAQ
+
+### Why is there no Air Gapped Installation? 🌌
+
+Doing a full air gapped installation may be viewed as a security issue.
+We need to download all the dependencies for software and store them as install binaries. Potentially these binaries can be embedded in the executable, 
+however this introduces an attack vector as enterprises need to trust that those binaries are safe.
+
+Alternative would be to give clients the ability to specify their own binaries, but then at that point there is little point for this tool
+to handle the software installation.
