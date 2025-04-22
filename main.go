@@ -31,7 +31,8 @@ func root(args []string) error {
 	availableSubcommands := strings.Join(availableSubcommandsArr, " ")
 
 	if len(args) < 1 {
-		return fmt.Errorf("you must pass a sub-command. Available Commands: %s", availableSubcommands)
+		runCommand := &run.RunCommand{}
+		os.Args = append(os.Args, runCommand.Name())
 	}
 
 	subcommand := os.Args[1]
