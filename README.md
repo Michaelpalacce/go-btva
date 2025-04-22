@@ -56,10 +56,6 @@ Go to the [releases](https://github.com/Michaelpalacce/go-btva/releases) and dow
 - [ ] Configure Other Artifact Managers?
 - [ ] Air Gapped installation with provided installation scripts?
 
-### Nice To Haves
-
-- [ ] Move the scripts from inline to templates
-
 ## State
 
 State is managed by a state file that is created where the tool is ran. After the initial run of the tool, CLI arguments are ignored and
